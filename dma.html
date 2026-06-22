@@ -21,7 +21,7 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(ellipse 700px 400px at 50% 0%, rgba(0,224,138,.18), transparent 65%);
+      background: radial-gradient(ellipse 700px 400px at 50% 0%, rgba(247,198,0,.18), transparent 65%);
       pointer-events: none;
     }
     .dma-hero .eyebrow { font-size: 13px; margin-bottom: 14px; display: block; }
@@ -31,7 +31,7 @@
 
     .dma-badge {
       display: inline-flex; align-items: center; gap: 8px;
-      background: linear-gradient(135deg, rgba(0,224,138,.2), rgba(0,224,138,.05));
+      background: linear-gradient(135deg, rgba(247,198,0,.2), rgba(247,198,0,.05));
       border: 1px solid var(--green-line);
       border-radius: 999px; padding: 8px 18px;
       font-weight: 800; font-size: 14px; color: var(--green);
@@ -74,7 +74,7 @@
     .social-proof-band h2 { font-size: 26px; margin-bottom: 28px; }
     .social-proof-band .stats-row { margin-bottom: 36px; }
     .social-proof-band .portal-stat-tile {
-      background: rgba(0,224,138,.06);
+      background: rgba(247,198,0,.06);
       border-color: var(--green-line);
     }
 
@@ -88,7 +88,7 @@
     }
     .example-card .ava {
       width: 52px; height: 52px; border-radius: 50%;
-      background: var(--grad-green); color: #04110B;
+      background: var(--grad-green); color: #16130A;
       display: grid; place-items: center;
       font-weight: 900; font-size: 20px;
       margin: 0 auto 10px;
@@ -108,11 +108,11 @@
     }
     .step-num {
       width: 48px; height: 48px; border-radius: 50%;
-      background: var(--grad-green); color: #04110B;
+      background: var(--grad-green); color: #16130A;
       display: grid; place-items: center;
       font-weight: 900; font-size: 22px;
       margin: 0 auto 16px;
-      box-shadow: 0 8px 24px rgba(0,224,138,.3);
+      box-shadow: 0 8px 24px rgba(247,198,0,.3);
     }
     .step-card h3 { font-size: 16px; font-weight: 800; margin-bottom: 8px; }
     .step-card p { font-size: 14px; color: var(--text-dim); }
@@ -131,7 +131,7 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(ellipse 500px 300px at 50% 100%, rgba(0,224,138,.12), transparent 65%);
+      background: radial-gradient(ellipse 500px 300px at 50% 100%, rgba(247,198,0,.12), transparent 65%);
       pointer-events: none;
     }
     .cta-block h2 { font-size: 32px; margin-bottom: 12px; position: relative; }
@@ -271,6 +271,11 @@
       <!-- SOCIAL PROOF -->
       <section class="social-proof-band reveal" id="proof">
         <h2>המספרים מדברים בעד עצמם</h2>
+        <div class="portal-stat-tile" style="max-width:480px; margin:0 auto 28px; background:linear-gradient(135deg,rgba(247,198,0,.18),rgba(247,198,0,.05)); border-color:var(--gold); padding:22px 28px;">
+          <span class="ico">💎</span>
+          <span class="v" style="font-size:2.4rem; color:var(--gold);">₪53,000,000</span>
+          <span class="k" style="font-size:15px; font-weight:700;">הכנסות המותגים של דניאל ב-2025 בלבד. הוא לא מלמד תיאוריה — הוא מלמד מה שהוא עושה בפועל, כולל עם מותג התכשיטים שלו "תנאור" (@tanaor.jewelry.il).</span>
+        </div>
         <div class="stats-row">
           <div class="portal-stat-tile">
             <span class="ico">🎓</span>
@@ -453,7 +458,7 @@
 
     /* Confetti */
     function launchConfetti() {
-      const colors = ['#00E08A', '#F0B743', '#4FB0FF', '#FF5C6C', '#ffffff'];
+      const colors = ['#F7C600', '#F0B743', '#4FB0FF', '#FF5C6C', '#ffffff'];
       for (let i = 0; i < 60; i++) {
         const p = document.createElement('div');
         p.className = 'confetti-particle';

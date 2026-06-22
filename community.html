@@ -58,7 +58,7 @@
       height: 40px;
       border-radius: 50%;
       background: var(--grad-green);
-      color: #04110B;
+      color: #16130A;
       display: grid;
       place-items: center;
       font-weight: 800;
@@ -66,9 +66,9 @@
       flex-shrink: 0;
     }
     .post-avatar.alt-1 { background: linear-gradient(135deg,#4FB0FF,#2277CC); color:#fff; }
-    .post-avatar.alt-2 { background: linear-gradient(135deg,#F0B743,#C98A4B); color:#04110B; }
+    .post-avatar.alt-2 { background: linear-gradient(135deg,#F0B743,#C98A4B); color:#16130A; }
     .post-avatar.alt-3 { background: linear-gradient(135deg,#FF5C6C,#CC2233); color:#fff; }
-    .post-avatar.alt-4 { background: linear-gradient(135deg,#00E08A,#00935A); color:#04110B; }
+    .post-avatar.alt-4 { background: linear-gradient(135deg,#F7C600,#C99A00); color:#16130A; }
     .post-avatar.alt-5 { background: linear-gradient(135deg,#A855F7,#7C3AED); color:#fff; }
 
     .post-name { font-weight: 700; font-size: 14.5px; }
@@ -295,11 +295,11 @@
       </div>`).join('');
 
     function avatarBg(cls) {
-      const map = { 'alt-1':'linear-gradient(135deg,#4FB0FF,#2277CC)', 'alt-2':'linear-gradient(135deg,#F0B743,#C98A4B)', 'alt-3':'linear-gradient(135deg,#FF5C6C,#CC2233)', 'alt-4':'linear-gradient(135deg,#00E08A,#00935A)', 'alt-5':'linear-gradient(135deg,#A855F7,#7C3AED)' };
+      const map = { 'alt-1':'linear-gradient(135deg,#4FB0FF,#2277CC)', 'alt-2':'linear-gradient(135deg,#F0B743,#C98A4B)', 'alt-3':'linear-gradient(135deg,#FF5C6C,#CC2233)', 'alt-4':'linear-gradient(135deg,#F7C600,#C99A00)', 'alt-5':'linear-gradient(135deg,#A855F7,#7C3AED)' };
       return map[cls] || 'var(--grad-green)';
     }
     function avatarColor(cls) {
-      return (cls === 'alt-1' || cls === 'alt-3' || cls === 'alt-5') ? '#fff' : '#04110B';
+      return (cls === 'alt-1' || cls === 'alt-3' || cls === 'alt-5') ? '#fff' : '#16130A';
     }
 
     /* ---------- Seed posts ---------- */

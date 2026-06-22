@@ -22,7 +22,7 @@
       position: absolute; inset-block-start: -120px; inset-inline-start: 50%;
       transform: translateX(-50%);
       width: 700px; height: 700px;
-      background: radial-gradient(circle, rgba(0,224,138,.12) 0%, transparent 65%);
+      background: radial-gradient(circle, rgba(247,198,0,.12) 0%, transparent 65%);
       pointer-events: none;
     }
     .lp-hero .h-display { margin-block: 18px 16px; max-width: 820px; margin-inline: auto; }
@@ -78,7 +78,7 @@
     .testimonial-card .ava-row { display: flex; align-items: center; gap: 12px; }
     .testimonial-card .ava-circle {
       width: 44px; height: 44px; border-radius: 50%; background: var(--grad-green);
-      color: #04110B; display: grid; place-items: center; font-weight: 900; font-size: 18px; flex-shrink: 0;
+      color: #16130A; display: grid; place-items: center; font-weight: 900; font-size: 18px; flex-shrink: 0;
     }
     .testimonial-card .quote { font-size: 15px; color: var(--text-dim); line-height: 1.6; }
     .testimonial-card .result { color: var(--green); font-weight: 800; font-size: 15px; }
@@ -92,7 +92,7 @@
     }
     .lp-cta-band::after {
       content: ''; position: absolute; inset: 0;
-      background: radial-gradient(ellipse at center, rgba(0,224,138,.08) 0%, transparent 70%);
+      background: radial-gradient(ellipse at center, rgba(247,198,0,.08) 0%, transparent 70%);
       pointer-events: none;
     }
     .lp-cta-band h2 { font-size: clamp(26px, 4vw, 42px); margin-block-end: 12px; }
@@ -121,6 +121,21 @@
     .btn-google:hover { border-color: var(--green-line); background: var(--green-soft); }
     .modal-close { position: absolute; top: 14px; left: 14px; font-size: 22px; color: var(--text-mute); cursor: pointer; line-height: 1; }
     .portal-modal .box { position: relative; }
+
+    /* credibility band */
+    .lp-cred-band {
+      background: linear-gradient(90deg, rgba(247,198,0,.07) 0%, transparent 100%);
+      border-block-end: 1px solid var(--border); padding-block: 18px;
+      text-align: center;
+    }
+    .lp-cred-band p {
+      font-size: 15px; font-weight: 700; color: var(--text);
+      margin: 0; display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+    }
+    .lp-cred-band .stat-num {
+      font-size: 22px; font-weight: 900; color: var(--green); letter-spacing: -.5px;
+    }
+    .lp-cred-band .cred-dot { color: var(--text-mute); font-size: 13px; }
 
     /* section spacing for landing page (override topbar offset) */
     .lp-body { padding-block-start: 58px; }
@@ -163,7 +178,7 @@
         ללא הון עצמי גבוה, בלי ניסיון קודם, בלי ידע באנגלית או טכנולוגיה, ובלי לסכן עשרות אלפי שקלים.
       </p>
       <p class="sub reveal" style="margin-block-start:-18px;font-size:16px">
-        הפורטל הזה מלמד את אותו הסיסטם בדיוק, חינם, צעד אחר צעד.
+        הפורטל הזה מלמד את אותו הסיסטם בדיוק, חינם, צעד אחר צעד. כן, ממש חינם. לא טריק שיווקי.
       </p>
       <div class="cta-row reveal">
         <a href="course-library.html" class="btn btn--primary btn--lg">התחל ללמוד חינם ←</a>
@@ -171,6 +186,20 @@
       </div>
     </div>
   </section>
+
+  <!-- ========== CREDIBILITY BAND ========== -->
+  <div class="lp-cred-band">
+    <div class="wrap">
+      <p>
+        <span class="stat-num">53,000,000 ש״ח</span>
+        <span class="cred-dot">·</span>
+        הכנסות המותגים של דניאל בשנת 2025 בלבד
+        <span class="cred-dot">·</span>
+        בעלים של מותג התכשיטים
+        <a href="https://www.instagram.com/tanaor.jewelry.il/" target="_blank" rel="noopener" style="color:var(--green);font-weight:800">תנאור (@tanaor.jewelry.il)</a>
+      </p>
+    </div>
+  </div>
 
   <!-- ========== STATS STRIP ========== -->
   <div class="lp-stats">
@@ -194,6 +223,11 @@
         <div class="ico">📚</div>
         <div class="v">6+</div>
         <div class="k">חוברות ותבניות</div>
+      </div>
+      <div class="portal-stat-tile reveal">
+        <div class="ico">💰</div>
+        <div class="v">₪53M</div>
+        <div class="k">הכנסות מותגיו ב-2025</div>
       </div>
     </div>
   </div>

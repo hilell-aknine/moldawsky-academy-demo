@@ -25,9 +25,9 @@
     .lesson-card .lc-thumb-wrap { position:relative; }
     .lesson-card .lc-thumb-wrap .play { position:absolute; inset:0; display:grid; place-items:center; opacity:0; transition:.2s; background:rgba(4,9,8,.42); border-radius:var(--r-sm); }
     .lesson-card:hover .lc-thumb-wrap .play { opacity:1; }
-    .lesson-card .lc-thumb-wrap .play span { width:46px; height:46px; border-radius:50%; background:var(--grad-green); color:#04110B; display:grid; place-items:center; font-size:18px; box-shadow:0 8px 20px rgba(0,224,138,.45); }
+    .lesson-card .lc-thumb-wrap .play span { width:46px; height:46px; border-radius:50%; background:var(--grad-green); color:#16130A; display:grid; place-items:center; font-size:18px; box-shadow:0 8px 20px rgba(247,198,0,.45); }
     .lesson-card .lc-thumb-wrap .dur-tag { position:absolute; inset-block-end:8px; inset-inline-start:8px; background:rgba(4,9,8,.78); color:#fff; font-size:11px; font-weight:700; padding:3px 8px; border-radius:7px; }
-    .lesson-card .lc-thumb-wrap .done-tag { position:absolute; inset-block-start:8px; inset-inline-end:8px; width:26px; height:26px; border-radius:50%; background:var(--green); color:#04110B; display:grid; place-items:center; font-weight:900; font-size:14px; box-shadow:var(--shadow-sm); }
+    .lesson-card .lc-thumb-wrap .done-tag { position:absolute; inset-block-start:8px; inset-inline-end:8px; width:26px; height:26px; border-radius:50%; background:var(--green); color:#16130A; display:grid; place-items:center; font-weight:900; font-size:14px; box-shadow:var(--shadow-sm); }
     .lesson-card h4 { font-size:15.5px; margin-block-start:2px; }
     .lesson-card.is-locked { opacity:.62; }
     .lesson-card.is-locked .lc-thumb-wrap::after { content:"🔒"; position:absolute; inset:0; display:grid; place-items:center; font-size:26px; background:rgba(4,9,8,.55); border-radius:var(--r-sm); }
@@ -480,7 +480,7 @@
 
     /* ============ CONFETTI ============ */
     function celebrate() {
-      const colors = ['#00E08A','#00B870','#F0B743','#C9D4D1','#4FB0FF'];
+      const colors = ['#F7C600','#E6B400','#F0B743','#C9D4D1','#4FB0FF'];
       for (let i=0;i<70;i++){
         const p = document.createElement('div');
         p.className = 'confetti-pc';
