@@ -89,13 +89,13 @@
       <a class="brand" href="course-library.html"><span class="logo">M</span> אקדמיית <b>מולדבסקי</b></a>
       <div class="topbar-spacer"></div>
       ${ (() => { const n = window.Progress.nextLesson();
-          return n ? `<a class="btn btn--primary btn--sm" href="course-library.html?lesson=${n.id}">המשך בשיעור הבא ←</a>` : ''; })() }
-      <a class="icon-btn hide-sm" href="game.html" title="משחק תרגול">🎮</a>
-      <a class="icon-btn hide-sm" href="ambassador.html" title="שגרירים">💸</a>
-      <button class="icon-btn" title="מצב תצוגה" onclick="toggleTheme()">◐</button>
-      <a class="icon-btn hide-sm" href="admin.html" title="ניהול (מאחורי הקלעים)">⚙️</a>
-      <a class="icon-btn" href="dma.html" title="DMA — הרמה הבאה">🔓</a>
-      <a class="avatar" href="profile.html" title="${u.name}">${u.initial}</a>
+          return n ? `<a class="btn btn--primary btn--sm" href="course-library.html?lesson=${n.id}" aria-label="המשך בשיעור הבא">המשך<span class="hide-sm"> בשיעור הבא</span> ←</a>` : ''; })() }
+      <a class="icon-btn hide-sm" href="game.html" title="משחק תרגול" aria-label="משחק תרגול">🎮</a>
+      <a class="icon-btn hide-sm" href="ambassador.html" title="שגרירים" aria-label="תוכנית שגרירים">💸</a>
+      <button class="icon-btn" title="מצב תצוגה (בהיר/כהה)" aria-label="החלף מצב תצוגה בהיר או כהה" onclick="toggleTheme()">◐</button>
+      <a class="icon-btn hide-sm" href="admin.html" title="ניהול (מאחורי הקלעים)" aria-label="דשבורד ניהול">⚙️</a>
+      <a class="icon-btn" href="dma.html" title="DMA — הרמה הבאה" aria-label="DMA, הרמה הבאה">🔓</a>
+      <a class="avatar" href="profile.html" title="${u.name}" aria-label="הפרופיל שלי">${u.initial}</a>
     </header>`;
   };
   window.renderBottomNav = function (active) {
