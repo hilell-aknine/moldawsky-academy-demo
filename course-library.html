@@ -354,6 +354,7 @@
           <button class="btn btn--outline mark-btn ${done?'is-done':''}" id="markBtn">
             <span id="markIco">${done?'✓':'○'}</span> <span id="markTxt">${done?'הושלם · לחץ לביטול':'סמן כהושלם'}</span>
           </button>
+          <a class="btn btn--outline btn--sm" id="summaryBtn" href="lesson-summary.html?lesson=${l.id}">📄 סיכום השיעור (PDF)</a>
           <div class="prevnext">
             <button class="btn btn--ghost" id="prevBtn" ${prev?'':'disabled'}>→ הקודם</button>
             <button class="btn btn--primary" id="nextBtn" ${next?'':'disabled'}>הבא ←</button>
@@ -445,7 +446,7 @@
         $('#markTxt').textContent = nowDone ? 'הושלם · לחץ לביטול' : 'סמן כהושלם';
         // refresh sidebar dot + progress
         buildSidebar(l.id);
-        if (nowDone) { toast('יפה! עוד שיעור בכיס, ממשיכים לחנות 🎉', '🎉'); celebrate(); }
+        if (nowDone) { toast('יפה! עוד שיעור בכיס, ממשיכים לחנות 🎉', '🎉'); celebrate(); showLessonEndPopup(l.id); }
       };
 
       // prev/next
@@ -496,6 +497,78 @@
         ], { duration: dur*1000, easing:'cubic-bezier(.2,.6,.4,1)' });
         setTimeout(()=>p.remove(), dur*1000);
       }
+    }
+
+    /* ============ LESSON-END POPUP ENGINE ============ */
+    const POPUP_DEFAULTS = [
+      { id:'p_done', trigger:'lesson_end', active:true, icon:'🎉',
+        title:'כל הכבוד! סיימת שיעור',
+        body:'עוד צעד לקראת המותג שלך. רוצה את סיכום השיעור או להמשיך הלאה?',
+        ctaText:'לשיעור הבא', ctaHref:'course-library.html', cta2Text:'סיכום PDF', cta2Href:'lesson-summary.html' },
+      { id:'p_streak', trigger:'after_5_lessons', active:true, icon:'🔥',
+        title:'5 שיעורים, מומנטום אמיתי',
+        body:'אתה בקצב מצוין. תלמידים שמגיעים לכאן הם אלה שמקימים מותג. רוצה ללוות את זה צמוד?',
+        ctaText:'גלה את DMA', ctaHref:'dma.html', cta2Text:'המשך ללמוד', cta2Href:'course-library.html' },
+      { id:'p_course_done', trigger:'course_done', active:true, icon:'🏆',
+        title:'סיימת את הקורס החינמי!',
+        body:'יש לך עכשיו את כל היסודות. הרמה הבאה היא ליווי צמוד עד התוצאה.',
+        ctaText:'קבע שיחת התאמה', ctaHref:'dma.html', cta2Text:'חזור לפורטל', ctaHref2:'', cta2Href:'course-library.html' }
+    ];
+
+    function loadPopups() {
+      try {
+        const raw = localStorage.getItem('mold_popups');
+        if (raw) { const arr = JSON.parse(raw); if (Array.isArray(arr) && arr.length) return arr; }
+      } catch (e) {}
+      localStorage.setItem('mold_popups', JSON.stringify(POPUP_DEFAULTS));
+      return POPUP_DEFAULTS.slice();
+    }
+
+    let _shownStreakThisSession = false;
+
+    function showLessonEndPopup(lessonId) {
+      const popups = loadPopups();
+      const completed = window.Progress.completedCount();
+      const total = window.LESSON_COUNT || 31;
+      const find = (t) => popups.find(p => p.trigger === t && p.active);
+
+      let pick = null;
+      if (completed >= total) {
+        pick = find('course_done');
+      } else if (completed > 0 && completed % 5 === 0 && !_shownStreakThisSession) {
+        pick = find('after_5_lessons');
+        if (pick) _shownStreakThisSession = true;
+      }
+      if (!pick) pick = find('lesson_end');
+      if (!pick) return;
+
+      let cta2Href = pick.cta2Href || '';
+      if (pick.trigger === 'lesson_end' && cta2Href === 'lesson-summary.html') {
+        cta2Href = 'lesson-summary.html?lesson=' + lessonId;
+      }
+
+      const overlay = document.createElement('div');
+      overlay.className = 'portal-modal open';
+      overlay.id = 'lessonEndModal';
+      const secondary = (pick.cta2Text && cta2Href)
+        ? `<a class="btn btn--outline btn--block" href="${esc(cta2Href)}">${esc(pick.cta2Text)}</a>` : '';
+      overlay.innerHTML = `
+        <div class="box pop" role="dialog" aria-modal="true">
+          <div class="flex between items-center mb-8">
+            <div style="font-size:40px">${esc(pick.icon || '🎉')}</div>
+            <button class="icon-btn" id="lessonEndClose" title="סגור">✕</button>
+          </div>
+          <h3 style="font-size:21px">${esc(pick.title || '')}</h3>
+          <p class="muted mt-8" style="line-height:1.7">${esc(pick.body || '')}</p>
+          <div class="flex col gap-12 mt-24">
+            <a class="btn btn--primary btn--block btn--lg" href="${esc(pick.ctaHref || 'course-library.html')}">${esc(pick.ctaText || 'המשך')}</a>
+            ${secondary}
+          </div>
+        </div>`;
+      document.body.appendChild(overlay);
+      const close = () => overlay.remove();
+      overlay.querySelector('#lessonEndClose').onclick = close;
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
     }
 
     /* ============ BOOT / ROUTING ============ */

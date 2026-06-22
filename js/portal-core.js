@@ -93,6 +93,7 @@
       <a class="icon-btn hide-sm" href="game.html" title="משחק תרגול">🎮</a>
       <a class="icon-btn hide-sm" href="ambassador.html" title="שגרירים">💸</a>
       <button class="icon-btn" title="מצב תצוגה" onclick="toggleTheme()">◐</button>
+      <a class="icon-btn hide-sm" href="admin.html" title="ניהול (מאחורי הקלעים)">⚙️</a>
       <a class="icon-btn" href="dma.html" title="DMA — הרמה הבאה">🔓</a>
       <a class="avatar" href="profile.html" title="${u.name}">${u.initial}</a>
     </header>`;

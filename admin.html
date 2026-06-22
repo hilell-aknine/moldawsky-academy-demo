@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>חדר הבקרה · אקדמיית מולדבסקי</title>
+  <link rel="stylesheet" href="css/portal.css">
+  <style>
+    /* page-local helpers, all built on portal.css tokens */
+    .admin-section { margin-block-start: 34px; }
+    .admin-section > h3 { font-size: 18px; margin-block-end: 4px; display:flex; align-items:center; gap:9px; }
+    .admin-section > .sub { color: var(--text-dim); font-size: 13.5px; margin-block-end: 16px; }
+
+    /* funnel */
+    .funnel { display:flex; flex-direction:column; gap:10px; }
+    .funnel-row { display:flex; align-items:center; gap:14px; }
+    .funnel-row .lbl { width:128px; flex-shrink:0; font-size:13.5px; color:var(--text-dim); font-weight:600; }
+    .funnel-row .track { flex:1; background:var(--surface-3); border-radius:999px; height:34px; overflow:hidden; position:relative; }
+    .funnel-row .fill { height:100%; border-radius:999px; background:var(--grad-green); display:flex; align-items:center; justify-content:flex-end; padding-inline-end:13px; color:#fff; font-family:var(--font-head); font-weight:800; font-size:13.5px; transition:width .8s var(--ease); }
+    .funnel-row .num { width:84px; flex-shrink:0; text-align:start; font-family:var(--font-head); font-weight:800; font-size:15px; }
+    .funnel-row .num small { display:block; color:var(--text-mute); font-size:11px; font-weight:600; }
+
+    /* students table */
+    .tbl-wrap { overflow-x:auto; border:1px solid var(--border); border-radius:var(--r); background:var(--surface); box-shadow:var(--shadow-sm); }
+    table.admin-tbl { width:100%; border-collapse:collapse; min-width:640px; }
+    table.admin-tbl th { text-align:start; font-family:var(--font-head); font-size:12px; font-weight:700; color:var(--text-mute); text-transform:uppercase; letter-spacing:.4px; padding:13px 16px; border-block-end:1px solid var(--border); background:var(--surface-2); }
+    table.admin-tbl td { padding:13px 16px; border-block-end:1px solid var(--border); font-size:13.5px; vertical-align:middle; }
+    table.admin-tbl tr:last-child td { border-block-end:none; }
+    table.admin-tbl tr:hover td { background:var(--surface-2); }
+    .stu-name { display:flex; align-items:center; gap:10px; font-weight:600; }
+    .stu-ava { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#CFD6E6,#AEB7CD); color:#3A4256; display:grid; place-items:center; font-family:var(--font-head); font-weight:800; font-size:12px; flex-shrink:0; }
+    .pbar-cell { display:flex; align-items:center; gap:9px; min-width:140px; }
+    .pbar-cell .progress-bar { flex:1; }
+    .pbar-cell .pct { font-family:var(--font-head); font-weight:800; font-size:12.5px; width:34px; }
+
+    /* content management */
+    .mod-row { display:flex; align-items:center; gap:14px; padding:13px 16px; border-block-end:1px solid var(--border); }
+    .mod-row:last-child { border-block-end:none; }
+    .mod-row .ico { font-size:20px; width:30px; text-align:center; flex-shrink:0; }
+    .mod-row .meta { flex:1; min-width:0; }
+    .mod-row .meta .t { font-family:var(--font-head); font-weight:700; font-size:14px; }
+    .mod-row .meta .s { color:var(--text-mute); font-size:12px; }
+
+    /* switch */
+    .switch { position:relative; width:44px; height:25px; flex-shrink:0; cursor:pointer; }
+    .switch input { display:none; }
+    .switch .slot { position:absolute; inset:0; background:var(--surface-3); border:1px solid var(--border-2); border-radius:999px; transition:.22s; }
+    .switch .knob { position:absolute; top:3px; inset-inline-end:3px; width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:var(--shadow-sm); transition:.22s; }
+    .switch input:checked + .slot { background:var(--grad-green); border-color:transparent; }
+    .switch input:checked + .slot + .knob { inset-inline-end:22px; }
+
+    /* popup manager cards */
+    .pop-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; }
+    .pop-card { display:flex; flex-direction:column; gap:12px; }
+    .pop-card .pc-head { display:flex; align-items:flex-start; gap:11px; }
+    .pop-card .pc-ico { font-size:26px; line-height:1; }
+    .pop-card .pc-title { font-family:var(--font-head); font-weight:800; font-size:15px; }
+    .pop-card .pc-body { color:var(--text-dim); font-size:13px; line-height:1.5; }
+    .pop-card .pc-trigger { align-self:flex-start; }
+    .pop-card .pc-actions { display:flex; gap:8px; flex-wrap:wrap; margin-block-start:auto; padding-block-start:6px; }
+    .pop-card.is-off { opacity:.62; }
+
+    /* inline edit fields */
+    .fld { display:block; margin-block-end:11px; }
+    .fld > label { display:block; font-size:12px; font-weight:700; color:var(--text-dim); margin-block-end:5px; }
+    .fld input, .fld textarea, .fld select { width:100%; padding:10px 12px; border-radius:10px; background:var(--surface-2); border:1px solid var(--border-2); color:var(--text); font-size:13.5px; }
+    .fld textarea { resize:vertical; min-height:64px; }
+    .fld-grid { display:grid; grid-template-columns:1fr 1fr; gap:0 12px; }
+    @media (max-width:480px){ .fld-grid{ grid-template-columns:1fr; } }
+
+    .seg { display:inline-flex; gap:6px; align-items:center; }
+    .live-dot { width:8px; height:8px; border-radius:50%; background:var(--ok); box-shadow:0 0 0 4px var(--ok-soft); }
+  </style>
+</head>
+<body>
+  <div id="topbar"></div>
+  <main class="app-main"><div class="app-content">
+
+    <!-- header -->
+    <div class="flex between items-center wrap-f gap-12 mb-8">
+      <div>
+        <span class="eyebrow">חדר הבקרה · מאחורי הקלעים</span>
+        <h1 style="font-size:30px; margin-block-start:4px;">לוח ניהול האקדמיה</h1>
+      </div>
+      <span class="seg pill"><span class="live-dot"></span> נתונים חיים · דמו</span>
+    </div>
+    <p class="muted mb-24" style="font-size:14px;">תמונת מצב מלאה של התלמידים, המשפך, התוכן והפופאפים. כל שינוי נשמר מקומית בדפדפן.</p>
+
+    <!-- 1 · KPI ROW -->
+    <div class="stats-row">
+      <div class="portal-stat-tile"><span class="ico">👥</span><span class="v">342</span><span class="k">תלמידים פעילים</span></div>
+      <div class="portal-stat-tile"><span class="ico">📈</span><span class="v">58%</span><span class="k">אחוז השלמה ממוצע</span></div>
+      <div class="portal-stat-tile"><span class="ico">▶️</span><span class="v">5,184</span><span class="k">שיעורים שנצפו</span></div>
+      <div class="portal-stat-tile"><span class="ico">🎯</span><span class="v">47</span><span class="k">לידים ל-DMA</span></div>
+      <div class="portal-stat-tile"><span class="ico">💰</span><span class="v">₪118K</span><span class="k">הכנסה משוערת</span></div>
+    </div>
+
+    <!-- 2 · FUNNEL -->
+    <section class="admin-section">
+      <h3>🪣 משפך התלמידים</h3>
+      <p class="sub">מנרשמים ועד פניית DMA. רוחב הפס הוא אחוז ביחס לשלב הראשון.</p>
+      <div class="portal-card">
+        <div class="funnel" id="funnel"></div>
+      </div>
+    </section>
+
+    <!-- 3 · STUDENTS TABLE -->
+    <section class="admin-section">
+      <h3>👥 טבלת תלמידים</h3>
+      <p class="sub">מי לומד, איפה הוא במשפך, ומי בשל לפנייה.</p>
+      <div class="mb-16">
+        <input class="search-input" id="stuSearch" placeholder="חיפוש תלמיד לפי שם..." style="max-width:340px;">
+      </div>
+      <div class="tbl-wrap">
+        <table class="admin-tbl">
+          <thead><tr>
+            <th>תלמיד</th><th>התקדמות</th><th>רצף</th><th>שלב במשפך</th><th style="text-align:start;">פעולה</th>
+          </tr></thead>
+          <tbody id="stuBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 4 · CONTENT MANAGEMENT -->
+    <section class="admin-section">
+      <h3>📚 ניהול תוכן</h3>
+      <p class="sub">12 מודולים · 31 שיעורים. מתג פרסום לכל מודול.</p>
+      <div class="portal-card" style="padding:0;">
+        <div id="modList"></div>
+      </div>
+    </section>
+
+    <!-- 5 · POPUP MANAGER -->
+    <section class="admin-section">
+      <h3>✨ מנהל הפופאפים</h3>
+      <p class="sub">הלב של חדר הבקרה. כל פופאפ שהתלמיד רואה בנגן נשלט מכאן. שינוי נשמר מיידית.</p>
+      <div class="flex between items-center wrap-f gap-12 mb-16">
+        <span class="badge badge--green" id="popCount">0 פופאפים</span>
+        <button class="btn btn--primary btn--sm" id="popAdd">+ פופאפ חדש</button>
+      </div>
+      <div class="pop-grid" id="popGrid"></div>
+    </section>
+
+    <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+  </div></main>
+
+  <div id="bottomnav"></div>
+
+  <!-- preview modal (mirrors the player) -->
+  <div class="portal-modal" id="previewModal">
+    <div class="box" id="previewBox"></div>
+  </div>
+
+  <script src="data/curriculum.js"></script>
+  <script src="js/portal-core.js"></script>
+  <script>
+    document.getElementById('topbar').innerHTML   = renderTopbar('admin.html');
+    document.getElementById('bottomnav').innerHTML = renderBottomNav('admin.html');
+
+    /* ============ 2 · FUNNEL ============ */
+    const FUNNEL = [
+      { lbl:'נרשמו לקורס',        n:342 },
+      { lbl:'התחילו ללמוד',       n:298 },
+      { lbl:'הגיעו ל-5 שיעורים',  n:176 },
+      { lbl:'סיימו את הקורס',     n:84  },
+      { lbl:'פנו ל-DMA',          n:47  },
+    ];
+    (function renderFunnel(){
+      const top = FUNNEL[0].n;
+      document.getElementById('funnel').innerHTML = FUNNEL.map((f,i) => {
+        const pct = Math.round(f.n/top*100);
+        const conv = i===0 ? 100 : Math.round(f.n/FUNNEL[i-1].n*100);
+        return `<div class="funnel-row">
+          <span class="lbl">${f.lbl}</span>
+          <div class="track"><div class="fill" style="width:${pct}%">${pct}%</div></div>
+          <span class="num">${f.n.toLocaleString('he-IL')}<small>${i===0?'בסיס':conv+'% המשך'}</small></span>
+        </div>`;
+      }).join('');
+    })();
+
+    /* ============ 3 · STUDENTS ============ */
+    const STAGES = {
+      new:        { t:'נרשם',           c:'badge--locked' },
+      started:    { t:'התחיל',          c:'badge--green' },
+      five:       { t:'5 שיעורים',      c:'badge--green' },
+      done:       { t:'סיים קורס',      c:'badge--gold' },
+      dma:        { t:'ליד DMA',        c:'badge--new' },
+    };
+    const STUDENTS = [
+      { name:'יואב לוי',      prog:92, streak:14, stage:'dma' },
+      { name:'נועה כהן',      prog:68, streak:7,  stage:'done' },
+      { name:'איתי שרון',     prog:45, streak:4,  stage:'five' },
+      { name:'מאיה פרץ',      prog:81, streak:9,  stage:'done' },
+      { name:'דניאל ביטון',   prog:23, streak:2,  stage:'started' },
+      { name:'שירה אברהם',    prog:100,streak:21, stage:'dma' },
+      { name:'עומר דהן',      prog:12, streak:1,  stage:'new' },
+      { name:'תמר מזרחי',     prog:57, streak:5,  stage:'five' },
+    ];
+    function renderStudents(filter=''){
+      const f = filter.trim();
+      const rows = STUDENTS.filter(s => !f || s.name.includes(f));
+      const body = document.getElementById('stuBody');
+      if (!rows.length){ body.innerHTML = `<tr><td colspan="5" class="muted center" style="padding:28px;">לא נמצאו תלמידים תואמים.</td></tr>`; return; }
+      body.innerHTML = rows.map(s => {
+        const st = STAGES[s.stage];
+        const initial = s.name.charAt(0);
+        return `<tr>
+          <td><span class="stu-name"><span class="stu-ava">${initial}</span>${s.name}</span></td>
+          <td><div class="pbar-cell"><div class="progress-bar"><i style="width:${s.prog}%"></i></div><span class="pct">${s.prog}%</span></div></td>
+          <td>🔥 ${s.streak}</td>
+          <td><span class="badge ${st.c}">${st.t}</span></td>
+          <td><button class="btn btn--outline btn--sm" onclick="toast('נפתח כרטיס תלמיד · ${s.name}','👤')">צפה</button></td>
+        </tr>`;
+      }).join('');
+    }
+    document.getElementById('stuSearch').addEventListener('input', e => renderStudents(e.target.value));
+    renderStudents();
+
+    /* ============ 4 · CONTENT ============ */
+    const PUB_KEY = 'mold_module_pub';
+    function getPub(){ try { return JSON.parse(localStorage.getItem(PUB_KEY) || '{}'); } catch { return {}; } }
+    function setPub(id, on){ const p=getPub(); p[id]=on; localStorage.setItem(PUB_KEY, JSON.stringify(p)); }
+    function renderModules(){
+      const pub = getPub();
+      document.getElementById('modList').innerHTML = (window.CURRICULUM.modules||[]).map((m,i) => {
+        // default: first 11 modules published, demo a draft on the last
+        const def = i < 11;
+        const on = (m.id in pub) ? pub[m.id] : def;
+        return `<div class="mod-row">
+          <span class="ico">${m.icon}</span>
+          <div class="meta"><div class="t">${m.title}</div><div class="s">${m.lessons.length} שיעורים</div></div>
+          <span class="badge ${on?'badge--green':'badge--locked'}" id="pubbadge_${m.id}">${on?'פורסם':'טיוטה'}</span>
+          <label class="switch" title="פרסום מודול">
+            <input type="checkbox" ${on?'checked':''} onchange="togglePub('${m.id}', this.checked)">
+            <span class="slot"></span><span class="knob"></span>
+          </label>
+        </div>`;
+      }).join('');
+    }
+    window.togglePub = function(id, on){
+      setPub(id, on);
+      const b = document.getElementById('pubbadge_'+id);
+      b.className = 'badge ' + (on?'badge--green':'badge--locked');
+      b.textContent = on ? 'פורסם' : 'טיוטה';
+      toast(on?'המודול פורסם':'הועבר לטיוטה', on?'✅':'📝');
+    };
+    renderModules();
+
+    /* ============ 5 · POPUP MANAGER (per _POPUP-CONTRACT.md) ============ */
+    const POP_KEY = 'mold_popups';
+    const POP_DEFAULTS = [
+      { id:'p_done', trigger:'lesson_end', active:true, icon:'🎉',
+        title:'כל הכבוד! סיימת שיעור',
+        body:'עוד צעד לקראת המותג שלך. רוצה את סיכום השיעור או להמשיך הלאה?',
+        ctaText:'לשיעור הבא', ctaHref:'course-library.html', cta2Text:'סיכום PDF', cta2Href:'lesson-summary.html' },
+      { id:'p_streak', trigger:'after_5_lessons', active:true, icon:'🔥',
+        title:'5 שיעורים, מומנטום אמיתי',
+        body:'אתה בקצב מצוין. תלמידים שמגיעים לכאן הם אלה שמקימים מותג. רוצה ללוות את זה צמוד?',
+        ctaText:'גלה את DMA', ctaHref:'dma.html', cta2Text:'המשך ללמוד', cta2Href:'course-library.html' },
+      { id:'p_course_done', trigger:'course_done', active:true, icon:'🏆',
+        title:'סיימת את הקורס החינמי!',
+        body:'יש לך עכשיו את כל היסודות. הרמה הבאה היא ליווי צמוד עד התוצאה.',
+        ctaText:'קבע שיחת התאמה', ctaHref:'dma.html', cta2Text:'חזור לפורטל', cta2Href:'course-library.html' },
+    ];
+    const TRIGGER_LABELS = {
+      lesson_end:      'בסיום שיעור',
+      after_5_lessons: 'אחרי 5 שיעורים',
+      course_done:     'בסיום הקורס',
+    };
+
+    function loadPopups(){
+      let arr;
+      try { arr = JSON.parse(localStorage.getItem(POP_KEY)); } catch { arr = null; }
+      if (!Array.isArray(arr) || !arr.length) {           // seed defaults if missing
+        arr = JSON.parse(JSON.stringify(POP_DEFAULTS));
+        localStorage.setItem(POP_KEY, JSON.stringify(arr));
+      }
+      return arr;
+    }
+    function savePopups(arr){ localStorage.setItem(POP_KEY, JSON.stringify(arr)); }
+
+    let POPUPS = loadPopups();
+    let editingId = null;
+
+    function esc(s){ return String(s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+    function renderPopups(){
+      document.getElementById('popCount').textContent = `${POPUPS.length} פופאפים`;
+      const grid = document.getElementById('popGrid');
+      grid.innerHTML = POPUPS.map(p => editingId===p.id ? editCard(p) : viewCard(p)).join('');
+    }
+
+    function viewCard(p){
+      return `<div class="portal-card portal-card--accent pop-card ${p.active?'':'is-off'}">
+        <div class="pc-head">
+          <span class="pc-ico">${esc(p.icon)}</span>
+          <div style="flex:1;min-width:0;">
+            <div class="pc-title">${esc(p.title)}</div>
+            <span class="badge badge--locked pc-trigger mt-8">${TRIGGER_LABELS[p.trigger]||p.trigger}</span>
+          </div>
+          <label class="switch" title="הפעל/כבה">
+            <input type="checkbox" ${p.active?'checked':''} onchange="toggleActive('${p.id}', this.checked)">
+            <span class="slot"></span><span class="knob"></span>
+          </label>
+        </div>
+        <div class="pc-body">${esc(p.body)}</div>
+        <div class="pc-actions">
+          <button class="btn btn--primary btn--sm" onclick="previewPopup('${p.id}')">👁 תצוגה מקדימה</button>
+          <button class="btn btn--outline btn--sm" onclick="startEdit('${p.id}')">✏️ עריכה</button>
+          <button class="btn btn--ghost btn--sm" onclick="deletePopup('${p.id}')">🗑 מחק</button>
+        </div>
+      </div>`;
+    }
+
+    function editCard(p){
+      const opts = Object.keys(TRIGGER_LABELS).map(k =>
+        `<option value="${k}" ${p.trigger===k?'selected':''}>${TRIGGER_LABELS[k]}</option>`).join('');
+      return `<div class="portal-card pop-card" style="border-color:var(--green-line);box-shadow:var(--shadow);">
+        <div class="fld-grid">
+          <div class="fld"><label>אייקון</label><input id="e_icon" value="${esc(p.icon)}"></div>
+          <div class="fld"><label>טריגר</label><select id="e_trigger">${opts}</select></div>
+        </div>
+        <div class="fld"><label>כותרת</label><input id="e_title" value="${esc(p.title)}"></div>
+        <div class="fld"><label>תוכן</label><textarea id="e_body">${esc(p.body)}</textarea></div>
+        <div class="fld-grid">
+          <div class="fld"><label>כפתור ראשי · טקסט</label><input id="e_ctaText" value="${esc(p.ctaText)}"></div>
+          <div class="fld"><label>כפתור ראשי · קישור</label><input id="e_ctaHref" value="${esc(p.ctaHref)}"></div>
+        </div>
+        <div class="fld-grid">
+          <div class="fld"><label>כפתור משני · טקסט</label><input id="e_cta2Text" value="${esc(p.cta2Text)}"></div>
+          <div class="fld"><label>כפתור משני · קישור</label><input id="e_cta2Href" value="${esc(p.cta2Href)}"></div>
+        </div>
+        <div class="pc-actions">
+          <button class="btn btn--primary btn--sm" onclick="saveEdit('${p.id}')">💾 שמור</button>
+          <button class="btn btn--outline btn--sm" onclick="cancelEdit()">ביטול</button>
+        </div>
+      </div>`;
+    }
+
+    window.toggleActive = function(id, on){
+      const p = POPUPS.find(x=>x.id===id); if(!p) return;
+      p.active = on; savePopups(POPUPS); renderPopups();
+      toast(on?'הפופאפ הופעל':'הפופאפ כובה', on?'✅':'🚫');
+    };
+    window.startEdit = function(id){ editingId = id; renderPopups(); };
+    window.cancelEdit = function(){ editingId = null; renderPopups(); };
+    window.saveEdit = function(id){
+      const p = POPUPS.find(x=>x.id===id); if(!p) return;
+      const val = i => (document.getElementById(i)||{}).value || '';
+      p.icon=val('e_icon'); p.trigger=val('e_trigger'); p.title=val('e_title'); p.body=val('e_body');
+      p.ctaText=val('e_ctaText'); p.ctaHref=val('e_ctaHref');
+      p.cta2Text=val('e_cta2Text'); p.cta2Href=val('e_cta2Href');
+      savePopups(POPUPS); editingId=null; renderPopups();
+      toast('הפופאפ נשמר','💾');
+    };
+    window.deletePopup = function(id){
+      POPUPS = POPUPS.filter(x=>x.id!==id); savePopups(POPUPS); renderPopups();
+      toast('הפופאפ נמחק','🗑');
+    };
+    document.getElementById('popAdd').addEventListener('click', () => {
+      const p = { id:'p_'+Date.now().toString(36), trigger:'lesson_end', active:true, icon:'✨',
+        title:'כותרת חדשה', body:'תוכן הפופאפ. ערוך אותי.',
+        ctaText:'כפתור ראשי', ctaHref:'course-library.html', cta2Text:'', cta2Href:'' };
+      POPUPS.push(p); savePopups(POPUPS); editingId = p.id; renderPopups();
+      document.getElementById('popGrid').lastElementChild?.scrollIntoView({behavior:'smooth',block:'center'});
+    });
+
+    /* preview · renders EXACTLY like the player shows it */
+    window.previewPopup = function(id){
+      const p = POPUPS.find(x=>x.id===id); if(!p) return;
+      const cta2 = (p.cta2Text && p.cta2Href)
+        ? `<button class="btn btn--outline btn--block" onclick="closePreview()">${esc(p.cta2Text)}</button>` : '';
+      document.getElementById('previewBox').innerHTML = `
+        <div class="flex between items-center mb-16">
+          <span class="pill">תצוגה מקדימה · ${TRIGGER_LABELS[p.trigger]||p.trigger}</span>
+          <button class="icon-btn" onclick="closePreview()" title="סגור">✕</button>
+        </div>
+        <div class="center">
+          <div style="font-size:52px;line-height:1;margin-block-end:10px;">${esc(p.icon)}</div>
+          <h2 style="font-size:22px;margin-block-end:10px;">${esc(p.title)}</h2>
+          <p class="muted" style="font-size:14.5px;margin-block-end:22px;">${esc(p.body)}</p>
+          <div class="flex col gap-8">
+            <button class="btn btn--primary btn--block btn--lg" onclick="closePreview()">${esc(p.ctaText)}</button>
+            ${cta2}
+          </div>
+        </div>`;
+      document.getElementById('previewModal').classList.add('open');
+    };
+    window.closePreview = function(){ document.getElementById('previewModal').classList.remove('open'); };
+    document.getElementById('previewModal').addEventListener('click', e => {
+      if (e.target.id === 'previewModal') closePreview();
+    });
+
+    renderPopups();
+  </script>
+</body>
+</html>

@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>סיכום שיעור · אקדמיית מולדבסקי</title>
+  <link rel="stylesheet" href="css/portal.css">
+  <style>
+    /* ---- Toolbar (NOT captured in PDF) ---- */
+    .ls-toolbar {
+      display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:var(--r); padding:16px 18px; box-shadow:var(--shadow-sm);
+      margin-block-end:24px;
+    }
+    .ls-toolbar .grow { flex:1; min-width:160px; }
+    .ls-select {
+      width:100%; padding:11px 14px; border-radius:11px;
+      background:var(--surface-2); border:1px solid var(--border-2);
+      color:var(--text); font-size:14px; font-family:var(--font); font-weight:600;
+    }
+    .ls-toolbar .back { color:var(--text-dim); font-weight:700; font-family:var(--font-head); font-size:13.5px; }
+    .ls-toolbar .back:hover { color:var(--green); }
+
+    /* ---- The printable sheet ---- */
+    .ls-sheet-wrap { display:flex; justify-content:center; }
+    #summarySheet {
+      width:100%; max-width:794px;            /* ~A4 width at 96dpi */
+      background:#FFFFFF; color:#16181D;
+      border:1px solid var(--border); border-radius:var(--r-lg);
+      box-shadow:var(--shadow); overflow:hidden;
+      font-family:'Heebo', sans-serif;
+    }
+    /* Brand header band */
+    .sheet-head {
+      background:#1D1F26; color:#fff;
+      padding:30px 38px; position:relative;
+    }
+    .sheet-head .row { display:flex; align-items:center; gap:13px; }
+    .sheet-head .logo {
+      width:46px; height:46px; border-radius:13px; background:#3B5BDB;
+      display:grid; place-items:center; color:#fff; font-weight:800; font-size:24px;
+      font-family:'Assistant',sans-serif; box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
+    }
+    .sheet-head .brand-name { font-family:'Assistant',sans-serif; font-weight:800; font-size:18px; letter-spacing:-.3px; }
+    .sheet-head .brand-sub { font-size:12.5px; color:#AEB7CD; margin-top:2px; }
+    .sheet-head .doc-kind {
+      margin-inline-start:auto; font-family:'Assistant',sans-serif; font-weight:800;
+      font-size:13px; letter-spacing:1px; color:#6E8BFF;
+      border:1px solid rgba(110,139,255,.4); padding:6px 14px; border-radius:999px;
+    }
+    .sheet-head h1 { color:#fff; font-size:27px; line-height:1.18; margin-top:22px; font-family:'Assistant',sans-serif; }
+    .sheet-head .meta { display:flex; gap:9px; flex-wrap:wrap; margin-top:14px; }
+    .sheet-head .chip {
+      font-size:12px; font-weight:700; font-family:'Assistant',sans-serif;
+      background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.13);
+      color:#ECEEF3; padding:5px 13px; border-radius:999px;
+    }
+    .sheet-head .chip.accent { background:rgba(59,91,219,.25); border-color:rgba(110,139,255,.45); color:#cdd6ff; }
+
+    .sheet-body { padding:34px 38px 30px; }
+    .sheet-intro { font-size:14.5px; color:#3a3f4b; line-height:1.7; margin-block-end:26px; }
+
+    .ls-block { margin-block-end:26px; }
+    .ls-block h2 {
+      font-family:'Assistant',sans-serif; font-size:16.5px; font-weight:800; color:#16181D;
+      display:flex; align-items:center; gap:9px; margin-block-end:13px;
+      padding-block-end:9px; border-block-end:2px solid #EEF1F5;
+    }
+    .ls-block h2 .ic {
+      width:27px; height:27px; border-radius:8px; background:#EEF1FE; color:#2F4BC4;
+      display:grid; place-items:center; font-size:14px; flex-shrink:0;
+    }
+    .ls-list { list-style:none; display:flex; flex-direction:column; gap:11px; }
+    .ls-list li { display:flex; gap:11px; align-items:flex-start; font-size:14px; line-height:1.6; color:#2b2f3a; }
+    .ls-list li .bullet {
+      flex-shrink:0; width:21px; height:21px; border-radius:6px; margin-top:1px;
+      background:#E7F5EF; color:#1F9D6B; display:grid; place-items:center; font-size:11px; font-weight:800;
+    }
+    .ls-list.action li .bullet { background:#EEF1FE; color:#2F4BC4; }
+
+    .ls-terms { display:flex; flex-wrap:wrap; gap:9px; }
+    .ls-term {
+      background:#F7F8FA; border:1px solid #ECEDF1; border-radius:10px; padding:9px 13px; max-width:100%;
+    }
+    .ls-term b { font-family:'Assistant',sans-serif; font-size:13.5px; color:#16181D; display:block; }
+    .ls-term span { font-size:12px; color:#5B616E; line-height:1.4; }
+
+    .ls-tip {
+      background:#F6EFE2; border:1px solid #ecdfc4; border-inline-start:4px solid #B08947;
+      border-radius:12px; padding:16px 18px; display:flex; gap:13px; align-items:flex-start;
+    }
+    .ls-tip .ava {
+      width:40px; height:40px; border-radius:50%; flex-shrink:0;
+      background:linear-gradient(135deg,#C99B4B,#B08947); color:#fff;
+      display:grid; place-items:center; font-family:'Assistant',sans-serif; font-weight:800; font-size:16px;
+    }
+    .ls-tip .t-head { font-family:'Assistant',sans-serif; font-weight:800; font-size:14px; color:#6e5320; margin-block-end:3px; }
+    .ls-tip .t-body { font-size:13.5px; line-height:1.6; color:#5c4a22; }
+
+    .sheet-foot {
+      border-block-start:1px solid #EEF1F5; margin-top:6px; padding:18px 38px 24px;
+      display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;
+    }
+    .sheet-foot .fl { font-family:'Assistant',sans-serif; font-weight:800; font-size:13px; color:#16181D; display:flex; align-items:center; gap:8px; }
+    .sheet-foot .fl .m { width:24px; height:24px; border-radius:7px; background:#1D1F26; color:#fff; display:grid; place-items:center; font-size:13px; font-weight:800; }
+    .sheet-foot .fr { font-size:12px; color:#9AA0AD; }
+    .sheet-foot .fr b { color:#5B616E; }
+
+    /* PDF capture: force a clean white sheet regardless of theme */
+    #summarySheet, #summarySheet * { color-scheme: light; }
+    .pdf-capturing #summarySheet { box-shadow:none; border-color:#e3e5ea; }
+
+    @media (max-width:560px){
+      .sheet-head, .sheet-body, .sheet-foot { padding-inline:20px; }
+      .sheet-head h1 { font-size:22px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="topbar"></div>
+  <main class="app-main"><div class="app-content">
+
+    <!-- Toolbar (not part of the PDF) -->
+    <div class="ls-toolbar" id="lsToolbar">
+      <div class="grow">
+        <select class="ls-select" id="lessonSelect" aria-label="בחירת שיעור"></select>
+      </div>
+      <button class="btn btn--primary" id="btnPdf">⬇ הורד PDF</button>
+      <button class="btn btn--outline" id="btnPrint">🖨 הדפס</button>
+      <a class="back" id="backLink" href="course-library.html">→ חזרה לקורס</a>
+    </div>
+
+    <!-- The branded, printable summary -->
+    <div class="ls-sheet-wrap">
+      <article id="summarySheet"><!-- rendered by JS --></article>
+    </div>
+
+    <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+  </div></main>
+
+  <div id="bottomnav"></div>
+
+  <script src="data/curriculum.js"></script>
+  <script src="js/portal-core.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script>
+    document.getElementById('topbar').innerHTML = renderTopbar('lesson-summary.html');
+    document.getElementById('bottomnav').innerHTML = renderBottomNav('lesson-summary.html');
+
+    const LESSONS = window.ALL_LESSONS || [];
+
+    /* ---------- Per-lesson hand-tailored content (seeded by curriculum) ---------- */
+    /* Each entry: takeaways[], actions[], terms[{t,d}], tip. Missing lessons fall back
+       to sensible on-topic content derived from the lesson summary + module. */
+    const CONTENT = {
+      l1: {
+        takeaways:[
+          'דניאל מולדבסקי בנה מותגי איקומרס אמיתיים (כמו תנאור) שגלגלו עשרות מיליוני שקלים.',
+          'המטרה של הקורס היא תוצאה אחת ברורה: חנות מוכרת מאפס, לא רק תאוריה.',
+          'המסע הוא צעד אחר צעד, גם למי שלא נגע בעולם המסחר האונליין מעולם.'
+        ],
+        actions:[
+          'החלט שאתה מתחייב להשלים את כל המודולים לפי הסדר, לא לדלג.',
+          'פתח מסמך אחד שבו תרכז החלטות (שם מותג, מוצר, תקציב התחלתי).'
+        ],
+        terms:[
+          {t:'איקומרס',d:'מסחר אלקטרוני · מכירת מוצרים דרך חנות אינטרנטית.'},
+          {t:'מותג',d:'זהות שלמה (שם, עיצוב, חוויה) שלקוחות זוכרים וסומכים עליה.'}
+        ],
+        tip:'אל תחכה שיהיה לך "הכל מושלם". בעולם הזה מי שמתחיל ומשפר תוך כדי תנועה מנצח את מי שמתכנן לנצח.'
+      },
+      l2: {
+        takeaways:[
+          'שופיפיי היא פלטפורמה שמאפשרת לבנות חנות מקצועית בלי לדעת לתכנת.',
+          'היא plug & play: הכל מגיע מוכן, אתה רק מרכיב את החלקים.',
+          'מותגי ענק בעולם בנויים עליה, אז אתה לא מתפשר על איכות.'
+        ],
+        actions:[
+          'היכנס לאתר שופיפיי וצפה בדמו של חנות לדוגמה.',
+          'רשום לעצמך שאתה לא צריך מתכנת או מעצב כדי להתחיל.'
+        ],
+        terms:[
+          {t:'שופיפיי (Shopify)',d:'מערכת לבניית חנויות אונליין בשליטה מלאה.'},
+          {t:'Plug & Play',d:'מוכן לשימוש מיד, בלי הגדרות טכניות מורכבות.'}
+        ],
+        tip:'הפלטפורמה היא רק הכלי. מה שמייצר כסף זה ההחלטות שלך עליו, אז אל תיתקע בלימוד אינסופי של המערכת.'
+      },
+      l3: {
+        takeaways:[
+          'חנות עצמאית נותנת לך שליטה מלאה במחיר, בעיצוב ובחוויית הלקוח.',
+          'במרקטפלייס (אמזון, איביי, אטסי) אתה דוכן בשוק של מישהו אחר, עם עמלות גבוהות.',
+          'בחנות שלך אין סכנה שיחסמו אותך באופן שרירותי ויאבדו לך את כל העסק.'
+        ],
+        actions:[
+          'הבן שאתה בונה נכס בבעלותך, לא שוכר מקום אצל ענק.',
+          'רשום שתי סיבות מרכזיות לבחור חנות עצמאית על פני מרקטפלייס.'
+        ],
+        terms:[
+          {t:'מרקטפלייס',d:'זירת מכירה משותפת (אמזון/איביי) עם תחרות ועמלות.'},
+          {t:'מיתוג',d:'יכולת לעצב את החנות כך שתשקף רק אותך.'}
+        ],
+        tip:'בנה בית, אל תשכור דוכן. כשהפלטפורמה שלך, אף אחד לא יכול לסגור לך את הברז ביום אחד.'
+      },
+      l4: {
+        takeaways:[
+          'חנות שמרוויחה כ-25,000₪ בחודש יכולה להישווה ל-1 עד 3 מיליון שקלים.',
+          'אתה לא רק מרוויח חודש בחודשו, אתה בונה נכס שאפשר למכור בעתיד.',
+          'חשיבה של "נכס" משנה את כל ההחלטות שלך לטווח ארוך.'
+        ],
+        actions:[
+          'הגדר יעד רווח חודשי שאליו אתה שואף בשנה הקרובה.',
+          'התחל לתעד הכל מסודר, כי קונה עתידי ירצה לראות נתונים.'
+        ],
+        terms:[
+          {t:'נכס',d:'דבר שמייצר ערך וכסף לאורך זמן וניתן למכירה.'},
+          {t:'מכפיל (Multiple)',d:'מספר שמכפיל את הרווח החודשי לשווי המכירה.'}
+        ],
+        tip:'תפסיק לחשוב "כמה הרווחתי החודש" ותתחיל לחשוב "כמה החנות שלי שווה". זה ההבדל בין עובד לבעל עסק.'
+      },
+      l5: {
+        takeaways:[
+          'שם גנרי וקצר בלי משמעות (כמו זרה או סוני) זוכר וגמיש יותר ממונח תיאורי.',
+          'אפשר לייצר 20 רעיונות לשם תוך 2 דקות עם ChatGPT.',
+          'תמיד בודקים שהדומיין (כתובת האתר) פנוי לפני שמתאהבים בשם.'
+        ],
+        actions:[
+          'בקש מ-ChatGPT 20 שמות מותג קצרים ונטולי משמעות לתחום שלך.',
+          'בדוק זמינות דומיין לשלושת השמות המובילים שלך.'
+        ],
+        terms:[
+          {t:'דומיין',d:'כתובת האתר שלך (לדוגמה shopname.com).'},
+          {t:'ChatGPT',d:'כלי AI שמייצר רעיונות וטקסט בשניות.'}
+        ],
+        tip:'שם טוב הוא קצר, קל להגייה, וזמין כדומיין .com. אל תבזבז יומיים על זה, סגור ותתקדם.'
+      },
+      l6: {
+        takeaways:[
+          'פותחים כתובת Gmail ייעודית רק לעסק, כדי להפריד מהפרטי.',
+          'נרשמים לשופיפיי בהצעת ה-1$ לחודש כדי להתחיל בזול.',
+          'בוחרים תוכנית לפי המחזור: Basic להתחלה, Grow/Advanced כשגדלים.'
+        ],
+        actions:[
+          'פתח Gmail חדש על שם המותג שלך.',
+          'הירשם לשופיפיי בתוכנית הזולה והתחל בתקופת הניסיון.'
+        ],
+        terms:[
+          {t:'תוכנית Basic',d:'מסלול ההתחלה של שופיפיי, מתאים למחזור נמוך.'},
+          {t:'מחזור',d:'סך הכסף שעובר דרך החנות לפני הוצאות.'}
+        ],
+        tip:'אל תשדרג תוכנית לפני שאתה מוכר. שלם על Basic עד שהמספרים מצדיקים אחרת.'
+      },
+      l7: {
+        takeaways:[
+          'דומיין משלך נראה מקצועי וממיר יותר מכתובת ברירת מחדל של שופיפיי.',
+          'אפשר לקנות דומיין בזול (לדוגמה ב-GoDaddy).',
+          'החיבור לשופיפיי הוא כמעט בלחיצת כפתור.'
+        ],
+        actions:[
+          'קנה את הדומיין שבחרת.',
+          'חבר אותו לחנות שלך לפי השלבים בשיעור.'
+        ],
+        terms:[
+          {t:'GoDaddy',d:'ספק פופולרי לרכישת דומיינים.'},
+          {t:'המרה (Conversion)',d:'אחוז המבקרים שהופכים לקונים.'}
+        ],
+        tip:'לקוח שרואה כתובת מקצועית סומך עליך יותר. דומיין עולה גרושים ומחזיר את עצמו במכירה אחת.'
+      },
+      l8: {
+        takeaways:[
+          'אפליקציות מוסיפות יכולות לחנות בלי לכתוב שורת קוד.',
+          'באנדלים (חבילות) מעלים את סך ההזמנה הממוצע, ה-AOV.',
+          'ה-AOV הוא אחד הנתונים שמכריעים אם החנות רווחית.'
+        ],
+        actions:[
+          'התקן את BundleUp ובדוק איך נראית חבילה בחנות.',
+          'חשב מה ה-AOV הנוכחי שלך ולאן תרצה להעלות אותו.'
+        ],
+        terms:[
+          {t:'AOV',d:'Average Order Value · סכום ההזמנה הממוצע ללקוח.'},
+          {t:'באנדל',d:'חבילת מוצרים שנמכרת יחד במחיר מושך.'}
+        ],
+        tip:'להעלות את ה-AOV זול בהרבה מלהביא לקוח חדש. כל שקל שמוסיפים לעגלה הוא רווח כמעט נקי.'
+      },
+      l9: {
+        takeaways:[
+          'AutoDS מושכת מוצרים מאלי-אקספרס לחנות שלך בקלות.',
+          'היא ממלאת הזמנות אוטומטית, גם בנפח של אלף הזמנות ביום.',
+          'זה מה שמאפשר לנהל דרופשיפינג בלי לגעת ידנית בכל הזמנה.'
+        ],
+        actions:[
+          'התקן את AutoDS וחבר אותה לחנות.',
+          'הגדר מילוי הזמנות אוטומטי כדי לחסוך עבודה ידנית.'
+        ],
+        terms:[
+          {t:'AutoDS',d:'אפליקציה לניהול דרופשיפינג ומילוי הזמנות.'},
+          {t:'מילוי אוטומטי',d:'הזמנה אצל הספק קורית לבד אחרי כל מכירה.'}
+        ],
+        tip:'אוטומציה היא מה שמשחרר אותך מהמסך. הגדר נכון פעם אחת, ותהנה ממכירות גם כשאתה ישן.'
+      },
+      l10: {
+        takeaways:[
+          'מתאימים את החנות לעברית ולכיוון מימין לשמאל (RTL).',
+          'אפסל בעגלה מציע ללקוח עוד מוצר ברגע הקנייה.',
+          'אפליקציית ביקורות עם AI מייצרת הוכחה חברתית שמוכרת.'
+        ],
+        actions:[
+          'התקן Sales RTL והפוך את החנות לעברית מלאה.',
+          'הוסף ביקורות עם Vouch AI כדי לבנות אמון.'
+        ],
+        terms:[
+          {t:'RTL',d:'Right To Left · התאמת המראה לכיוון העברית.'},
+          {t:'הוכחה חברתית',d:'עדויות וביקורות שמשכנעות לקוחות חדשים.'}
+        ],
+        tip:'אנשים קונים מה שאחרים כבר קנו. ביקורות אמינות מורידות פחד וסוגרות עסקה.'
+      },
+      l11: {
+        takeaways:[
+          'מגדירים מוצר חדש עם מחיר מכירה מול עלות הספק.',
+          'רואים מיד את המרג\'ין, כלומר כמה נשאר לך מכל מכירה.',
+          'מנהלים מלאי ומחליטים אם להמשיך למכור גם בלי מלאי (continue selling).'
+        ],
+        actions:[
+          'העלה מוצר אחד והגדר לו מחיר ועלות.',
+          'בדוק שהמרג\'ין מספיק גבוה כדי לכסות פרסום ורווח.'
+        ],
+        terms:[
+          {t:'מרג\'ין',d:'ההפרש בין מחיר המכירה לעלות · הרווח הגולמי.'},
+          {t:'Continue selling',d:'אפשרות למכור גם כשאין מלאי רשום.'}
+        ],
+        tip:'אם המרג\'ין לא מכסה את עלות הפרסום ועוד רווח, המוצר מפסיד כסף. בדוק את המספרים לפני שאתה משיק.'
+      },
+      l12: {
+        takeaways:[
+          'דרופשיפינג הוא מודל שבו אתה מתווך בין הלקוח לספק בלי להחזיק מלאי.',
+          'הלקוח מזמין ומשלם אצלך, ואתה מזמין מהספק ששולח ישירות.',
+          'המודל חוקי ומוסרי לחלוטין: אתה מספק שירות, נוחות וחוויית קנייה.',
+          'הלקוח לא יודע ולא אכפת לו מאיפה מגיע המוצר, בדיוק כמו בכל חנות.'
+        ],
+        actions:[
+          'הפנם את שרשרת ההזמנה: לקוח ← אתה ← ספק ← לקוח.',
+          'תמחר כך שהפער בין מחיר הלקוח לעלות הספק יישאר רווחי.'
+        ],
+        terms:[
+          {t:'דרופשיפינג',d:'מכירה ללא מלאי · הספק שולח ישירות ללקוח.'},
+          {t:'ספק (Supplier)',d:'הגורם שמייצר ושולח את המוצר בפועל.'},
+          {t:'תיווך',d:'אתה מחבר בין הצורך של הלקוח לפתרון של הספק.'}
+        ],
+        tip:'אתה לא מוכר חפץ, אתה מוכר חוויה ופתרון. בדיוק בשביל זה לקוחות מוכנים לשלם יותר ממחיר הספק.'
+      },
+      l13: {
+        takeaways:[
+          'מוצר מנצח פותר כאב אמיתי או מעורר רגש חזק.',
+          'טווח מחיר של 100 עד 300₪ אידיאלי לרכישה אימפולסיבית.',
+          'מחפשים מוצרים ב-AutoDS ובאלי-אקספרס לפי הקריטריונים.'
+        ],
+        actions:[
+          'הכן רשימה של 5 מוצרים שפותרים כאב ברור.',
+          'סנן אותם לפי טווח המחיר וזמינות אצל הספק.'
+        ],
+        terms:[
+          {t:'מוצר מנצח',d:'מוצר עם ביקוש, מרג\'ין ופוטנציאל ויראלי.'},
+          {t:'רכישה אימפולסיבית',d:'קנייה מהירה מרגש, בלי התלבטות ארוכה.'}
+        ],
+        tip:'מוצר שגורם לאדם לומר "וואו, אני חייב את זה" מוכר את עצמו. תחפש את הרגש, לא רק את המפרט.'
+      },
+      l14: {
+        takeaways:[
+          'תבנית AIDA: תשומת-לב, עניין, חשק, פעולה.',
+          'תיאור מוצר טוב משכנע ומספר סיפור, לא רק מפרט יבש.',
+          'כל שלב בתיאור דוחף את הקורא צעד אחד קרוב יותר לקנייה.'
+        ],
+        actions:[
+          'כתוב תיאור מוצר אחד לפי ארבעת שלבי AIDA.',
+          'החלף רשימת תכונות יבשה במשפט תועלת רגשי.'
+        ],
+        terms:[
+          {t:'AIDA',d:'Attention, Interest, Desire, Action · מבנה שכנוע.'},
+          {t:'קופירייטינג',d:'אמנות הכתיבה שמוכרת ומניעה לפעולה.'}
+        ],
+        tip:'אנשים לא קונים תכונות, הם קונים את מה שהתכונה עושה להם. כתוב על התוצאה, לא על המפרט.'
+      },
+      l15: {
+        takeaways:[
+          'ספריית המודעות של פייסבוק מראה מה מתחרים מצליחים מפרסמים.',
+          'לוקחים השראה (לא מעתיקים) ממודעות שרצות הרבה זמן.',
+          'שאלות-תשובות בדף המוצר מסירות חששות ובונות ודאות.'
+        ],
+        actions:[
+          'חפש 3 מתחרים ב-Facebook Ad Library ונתח את הקופי שלהם.',
+          'כתוב 5 שאלות ותשובות שמסירות התנגדויות נפוצות.'
+        ],
+        terms:[
+          {t:'Facebook Ad Library',d:'מאגר פתוח של כל המודעות הפעילות בפייסבוק.'},
+          {t:'התנגדות',d:'חשש או ספק שמונע מהלקוח לקנות.'}
+        ],
+        tip:'מתחרה שמפרסם מודעה חודשים, מרוויח ממנה. למד ממה שכבר עובד, ואז עשה את זה טוב יותר.'
+      },
+      l16: {
+        takeaways:[
+          'בונים את דף הבית והסקשנים בעורך הוויזואלי של שופיפיי.',
+          'עובדים מובייל-first, כי שם רוב הלקוחות באמת קונים.',
+          'מבנה נקי וברור מעלה את אחוז ההמרה.'
+        ],
+        actions:[
+          'בנה דף בית עם בלוק גיבור, מוצר מוביל וביקורות.',
+          'בדוק את התצוגה בנייד לפני שאתה מאשר עיצוב.'
+        ],
+        terms:[
+          {t:'מובייל-first',d:'עיצוב שמתחיל מהמסך הקטן ואז גדל.'},
+          {t:'סקשן',d:'בלוק תוכן בדף הבית (גיבור, ביקורות, מוצרים).'}
+        ],
+        tip:'תפתח את החנות בטלפון שלך כל הזמן. אם זה לא יפה ומהיר בנייד, הפסדת את רוב הלקוחות.'
+      },
+      l17: {
+        takeaways:[
+          'תמונות מוצר הן אחד הגורמים הכי משפיעים על מכירה.',
+          'בקנבה מייצרים תמונות עם רקע שקוף, הצללות ומראה ממותג.',
+          'תמונות באנדל מסבירות בעין אחת מה הלקוח מקבל.'
+        ],
+        actions:[
+          'צור בקנבה תמונת מוצר נקייה ותמונת באנדל אחת.',
+          'הוסף לוגו או צבע מותג עקבי לכל התמונות.'
+        ],
+        terms:[
+          {t:'קנבה (Canva)',d:'כלי עיצוב פשוט ליצירת תמונות מקצועיות.'},
+          {t:'רקע שקוף',d:'מוצר ללא רקע, להרכבה נקייה על כל עיצוב.'}
+        ],
+        tip:'תמונה חובבנית הורגת אמון. שעה אחת בקנבה על תמונות טובות שווה יותר מעוד מודעה.'
+      },
+      l18: {
+        takeaways:[
+          'מקימים באנדלים של 1, 2 ו-3 יחידות ב-BundleUp.',
+          'תמחור פר-יחידה מדגיש כמה חוסכים בחבילה הגדולה.',
+          'עיצוב נכון של החבילות דוחף את הלקוח לקנות יותר.'
+        ],
+        actions:[
+          'הקם שלוש חבילות והדגש את החיסכון בגדולה.',
+          'סמן את החבילה האמצעית כ"הכי משתלמת".'
+        ],
+        terms:[
+          {t:'BundleUp',d:'אפליקציה ליצירת חבילות מוצרים בשופיפיי.'},
+          {t:'תמחור פר-יחידה',d:'הצגת המחיר ליחידה כדי להדגיש חיסכון.'}
+        ],
+        tip:'רוב האנשים יבחרו את האופציה האמצעית. תכנן את החבילות כך שהאמצעית היא בדיוק זו שמכניסה לך הכי הרבה.'
+      },
+      l19: {
+        takeaways:[
+          'אפסל בעגלה מציע מוצר משלים ברגע הקנייה.',
+          'תגמולים מדורגים (משלוח חינם, הנחה, מתנה) דוחפים להוסיף לעגלה.',
+          'טיימר וסמלי אשראי מגבירים דחיפות ואמון.'
+        ],
+        actions:[
+          'הגדר ב-Cartify סף למשלוח חינם שמעודד עוד הוספה.',
+          'הוסף אפסל אחד רלוונטי בעגלת הקנייה.'
+        ],
+        terms:[
+          {t:'אפסל (Upsell)',d:'הצעת מוצר נוסף או משודרג בזמן הקנייה.'},
+          {t:'תגמול מדורג',d:'הטבה שנפתחת ככל שסכום העגלה עולה.'}
+        ],
+        tip:'"עוד 30₪ ומשלוח עליי" זו אחת המשפטים הכי רווחיים בעולם. שם נמצא המון רווח חבוי.'
+      },
+      l20: {
+        takeaways:[
+          'דף About מספר סיפור מותג שמייצר אמון.',
+          'דף Contact מראה ללקוח שיש עם מי לדבר.',
+          'אפשר לנסח את שניהם עם ChatGPT תוך דקות.'
+        ],
+        actions:[
+          'כתוב סיפור מותג קצר ואותנטי לדף About.',
+          'הוסף דף יצירת קשר עם פרטים ברורים.'
+        ],
+        terms:[
+          {t:'דף About',d:'עמוד שמספר מי אתם ולמה להאמין לכם.'},
+          {t:'אמון',d:'התחושה שמאפשרת ללקוח להוציא כרטיס אשראי.'}
+        ],
+        tip:'סיפור אנושי קצר שווה יותר מעשרה שבחים על המוצר. אנשים קונים מאנשים, גם אונליין.'
+      },
+      l21: {
+        takeaways:[
+          'מדיניות החזרות, פרטיות, תנאי שימוש ומשלוחים היא חובה חוקית.',
+          'דניאל מספק תבניות שעורכי הדין שלו ניסחו.',
+          'דפים אלה גם מגנים עליך וגם מרגיעים את הלקוח.'
+        ],
+        actions:[
+          'הדבק את ארבע התבניות והתאם את הפרטים שלך.',
+          'ודא שכל הדפים מקושרים בפוטר החנות.'
+        ],
+        terms:[
+          {t:'תקנון',d:'מסמך שמגדיר את כללי השימוש והרכישה.'},
+          {t:'מדיניות פרטיות',d:'הסבר איך אתם שומרים על מידע הלקוח.'}
+        ],
+        tip:'אל תדלג על הדפים המשפטיים. הם לוקחים 10 דקות עם התבניות, ומונעים ממך כאב ראש אמיתי בהמשך.'
+      },
+      l22: {
+        takeaways:[
+          'תפריט ראשי נקי מנווט את הלקוח בלי לבלבל.',
+          'הפוטר מרכז קישורים חשובים: מדיניות, צור קשר, מעקב.',
+          'ניווט ברור מעלה אמון ומוריד נטישה.'
+        ],
+        actions:[
+          'בנה תפריט עם דף הבית, מוצר, צור קשר ומדיניות.',
+          'סדר את הפוטר עם כל הקישורים החוקיים.'
+        ],
+        terms:[
+          {t:'פוטר',d:'אזור תחתון בכל עמוד עם קישורים חשובים.'},
+          {t:'ניווט',d:'הדרך שבה הלקוח מוצא מה שהוא מחפש.'}
+        ],
+        tip:'תפריט פשוט = יותר מכירות. כל קישור מיותר הוא עוד הזדמנות ללקוח לאבד את הדרך ולעזוב.'
+      },
+      l23: {
+        takeaways:[
+          'דף מעקב הזמנה מאפשר ללקוח לבדוק לבד איפה החבילה.',
+          'AutoTrack מסתיר שהמשלוח מגיע מסין.',
+          'התוצאה: פחות פניות, פחות ביטולים ויותר אמון.'
+        ],
+        actions:[
+          'התקן AutoTrack והוסף דף מעקב הזמנה.',
+          'ודא שמסך המעקב נקי ממידע על מקור המשלוח.'
+        ],
+        terms:[
+          {t:'AutoTrack',d:'אפליקציית מעקב הזמנות עם הסתרת מקור.'},
+          {t:'מעקב הזמנה',d:'עמוד שבו הלקוח רואה את סטטוס החבילה.'}
+        ],
+        tip:'לקוח שיכול לבדוק לבד איפה ההזמנה שלו לא יפתח לך טיקט. שירות עצמי שקט שווה זהב.'
+      },
+      l24: {
+        takeaways:[
+          'מגדירים את המטבע הנכון לחנות.',
+          'מחייבים את הלקוח למלא אימייל, שם וטלפון בצ\'קאאוט.',
+          'כך לא מאבדים יכולת לעדכן את הלקוח על המשלוח.'
+        ],
+        actions:[
+          'הגדר את המטבע ושפת הצ\'קאאוט.',
+          'הפוך שדות פרטי קשר לחובה בתשלום.'
+        ],
+        terms:[
+          {t:'צ\'קאאוט',d:'שלב התשלום הסופי בעגלת הקנייה.'},
+          {t:'מטבע',d:'המטבע שבו מוצגים המחירים ללקוח.'}
+        ],
+        tip:'אימייל וטלפון של הלקוח שווים זהב לעתיד. ודא שאתה אוסף אותם בכל הזמנה.'
+      },
+      l25: {
+        takeaways:[
+          'מגדירים אזורי משלוח (shipping zones) לישראל ולחו"ל.',
+          'לקוחות יכולים לבחור מדינה ולסיים רכישה.',
+          'יש לשים לב לחוקי תמחור משלוח בישראל.'
+        ],
+        actions:[
+          'הגדר אזור משלוח לישראל ואזור בינלאומי.',
+          'בדוק שהמחיר והזמן מוצגים נכון בצ\'קאאוט.'
+        ],
+        terms:[
+          {t:'Shipping Zones',d:'אזורים גאוגרפיים עם מחיר משלוח שונה.'},
+          {t:'שווקים (Markets)',d:'הגדרת המדינות שאליהן מוכרים.'}
+        ],
+        tip:'אם לקוח לא מוצא את המדינה שלו בצ\'קאאוט, הוא עוזב. ודא שכל קהל היעד שלך יכול לסיים קנייה.'
+      },
+      l26: {
+        takeaways:[
+          'ספק סליקה מאפשר ללקוחות לשלם בכרטיס אשראי.',
+          'אפשר לחבר PayPal או ספק כמו PayPlus.',
+          'יש מגבלת PayPal למשתמשים מתחת לגיל 18.'
+        ],
+        actions:[
+          'חבר ספק סליקה כדי לקבל תשלומי אשראי.',
+          'בדוק שעסקת ניסיון עוברת בהצלחה.'
+        ],
+        terms:[
+          {t:'סליקה',d:'תהליך גביית תשלום בכרטיס אשראי.'},
+          {t:'PayPlus',d:'ספק סליקה ישראלי לחיבור לחנות.'}
+        ],
+        tip:'בלי סליקה תקינה אין עסק. תבדוק שהתשלום עובד עוד לפני שאתה שולח טיפת תקציב לפרסום.'
+      },
+      l27: {
+        takeaways:[
+          'עושים רכישת ניסיון אמיתית כדי לבדוק שהכל עובד.',
+          'שומעים את סאונד ההזמנה הראשון.',
+          'מגדירים מילוי אוטומטי ב-AutoDS וחיבור לאלי-אקספרס.'
+        ],
+        actions:[
+          'בצע רכישת בדיקה מקצה לקצה.',
+          'הפעל מילוי אוטומטי כדי שההזמנה תטופל לבד.'
+        ],
+        terms:[
+          {t:'רכישת ניסיון',d:'הזמנה שאתה מבצע בעצמך כדי לבדוק את החנות.'},
+          {t:'מילוי אוטומטי',d:'הזמנה אצל הספק שמתבצעת לבד אחרי מכירה.'}
+        ],
+        tip:'ההזמנה הראשונה שלך תהיה שלך. תבצע אותה, תרגיש את החוויה, ותתקן כל חיכוך לפני שלקוח אמיתי מגיע.'
+      },
+      l28: {
+        takeaways:[
+          'אנשים קונים מתוך רגש ומצדיקים בהיגיון בדיעבד.',
+          'הבנת הפסיכולוגיה הצרכנית מפרידה בין רווח להפסד.',
+          'השיווק הוא המנוע האמיתי של החנות, לא רק העיצוב.'
+        ],
+        actions:[
+          'נסח את הרגש המרכזי שהמוצר שלך פותר.',
+          'בנה מסר שיווקי שפונה לרגש הזה ישירות.'
+        ],
+        terms:[
+          {t:'פסיכולוגיה צרכנית',d:'הבנת מה מניע אנשים לקנות.'},
+          {t:'טריגר רגשי',d:'הרגש שדוחף ללחיצה על "קנה עכשיו".'}
+        ],
+        tip:'תפסיק למכור מוצר ותתחיל למכור תחושה. מי שמבין למה אנשים קונים, שולט במשחק.'
+      },
+      l29: {
+        takeaways:[
+          'תסריט מודעה טוב תופס תשומת-לב בשניות הראשונות.',
+          'הקופי משכנע ומוביל לפעולה ברורה.',
+          'היום אפשר להפיק קריאייטיב באמצעות AI בשקלים בודדים.'
+        ],
+        actions:[
+          'כתוב הוק (משפט פתיחה) שעוצר את הגלילה.',
+          'הפק גרסת קריאייטיב אחת בעזרת כלי AI.'
+        ],
+        terms:[
+          {t:'קריאייטיב',d:'התמונה או הסרטון של המודעה.'},
+          {t:'הוק (Hook)',d:'שלוש השניות הראשונות שעוצרות את הגולש.'}
+        ],
+        tip:'אם ההוק לא עוצר את האגודל בשלוש שניות, שאר המודעה לא קיימת. תשקיע את רוב המאמץ בפתיחה.'
+      },
+      l30: {
+        takeaways:[
+          'מתחילים קמפיין ממומן עם תקציב קטן, למשל 100₪ ביום.',
+          'המטרה היא יחס רווחי, למשל 100₪ הוצאה מול 500₪ מכירות.',
+          'משם מעלים תקציב בהדרגה תוך שמירה על היחס.'
+        ],
+        actions:[
+          'הקם קמפיין ראשון בתקציב יומי קטן.',
+          'מדוד את היחס בין הוצאה למכירות לפני שמעלים.'
+        ],
+        terms:[
+          {t:'ROAS',d:'היחס בין הכנסה מפרסום להוצאה עליו.'},
+          {t:'קידום ממומן',d:'תשלום לפלטפורמות כדי להגיע ללקוחות.'}
+        ],
+        tip:'אל תעלה תקציב כי "בא לך". תעלה רק כשהיחס יציב ורווחי. סבלנות בפרסום היא כסף.'
+      },
+      l31: {
+        takeaways:[
+          'מבינים את ההבדל בין עוסק פטור לעוסק מורשה ואת נושא החשבוניות.',
+          'AI הוא כלי עזר בכל שלב, מקופי ועד שירות.',
+          'מי שרוצה ליווי צמוד יכול להמשיך לתוכנית DMA.'
+        ],
+        actions:[
+          'בדוק איזה סוג עוסק מתאים לך לפי המחזור.',
+          'שקול אם ליווי DMA מתאים לשלב שאתה נמצא בו.'
+        ],
+        terms:[
+          {t:'עוסק פטור',d:'מעמד מס למחזור נמוך, ללא גביית מע"מ.'},
+          {t:'DMA',d:'תוכנית הליווי הצמוד של דניאל מולדבסקי.'}
+        ],
+        tip:'אל תיבהל מהמיסוי. סדר את זה מההתחלה בקטן, ותהיה חופשי להתמקד במה שחשוב: למכור.'
+      }
+    };
+
+    /* ---------- Generic fallback for any lesson without explicit content ---------- */
+    function fallback(les) {
+      const s = les.summary || '';
+      const first = s.split(/[.·]/).map(x => x.trim()).filter(Boolean);
+      const takeaways = (first.length ? first : [s]).slice(0,4);
+      while (takeaways.length < 3) takeaways.push('צפה בשיעור עד הסוף ויישם את הנקודה המרכזית בחנות שלך.');
+      return {
+        takeaways,
+        actions:[
+          'צפה בשיעור עד הסוף ובצע בעצמך כל שלב במקביל.',
+          'יישם את מה שלמדת מיד בחנות שלך, לא מחר.'
+        ],
+        terms:[
+          {t:'איקומרס', d:'מכירת מוצרים דרך חנות אינטרנטית.'},
+          {t:'יישום', d:'הפיכת ידע לפעולה בחנות בפועל.'}
+        ],
+        tip:'ידע בלי יישום שווה אפס. סגור את הסיכום ולך לבצע צעד אחד בחנות עכשיו.'
+      };
+    }
+
+    /* ---------- Resolve current lesson ---------- */
+    function resolveLesson() {
+      const id = qs('lesson');
+      let les = id ? LESSONS.find(l => l.id === id) : null;
+      if (!les) les = (window.Progress && window.Progress.nextLesson()) || LESSONS[0];
+      return les;
+    }
+
+    function esc(s){ return String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+    /* ---------- Render the branded sheet ---------- */
+    function renderSheet(les) {
+      const c = CONTENT[les.id] || fallback(les);
+      const li = (arr, cls) => `<ul class="ls-list ${cls||''}">` +
+        arr.map(x => `<li><span class="bullet">${cls==='action'?'›':'✓'}</span><span>${esc(x)}</span></li>`).join('') + `</ul>`;
+      const terms = (c.terms||[]).map(t =>
+        `<div class="ls-term"><b>${esc(t.t)}</b><span>${esc(t.d)}</span></div>`).join('');
+
+      document.getElementById('summarySheet').innerHTML = `
+        <div class="sheet-head">
+          <div class="row">
+            <span class="logo">M</span>
+            <div>
+              <div class="brand-name">אקדמיית מולדבסקי</div>
+              <div class="brand-sub">הכשרת האיקומרס · דניאל מולדבסקי</div>
+            </div>
+            <span class="doc-kind">סיכום שיעור</span>
+          </div>
+          <h1>${esc(les.title)}</h1>
+          <div class="meta">
+            <span class="chip accent">${esc(les.moduleIcon||'')} ${esc(les.moduleTitle||'')}</span>
+            <span class="chip">⏱ ${esc(les.dur||'')}</span>
+            <span class="chip">שיעור ${esc(les.id.replace('l',''))} מתוך ${window.LESSON_COUNT}</span>
+          </div>
+        </div>
+
+        <div class="sheet-body">
+          <p class="sheet-intro">${esc(les.summary||'')}</p>
+
+          <div class="ls-block">
+            <h2><span class="ic">📘</span> מה למדנו</h2>
+            ${li(c.takeaways)}
+          </div>
+
+          <div class="ls-block">
+            <h2><span class="ic">🎯</span> נקודות מפתח לפעולה</h2>
+            ${li(c.actions,'action')}
+          </div>
+
+          <div class="ls-block">
+            <h2><span class="ic">🔑</span> מושגים</h2>
+            <div class="ls-terms">${terms}</div>
+          </div>
+
+          <div class="ls-block">
+            <h2><span class="ic">💡</span> טיפ של דניאל</h2>
+            <div class="ls-tip">
+              <span class="ava">ד</span>
+              <div>
+                <div class="t-head">דניאל מולדבסקי</div>
+                <div class="t-body">${esc(c.tip)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sheet-foot">
+          <div class="fl"><span class="m">M</span> אקדמיית מולדבסקי · הסיסטם מבוסס ה-AI להקמת מותג איקומרס מ-0</div>
+          <div class="fr">נבנה ע"י <b>הלל אקנין</b></div>
+        </div>`;
+    }
+
+    /* ---------- Lesson <select> ---------- */
+    function buildSelect(currentId) {
+      const sel = document.getElementById('lessonSelect');
+      let html = '', lastMod = '';
+      LESSONS.forEach(l => {
+        if (l.moduleId !== lastMod) {
+          if (lastMod) html += '</optgroup>';
+          html += `<optgroup label="${esc(l.moduleIcon)} ${esc(l.moduleTitle)}">`;
+          lastMod = l.moduleId;
+        }
+        const done = window.Progress.isDone(l.id) ? '✓ ' : '';
+        html += `<option value="${l.id}" ${l.id===currentId?'selected':''}>${done}${esc(l.title)}</option>`;
+      });
+      html += '</optgroup>';
+      sel.innerHTML = html;
+      sel.onchange = () => {
+        const url = new URL(location.href);
+        url.searchParams.set('lesson', sel.value);
+        location.href = url.toString();
+      };
+    }
+
+    /* ---------- PDF + print ---------- */
+    function downloadPDF(les) {
+      const el = document.getElementById('summarySheet');
+      const safe = (les.title || 'שיעור').replace(/[\\/:*?"<>|]/g,'').trim();
+      const fileName = `סיכום · ${safe}.pdf`;
+      document.body.classList.add('pdf-capturing');
+      const prevTheme = document.documentElement.getAttribute('data-theme');
+      document.documentElement.setAttribute('data-theme','light'); // clean white capture
+      const btn = document.getElementById('btnPdf');
+      const txt = btn.textContent; btn.textContent = 'מכין PDF…'; btn.disabled = true;
+
+      html2pdf().set({
+        margin: 8,
+        filename: fileName,
+        image: { type:'jpeg', quality:0.98 },
+        html2canvas: { scale:2, useCORS:true, backgroundColor:'#FFFFFF' },
+        jsPDF: { unit:'mm', format:'a4', orientation:'portrait' },
+        pagebreak: { mode:['css','legacy'] }
+      }).from(el).save().then(() => {
+        toast('הסיכום ירד כקובץ PDF', '⬇');
+      }).catch(() => {
+        toast('משהו השתבש בהורדה', '⚠️');
+      }).finally(() => {
+        document.body.classList.remove('pdf-capturing');
+        if (prevTheme) document.documentElement.setAttribute('data-theme', prevTheme);
+        btn.textContent = txt; btn.disabled = false;
+      });
+    }
+
+    /* ---------- Boot ---------- */
+    const lesson = resolveLesson();
+    renderSheet(lesson);
+    buildSelect(lesson.id);
+    document.getElementById('btnPdf').onclick = () => downloadPDF(lesson);
+    document.getElementById('btnPrint').onclick = () => window.print();
+  </script>
+
+  <style media="print">
+    /* Print: hide all app chrome, show only the sheet on a clean white page */
+    .portal-header, .bottom-nav, #lsToolbar, .credit, .portal-fab, .portal-toast { display:none !important; }
+    body, .app-main, .app-content { background:#fff !important; padding:0 !important; margin:0 !important; }
+    #summarySheet { box-shadow:none !important; border:none !important; max-width:100% !important; }
+    @page { size:A4; margin:10mm; }
+  </style>
+</body>
+</html>
