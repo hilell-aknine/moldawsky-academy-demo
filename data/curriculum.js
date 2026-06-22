@@ -5,8 +5,16 @@
    Every page reads window.CURRICULUM. Do not fork this shape.
    ============================================================ */
 window.VIDEO_ID = '_WM5MC28zQc';
+window.VIDEO_END = 14420; // ~4:00:14 — full video length, used as the end bound of the last lesson
 window.YT_THUMB = (ts) => `https://i.ytimg.com/vi/${window.VIDEO_ID}/hqdefault.jpg`;
-window.YT_EMBED = (ts) => `https://www.youtube.com/embed/${window.VIDEO_ID}?start=${ts}&rel=0&modestbranding=1`;
+/* Each lesson is its OWN modular segment: it starts at lesson.ts and ENDS where the next
+   lesson begins, so the player stops at the lesson boundary instead of running into the next topic. */
+window.YT_EMBED = (ts) => {
+  const list = window.ALL_LESSONS || [];
+  const idx = list.findIndex(l => l.ts === ts);
+  const end = (idx > -1 && idx < list.length - 1) ? list[idx + 1].ts : window.VIDEO_END;
+  return `https://www.youtube.com/embed/${window.VIDEO_ID}?start=${ts}&end=${end}&rel=0&modestbranding=1&iv_load_policy=3`;
+};
 
 window.CURRICULUM = {
   brand: { name: 'אקדמיית מולדבסקי', creator: 'דניאל מולדבסקי', brandRef: 'תנאור', program: 'הכשרת האיקומרס', tagline: 'הסיסטם מבוסס ה-AI להקמת מותג איקומרס מ-0' },
