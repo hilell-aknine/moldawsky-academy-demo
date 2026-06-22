@@ -9,7 +9,7 @@ window.YT_THUMB = (ts) => `https://i.ytimg.com/vi/${window.VIDEO_ID}/hqdefault.j
 window.YT_EMBED = (ts) => `https://www.youtube.com/embed/${window.VIDEO_ID}?start=${ts}&rel=0&modestbranding=1`;
 
 window.CURRICULUM = {
-  brand: { name: 'אקדמיית מולדבסקי', creator: 'דניאל מולדבסקי', tagline: 'מאפס לחנות שמוכרת' },
+  brand: { name: 'אקדמיית מולדבסקי', creator: 'דניאל מולדבסקי', brandRef: 'תנאור', program: 'הכשרת האיקומרס', tagline: 'הסיסטם מבוסס ה-AI להקמת מותג איקומרס מ-0' },
   modules: [
     { id:'m1', title:'להבין את המשחק', icon:'🎯', lessons:[
       { id:'l1',  ts:0,    dur:'3:00', title:'ברוכים הבאים — מי דניאל ומה תלמדו', summary:'הקדמה: מי דניאל מולדבסקי, המותגים שהקים (תנאור, עשרות מיליוני ש"ח), ומה בדיוק תצא איתו מהקורס — חנות מוכרת מאפס.' },
