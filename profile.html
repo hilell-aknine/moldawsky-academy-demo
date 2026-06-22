@@ -167,7 +167,7 @@
       <!-- Module progress rings -->
       <div class="reveal mb-24">
         <div class="section-head">
-          <h2>ההתקדמות שלך לפי מודול</h2>
+          <h2>התקדמות לפי מודול</h2>
         </div>
         <div class="modules-grid" id="modulesGrid"></div>
       </div>
@@ -192,10 +192,10 @@
       <!-- CTA -->
       <div class="cta-bar reveal mb-24">
         <div>
-          <div class="cta-bar-text">מוכן להמשיך לשיעור הבא?</div>
+          <div class="cta-bar-text">כל שיעור שמסיים, עסק שמתקדם. בוא נמשיך.</div>
           <div class="cta-bar-sub" id="ctaSub"></div>
         </div>
-        <a href="course-library.html" class="btn btn--primary btn--lg">המשך ללמוד ←</a>
+        <a href="course-library.html" class="btn btn--primary btn--lg">המשך לקורס ←</a>
       </div>
 
       <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
@@ -225,7 +225,7 @@
     document.getElementById('profileName').textContent = u.name;
 
     /* Level */
-    const levelNames = ['סוחר מתחיל','סוחר מתפתח','סוחר מנוסה','אומן המכירות','מולדבסקי בכוח'];
+    const levelNames = ['בעל עסק מתחיל','בעל מותג צומח','יזם דיגיטלי','מוכר מקצוען','בוגר אקדמיית מולדבסקי'];
     const levelName = levelNames[Math.min(level - 1, levelNames.length - 1)];
     document.getElementById('levelBadge').innerHTML =
       `<span class="badge badge--gold">⚡ רמה ${level} · ${levelName}</span>`;
@@ -242,10 +242,10 @@
 
     /* Stats */
     const tileData = [
-      { ico: '🔥', v: streak,                        k: 'רצף ימים' },
+      { ico: '🔥', v: streak,                        k: 'רצף יומי' },
       { ico: '✅', v: `${completed}/${window.LESSON_COUNT}`, k: 'שיעורים הושלמו' },
-      { ico: '⏱️', v: window.Progress.timeLeftLabel(), k: 'זמן שנותר' },
-      { ico: '⭐', v: xp,                             k: 'XP שצברת' },
+      { ico: '⏱️', v: window.Progress.timeLeftLabel(), k: 'נותר לסיום' },
+      { ico: '⭐', v: xp,                             k: 'נקודות XP' },
     ];
     document.getElementById('statsRow').innerHTML = tileData.map(t =>
       `<div class="portal-stat-tile">
@@ -270,31 +270,31 @@
     /* Achievements */
     const ACHIEVEMENTS = [
       {
-        icon: '🎓', name: 'השיעור הראשון', desc: 'סיימת את השיעור הראשון',
+        icon: '🎓', name: 'הצעד הראשון', desc: 'סיימת את השיעור הראשון באקדמיית מולדבסקי. הדרך מתחילה כאן.',
         unlocked: completed >= 1,
       },
       {
-        icon: '🏁', name: 'מודול ראשון הושלם', desc: 'סיימת מודול שלם',
+        icon: '🏁', name: 'מודול ראשון בכיס', desc: 'סגרת מודול שלם מהתחלה לסוף. אתה כבר לא בהתחלה.',
         unlocked: window.CURRICULUM.modules.some(m => window.Progress.moduleStats(m).pct === 100),
       },
       {
-        icon: '🔥', name: 'רצף 3 ימים', desc: 'למדת 3 ימים ברצף',
+        icon: '🔥', name: 'עקביות משתלמת', desc: 'למדת 3 ימים ברצף. העסקים הגדולים נבנים בהרגלים קטנים.',
         unlocked: streak >= 3,
       },
       {
-        icon: '⚡', name: 'חצי הדרך', desc: `${Math.floor(window.LESSON_COUNT / 2)} שיעורים הושלמו`,
+        icon: '⚡', name: 'חצי הדרך אחריך', desc: `עברת את ${Math.floor(window.LESSON_COUNT / 2)} השיעורים הראשונים. הכסף האמיתי מגיע ממה שנשאר.`,
         unlocked: completed >= Math.floor(window.LESSON_COUNT / 2),
       },
       {
-        icon: '🏆', name: 'סיימת את הקורס', desc: 'כל 31 שיעורים הושלמו',
+        icon: '🏆', name: 'בוגר אקדמיית מולדבסקי', desc: 'סיימת את כל הקורס. יש לך עכשיו את הידע לבנות מותג שמוכר.',
         unlocked: completed >= window.LESSON_COUNT,
       },
       {
-        icon: '🤖', name: 'הרצת אג\'נט AI', desc: 'שאלת את מורה ה-AI',
+        icon: '🤖', name: 'הפעלת את ה-AI', desc: 'שאלת את מורה ה-AI. זה בדיוק מה שמבדיל בין עסק ידני לעסק חכם.',
         unlocked: !!localStorage.getItem('mold_ai_used'),
       },
       {
-        icon: '💬', name: 'פוסט ראשון בקהילה', desc: 'שיתפת בקהילה',
+        icon: '💬', name: 'חלק מהקהילה', desc: 'שיתפת את הקהילה. הנראות שלך מתחילה כאן.',
         unlocked: !!localStorage.getItem('mold_community_post'),
       },
     ];
@@ -318,13 +318,13 @@
     window.ALL_LESSONS.forEach(l => { lessonMap[l.id] = l.title; });
 
     const notesList = document.getElementById('notesList');
-    document.getElementById('notesCount').textContent = noteKeys.length ? `${noteKeys.length} פתקים` : '';
+    document.getElementById('notesCount').textContent = noteKeys.length ? `${noteKeys.length} תובנות שמורות` : '';
 
     if (noteKeys.length === 0) {
       notesList.innerHTML = `<div class="notes-empty">
         <div class="empty-icon">📝</div>
-        <div style="font-weight:700;margin-bottom:6px">עדיין אין פתקים</div>
-        <div class="muted">תוך כדי שיעורים תוכל לרשום הערות, והן יופיעו כאן</div>
+        <div style="font-weight:700;margin-bottom:6px">הפנקס שלך עדיין ריק</div>
+        <div class="muted">תוך כדי שיעורים תוכל לרשום תובנות, רעיונות, והחלטות לעסק שלך. הכל יישמר כאן.</div>
       </div>`;
     } else {
       notesList.innerHTML = `<div class="notes-list">${noteKeys.map(k => {
@@ -341,8 +341,8 @@
     /* CTA subtitle */
     const next = window.Progress.nextLesson();
     document.getElementById('ctaSub').textContent = next
-      ? `השיעור הבא: ${next.moduleIcon} ${next.title}`
-      : 'כל הכבוד. סיימת את הקורס!';
+      ? `השיעור הבא שלך: ${next.moduleIcon} ${next.title}`
+      : 'סיימת את כל הקורס. אתה בוגר אקדמיית מולדבסקי.';
 
     /* Scroll reveal re-trigger */
     setTimeout(() => {

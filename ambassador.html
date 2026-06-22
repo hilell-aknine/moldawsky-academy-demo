@@ -234,12 +234,12 @@
 
     <!-- Hero -->
     <div class="amb-hero pop">
-      <h1>הזמן חברים. <span>הרווח אמיתי.</span></h1>
-      <p class="mt-8">כל חבר שמצטרף דרכך ועובר ל-DMA, אתה מרוויח. חינם להצטרף, ואין תקרה על הרווח.</p>
+      <h1>אתה מפנה. <span>הכסף מגיע אליך.</span></h1>
+      <p class="mt-8">כל אחד שמצטרף לאקדמיית מולדבסקי דרכך ועובר ל-DMA שווה לך עמלה אמיתית. אין מינימום, אין תקרה, אין תפוגה.</p>
       <div class="flex gap-8 wrap-f mt-16">
-        <span class="badge badge--green">✓ בחינם לחלוטין</span>
-        <span class="badge badge--gold">⭐ עמלות מדורגות</span>
-        <span class="badge badge--locked">🔒 ללא הגבלת הכנסה</span>
+        <span class="badge badge--green">✓ הצטרפות חינמית</span>
+        <span class="badge badge--gold">⭐ עד 15% עמלה</span>
+        <span class="badge badge--locked">🔒 הכנסה ללא תקרה</span>
       </div>
     </div>
 
@@ -248,24 +248,24 @@
       <div class="portal-stat-tile">
         <span class="ico">📨</span>
         <span class="v" id="stat-invited">0</span>
-        <span class="k">הזמנות נרשמו</span>
+        <span class="k">נרשמו דרכך</span>
       </div>
       <div class="portal-stat-tile">
         <span class="ico">⬆️</span>
         <span class="v" id="stat-upgraded">0</span>
-        <span class="k">שדרגו ל-DMA</span>
+        <span class="k">סגרו DMA</span>
       </div>
       <div class="portal-stat-tile">
         <span class="ico">💰</span>
         <span class="v green" id="stat-earnings">0₪</span>
-        <span class="k">רווח מצטבר</span>
+        <span class="k">הרווחת עד כה</span>
       </div>
     </div>
 
     <!-- Referral link + QR grid -->
     <div class="grid-2 mb-24 reveal">
       <div class="ref-link-card">
-        <h3>הקישור האישי שלך</h3>
+        <h3>הקישור שלך. תשתף אותו.</h3>
         <div class="link-box">
           <span class="link-url" id="ref-url">https://moldawsky.academy/?ref=DANIEL123</span>
           <button class="btn btn--primary btn--sm" onclick="copyLink()">העתק</button>
@@ -289,59 +289,59 @@
           <span class="qr-icon">⬛</span>
           <span>QR Code<br>יוצג כאן</span>
         </div>
-        <p style="font-size:13px;color:var(--text-dim);max-width:180px;">שתף בסטורי, בפוסט, או הדפס להדגמות</p>
+        <p style="font-size:13px;color:var(--text-dim);max-width:180px;">שים בסטורי, בפוסט, בהדגמה, בכרטיס ביקור. הוא עובד בכל מקום.</p>
         <button class="btn btn--outline btn--sm" onclick="toast('QR יהיה זמין בקרוב 📲')">הורד QR</button>
       </div>
     </div>
 
     <!-- How it works -->
     <div class="mb-8 reveal">
-      <p class="section-label">איך זה עובד</p>
+      <p class="section-label">שלושה צעדים. כסף בחשבון.</p>
     </div>
     <div class="steps-row reveal">
       <div class="step-card" data-step="1">
         <div class="step-icon">🔗</div>
-        <h4>משתף קישור</h4>
-        <p>שולח את הקישור לחבר, מפרסם בסטורי, מדביק בפוסט. אתה עושה, הם נכנסים.</p>
+        <h4>מפיץ את הקישור</h4>
+        <p>וואטסאפ, סטורי, פוסט, שיחה. בכל מקום שמישהו שואל "איך מוכרים באינטרנט", הקישור שלך שם.</p>
       </div>
       <div class="step-card" data-step="2">
         <div class="step-icon">👤</div>
-        <h4>חבר נרשם</h4>
-        <p>החבר נרשם לפורטל החינמי. נספר לך, תראה את המספרים עולים בזמן אמת.</p>
+        <h4>הם מצטרפים לאקדמיה</h4>
+        <p>נרשמים לפורטל בחינם. הם מתחברים לתוכן של דניאל, אתה רואה את המספרים עולים בזמן אמת.</p>
       </div>
       <div class="step-card" data-step="3">
         <div class="step-icon">💸</div>
-        <h4>אתה מרוויח</h4>
-        <p>ברגע שהחבר עובר ל-DMA, העמלה שלך מחושבת אוטומטית ומועברת ישירות אליך.</p>
+        <h4>הכסף מגיע אליך</h4>
+        <p>ברגע שסגרו DMA, העמלה מחושבת אוטומטית ומועברת ישירות אליך. אפס התעסקות.</p>
       </div>
     </div>
 
     <!-- Commission tiers -->
     <div class="portal-card mb-24 reveal">
-      <p class="section-label">מדרגות עמלה</p>
+      <p class="section-label">ככל שסוגרים יותר, מרוויחים יותר</p>
       <div class="tier-row">
         <div class="tier-card">
           <div class="tier-icon">🥉</div>
           <div class="tier-val">5%</div>
-          <div class="tier-lbl">1-4 שדרוגים</div>
+          <div class="tier-lbl">4-1 סגירות ראשונות</div>
         </div>
         <div class="tier-card">
           <div class="tier-icon">🥈</div>
           <div class="tier-val">10%</div>
-          <div class="tier-lbl">5-14 שדרוגים</div>
+          <div class="tier-lbl">14-5 סגירות, מתזזים</div>
         </div>
         <div class="tier-card">
           <div class="tier-icon">🥇</div>
           <div class="tier-val">15%</div>
-          <div class="tier-lbl">15+ שדרוגים</div>
+          <div class="tier-lbl">15+ סגירות, שגריר זהב</div>
         </div>
       </div>
-      <p class="mt-16" style="font-size:13px;color:var(--text-dim);">מחיר ה-DMA עומד על 1,997₪. 15 שדרוגים = 4,493₪ בכיס שלך. ממנת עמלה 1% כל חודש שהחבר נשאר פעיל.</p>
+      <p class="mt-16" style="font-size:13px;color:var(--text-dim);">DMA עולה 1,997 שקל. 15 סגירות שמות 4,493 שקל בכיס שלך. בנוסף, עמלת נאמנות של 1% כל חודש שהחבר ממשיך את המסלול.</p>
     </div>
 
     <!-- Podium -->
     <div class="mb-8 reveal">
-      <p class="section-label">מובילי החודש</p>
+      <p class="section-label">שגרירי החודש שמוציאים הכי הרבה</p>
     </div>
     <div class="portal-card mb-24 reveal">
       <div class="portal-podium" id="podium"></div>
@@ -350,17 +350,17 @@
     <!-- Full leaderboard -->
     <div class="portal-card reveal">
       <div class="flex between items-center mb-16">
-        <p class="section-label" style="margin:0">טבלת מובילים</p>
+        <p class="section-label" style="margin:0">לוח השגרירים</p>
         <span class="pill">יוני 2026</span>
       </div>
       <table class="lb-table" id="lb-table">
         <thead>
           <tr>
             <th>#</th>
-            <th>שגריר</th>
-            <th>הזמנות</th>
-            <th>שדרוגים</th>
-            <th>רווח</th>
+            <th>שם</th>
+            <th>נרשמו</th>
+            <th>סגרו DMA</th>
+            <th>הרוויח</th>
           </tr>
         </thead>
         <tbody id="lb-body"></tbody>
@@ -414,7 +414,7 @@
     }).catch(() => toast('שגיאה בהעתקה', '⚠️'));
   };
   window.shareWhatsApp = function () {
-    const msg = encodeURIComponent(`היי! הצטרף/י לאקדמיית מולדבסקי בחינם ולמד איך לפתוח חנות אינטרנטית שמוכרת:\n${refUrl}`);
+    const msg = encodeURIComponent(`שמע, יש דבר שאני חייב/ת לשלוח לך. הצטרפתי לאקדמיית מולדבסקי וזה שינה לי את ההבנה על איקומרס. הכניסה בחינם. פשוט תיכנס:\n${refUrl}`);
     window.open(`https://wa.me/?text=${msg}`, '_blank');
   };
   window.shareInstagram = function () {

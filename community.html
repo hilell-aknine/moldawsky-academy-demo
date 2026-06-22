@@ -166,7 +166,7 @@
       <!-- Page header -->
       <div class="mb-24">
         <div class="page-title">👥 קהילת הסוחרים</div>
-        <div class="page-sub">ניצחונות, שאלות, טיפים. 340 סוחרים פעילים.</div>
+        <div class="page-sub">ניצחונות, שאלות, מוצרים שעובדים. 340 סוחרים פעילים מדי יום.</div>
       </div>
 
       <div class="community-layout">
@@ -180,7 +180,7 @@
               <div class="post-avatar" id="composer-ava">ד</div>
               <div style="flex:1; color:var(--text-dim); font-size:14px;">שלום <strong id="composer-name">דניאל</strong> 👋</div>
             </div>
-            <textarea class="composer-textarea" id="composer-text" placeholder="שתף ניצחון, שאלה או מוצר שעובד לך..."></textarea>
+            <textarea class="composer-textarea" id="composer-text" placeholder="פוסט ראשון? נצחון קטן? מוצר שגילית? מישהו כאן כבר עבר את זה. כתוב."></textarea>
             <div class="flex between items-center mt-16">
               <div class="flex gap-8">
                 <button class="btn btn--outline btn--sm" onclick="addTag('ניצחון 🏆')">ניצחון 🏆</button>
@@ -231,8 +231,8 @@
           <!-- Leaderboard -->
           <div class="portal-card reveal">
             <div class="flex between items-center mb-16">
-              <div style="font-weight:800; font-size:15px;">מובילי הקהילה</div>
-              <span class="badge badge--gold">🏆 חודשי</span>
+              <div style="font-weight:800; font-size:15px;">מובילי החודש</div>
+              <span class="badge badge--gold">🏆 יוני 2025</span>
             </div>
             <div id="leaderboard"></div>
           </div>
@@ -240,11 +240,11 @@
           <!-- Rules -->
           <div class="portal-card reveal">
             <div style="font-weight:800; font-size:15px; margin-bottom:12px;">📋 כללי הקהילה</div>
-            <div class="rule-item"><span class="rule-icon">✅</span>שתף מה עובד לך, אפילו פנייה קטנה.</div>
-            <div class="rule-item"><span class="rule-icon">🤝</span>עזור לאחרים. היום אתה שואל, מחר אתה עונה.</div>
-            <div class="rule-item"><span class="rule-icon">🚫</span>אין ספאם, אין פרסום שירותים מתחרים.</div>
-            <div class="rule-item"><span class="rule-icon">💬</span>שאלות = מוזמנות. אין שאלה מביכה כאן.</div>
-            <div class="rule-item"><span class="rule-icon">🔒</span>סודות עסקיים נשארים בקהילה.</div>
+            <div class="rule-item"><span class="rule-icon">✅</span>שתף מה עובד לך. גם מוצר ראשון, גם ROAS של 1.2.</div>
+            <div class="rule-item"><span class="rule-icon">🤝</span>עזור לאחרים. היום אתה שואל על סליקה, מחר אתה עונה.</div>
+            <div class="rule-item"><span class="rule-icon">🚫</span>אין ספאם, אין פרסום שירותים מתחרים. בקשר לזה ברור.</div>
+            <div class="rule-item"><span class="rule-icon">💬</span>שאלות מוזמנות. אין שאלה מטופשת לסוחר שמתחיל.</div>
+            <div class="rule-item"><span class="rule-icon">🔒</span>מה שנאמר בקהילה נשאר בקהילה.</div>
           </div>
 
         </div>
@@ -312,11 +312,11 @@
         time: 'לפני 12 דקות',
         tag: 'ניצחון 🏆',
         tagStyle: 'badge--green',
-        body: 'קיבלתי את ההתראה הראשונה!! ₪149 🔔🎉 לא האמנתי שזה קורה אמיתי. הגדרתי את החנות אתמול בלילה לפי השיעור של דניאל על AutoDS ובוקר קיבלתי PING. הסאונד הזה של שופיפיי הוא הכי טוב בעולם.',
+        body: 'קיבלתי את ההתראה הראשונה!! ₪149 🔔🎉 לא האמנתי שזה קורה אמיתי. הגדרתי את החנות אתמול בלילה לפי השיעור של דניאל על AutoDS, בחרתי את בובת הנשימה שהוא הראה כמוצר לדוגמה, וב-7:40 בבוקר קיבלתי PING. הסאונד הזה של שופיפיי הוא הכי טוב בעולם.',
         likes: 47,
         comments: [
-          { author: 'מיה לוי',   initial: 'מ', text: 'ברוך הבא לועדת ה-PING! מכאן רק למעלה 🙌' },
-          { author: 'אסף גרין',  initial: 'א', text: 'אני זוכר את ההרגשה. עשיתי סקרינשוט ושמרתי. יום אחד תסתכל עליו ותצחק כמה קטן זה היה.' },
+          { author: 'מיה לוי',   initial: 'מ', text: 'ברוך הבא לועדת ה-PING! זה הצעד הכי קשה ועכשיו הוא מאחוריך. מכאן רק למעלה 🙌' },
+          { author: 'אסף גרין',  initial: 'א', text: 'עשיתי סקרינשוט של ה-₪149 ושמרתי. יום אחד תסתכל עליו ותבין שזה הרגע שהכל השתנה.' },
         ],
         userLiked: false,
       },
@@ -328,11 +328,11 @@
         time: 'לפני 38 דקות',
         tag: 'שאלה ❓',
         tagStyle: 'badge--locked',
-        body: 'שאלה לכל מי שכבר מקבל תשלומים: לחבר PayPlus או להתחיל עם PayPal? ראיתי בשיעור שדניאל אמר להיזהר עם PayPal מתחת לגיל 18 אבל אני 22, האם PayPlus שווה את התהליך הבירוקרטי? כמה זמן לקח לכם לאשר?',
+        body: 'שאלה לכל מי שכבר מקבל תשלומים בארץ: לחבר PayPlus או להתחיל עם PayPal? דניאל הזכיר בשיעור הסליקה שהעמלות שונות מאוד, אני 22 כך שאין בעיה עם PayPal, אבל שמעתי שPayPlus נראה יותר אמין ללקוח ישראלי. כמה זמן לקח לכם לאשר ומה הניירת שצריך?',
         likes: 14,
         comments: [
-          { author: 'רועי ברנר', initial: 'ר', text: 'אצלי PayPlus לקח 3 ימי עסקים. ממליץ בחום, העמלות יותר הגיוניות ממה שנראה.' },
-          { author: 'שי כהן',    initial: 'ש', text: 'PayPlus כל הדרך. תכין ת.ז + פרטי חשבון בנק ותהיה מוכן.' },
+          { author: 'רועי ברנר', initial: 'ר', text: 'PayPlus לקח אצלי 3 ימי עסקים בלבד. ממליץ בחום, העמלות גבוהות יותר מPayPal אבל הלקוח הישראלי סומך עליו יותר.' },
+          { author: 'שי כהן',    initial: 'ש', text: 'PayPlus כל הדרך. תכין ת.ז, פרטי חשבון בנק ורישיון עסק אם יש. הם מהירים.' },
         ],
         userLiked: false,
       },
@@ -344,11 +344,11 @@
         time: 'לפני שעה',
         tag: 'טיפ 💡',
         tagStyle: 'badge--gold',
-        body: 'שיתוף: מודעת הווידאו שעבדה לי הכי טוב החודש.\n\n3 שניות ראשונות: הצגת הכאב (בלי מוצר).\nשניה 4-8: המוצר בפעולה.\nשניה 9-15: ביקורת אחת וCTA.\n\nתקציב 80₪ ביום, הביא 490₪ מכירות ביום הראשון. תנסו, זה עובד.',
+        body: 'שיתוף: מודעת הווידאו שעבדה לי הכי טוב החודש. בנויה לפי שיטת AIDA של דניאל:\n\n3 שניות ראשונות: הצגת הכאב בלבד, בלי מוצר, רק ההרגשה.\nשניה 4-8: המוצר בפעולה, תוצאה ברורה.\nשניה 9-15: ביקורת אחת אמיתית מלקוח + CTA ישיר.\n\nתקציב 80₪ ביום, הביא 490₪ מכירות ביום הראשון. ROAS של 6.1. תנסו.',
         likes: 63,
         comments: [
-          { author: 'נועה דוד',  initial: 'נ', text: 'שמרתי! על איזה פלטפורמה הרצת, פייסבוק?' },
-          { author: 'רועי ברנר', initial: 'ר', text: 'אינסטגרם Reels. ב-FB פחות טוב לי בקהל הזה.' },
+          { author: 'נועה דוד',  initial: 'נ', text: 'שמרתי! על איזה פלטפורמה הרצת? פייסבוק או אינסטגרם?' },
+          { author: 'רועי ברנר', initial: 'ר', text: 'אינסטגרם Reels בלבד. ב-FB הקהל שלי הרבה פחות מגיב לפורמט הזה.' },
         ],
         userLiked: false,
       },
@@ -360,11 +360,11 @@
         time: 'לפני 3 שעות',
         tag: 'ניצחון 🏆',
         tagStyle: 'badge--green',
-        body: 'חצינו 10,000₪ החודש! 🎯\n\nלפני 3 חודשים הייתי בפחד להוציא 200₪ על מוצר בדיקה. היום מחזור חודשי 10K. עדיין לא מאמינה שזה אמיתי.\n\nמה שינה הכל: הוספת הבאנדל 1/2/3 מהשיעור של BundleUp. ה-AOV קפץ מ-130₪ ל-245₪. חשבת שזה פשוט אבל זה עשה את כל ההבדל.',
+        body: 'חצינו 10,000₪ מחזור החודש! 🎯\n\nלפני 3 חודשים הייתי מפחדת להוציא 200₪ על מוצר לבדיקה. היום 10K. עדיין לא מאמינה שזה קורה.\n\nמה שינה הכל לגמרי: שיעור הבאנדלים של דניאל. הוספתי אופציות 1/2/3 יחידות בצ\'קאאוט ה-AOV קפץ מ-130₪ ל-245₪. אותו מוצר, אותה מודעה, כמעט פי 2 הכנסה. תקשיבו לשיעור הזה.',
         likes: 112,
         comments: [
-          { author: 'שי כהן',   initial: 'ש', text: '10K זה milestone אמיתי. מכאן 20K הוא הצעד הקרוב.' },
-          { author: 'אסף גרין', initial: 'א', text: 'ה-AOV זה הנקודה שאנשים מפספסים! אותו תנועה, פחות כסף. מאזין.' },
+          { author: 'שי כהן',   initial: 'ש', text: '10K זה ה-milestone האמיתי הראשון. לפה אנשים פושרים עוצרים ואתם ממשיכים. 20K הבא.' },
+          { author: 'אסף גרין', initial: 'א', text: 'ה-AOV הוא הדבר שאנשים מפספסים כל פעם. אותה תנועה, הרבה יותר כסף. ממש מאזין לזה.' },
         ],
         userLiked: false,
       },
@@ -376,10 +376,10 @@
         time: 'לפני 5 שעות',
         tag: 'שאלה ❓',
         tagStyle: 'badge--locked',
-        body: 'מישהו פתר את בעיית המטבע בקאסה? לי מוצג ₪ בדף המוצר אבל בצ\'קאאוט עובר לדולר. ניסיתי לשנות ב-Settings > Markets אבל עדיין קורה. גירסת שופיפיי Basic.',
+        body: 'מישהו פתר את בעיית המטבע בצ\'קאאוט? מוצג ₪ בדף המוצר אבל ברגע שהלקוח עובר לתשלום עובר לדולר. ניסיתי לשנות ב-Settings > Markets, אין שינוי. שופיפיי Basic. לקוח אחד כבר ירד כי חשב שמחיר הדולר.',
         likes: 9,
         comments: [
-          { author: 'מיה לוי', initial: 'מ', text: 'תוודא שב-Checkout settings בחרת "Same as store currency". אצלי פתר.' },
+          { author: 'מיה לוי', initial: 'מ', text: 'תוודא שב-Checkout settings > Currency בחרת "Same as store currency". זה היה הפתרון אצלי, 5 דקות עבודה.' },
         ],
         userLiked: false,
       },
@@ -391,11 +391,11 @@
         time: 'לפני 7 שעות',
         tag: 'טיפ 💡',
         tagStyle: 'badge--gold',
-        body: 'טיפ לכל מי שעושה דרופשיפינג: תוסיף "מעקב הזמנה" ברור ובולט לתפריט. מאז שהוספתי AutoTrack ירדו שאלות "איפה ההזמנה שלי?" ב-70%. זה גם חוסך לך זמן וגם מוריד chargebacks. מוסיף אמון ענק ללקוח.',
+        body: 'טיפ אחד שהוריד לי את עלויות שירות הלקוחות בחצי: תוסיף עמוד "מעקב הזמנה" ברור ובולט בתפריט הראשי, לא רק בפוטר. מאז שהוספתי AutoTrack ירדו שאלות "איפה ההזמנה שלי?" ב-70%. פחות וואטסאפים, פחות chargebacks, ויותר אמון. הלקוח מרגיש בשליטה.',
         likes: 38,
         comments: [
-          { author: 'נועה דוד', initial: 'נ', text: 'מוסיף עכשיו! לא חשבתי על זה כגורם לchargebacks.' },
-          { author: 'רועי ברנר', initial: 'ר', text: 'גם סוגר את הבעיה שהלקוח מבין שהמשלוח מסין.' },
+          { author: 'נועה דוד', initial: 'נ', text: 'מוסיפה עכשיו! לא חשבתי שזה ישפיע על chargebacks, רק על שירות לקוחות.' },
+          { author: 'רועי ברנר', initial: 'ר', text: 'זה גם סוגר את הבעיה שהלקוח שם לב שהמשלוח יוצא מסין. כשהוא עסוק במעקב הוא פחות שם לב.' },
         ],
         userLiked: false,
       },
@@ -509,7 +509,7 @@
     function publishPost() {
       const ta = document.getElementById('composer-text');
       const text = ta.value.trim();
-      if (!text) { toast('כתוב משהו לפני שמפרסמים 😊', '✏️'); ta.focus(); return; }
+      if (!text) { toast('כתוב משהו קצר ופרסם. הקהילה מחכה.', '✏️'); ta.focus(); return; }
 
       const tag = activeTag || 'שיתוף 📣';
       const tagStyle = activeTag.includes('ניצחון') ? 'badge--green' : activeTag.includes('טיפ') ? 'badge--gold' : 'badge--locked';
@@ -527,7 +527,7 @@
 
       ta.value = '';
       activeTag = '';
-      toast('הפוסט פורסם בהצלחה!', '🚀');
+      toast('הפוסט עלה! הקהילה רואה אותו עכשיו.', '🚀');
     }
 
     /* ---------- Init ---------- */
