@@ -60,6 +60,18 @@
     /* confetti */
     .confetti-pc { position:fixed; top:-12px; width:10px; height:14px; z-index:400; pointer-events:none; border-radius:2px; will-change:transform; }
 
+    /* mobile drawer a11y */
+    #sidebarBackdrop { position:fixed; inset:0; background:rgba(20,24,34,.42); z-index:115; opacity:0; visibility:hidden; transition:opacity .25s var(--ease); }
+    #sidebarBackdrop.show { opacity:1; visibility:visible; }
+    #sidebarClose { display:none; }
+    @media (max-width:1024px){
+      #sidebarClose { display:grid; place-items:center; width:44px; height:44px; margin-inline-start:auto; border:1px solid var(--border); border-radius:12px; background:var(--surface-2); color:var(--text); font-size:20px; cursor:pointer; flex-shrink:0; }
+      .sidebar-head { display:flex; align-items:center; gap:12px; }
+      .sidebar-head .search-wrap { flex:1; min-width:0; }
+    }
+    @media (min-width:1025px){ #sidebarBackdrop { display:none !important; } }
+    #hamburger { min-width:44px; min-height:44px; }
+
     @media (max-width:560px){
       .portal-hero-card .thumb { width:100%; }
       .prevnext { margin-inline-start:0; width:100%; }
@@ -71,12 +83,15 @@
 
   <div id="topbar"></div>
 
+  <div id="sidebarBackdrop" hidden></div>
+
   <aside class="app-sidebar" id="sidebar">
     <div class="sidebar-head">
       <div class="search-wrap">
         <span class="s-ico">🔍</span>
         <input id="syllabusSearch" class="search-input" type="search" placeholder="חיפוש שיעור..." autocomplete="off">
       </div>
+      <button id="sidebarClose" type="button" aria-label="סגור תפריט">✕</button>
     </div>
     <nav id="navGroups"></nav>
     <div class="sidebar-progress">
@@ -137,6 +152,28 @@
     $('#topbar').innerHTML = renderTopbar('course-library.html');
     $('#bottomnav').innerHTML = renderBottomNav('course-library.html');
 
+    // mobile drawer open/close (centralized: keeps backdrop + scroll-lock in sync)
+    const isMobile = () => window.matchMedia('(max-width:1024px)').matches;
+    function openDrawer() {
+      $('#sidebar').classList.add('open');
+      const bd = $('#sidebarBackdrop');
+      if (bd) { bd.hidden = false; bd.classList.add('show'); }
+      document.body.style.overflow = 'hidden';
+    }
+    function closeDrawer() {
+      $('#sidebar').classList.remove('open');
+      const bd = $('#sidebarBackdrop');
+      if (bd) { bd.classList.remove('show'); bd.hidden = true; }
+      document.body.style.overflow = '';
+    }
+    function toggleDrawer() {
+      $('#sidebar').classList.contains('open') ? closeDrawer() : openDrawer();
+    }
+    const backdrop = $('#sidebarBackdrop');
+    if (backdrop) backdrop.addEventListener('click', closeDrawer);
+    const closeBtn = $('#sidebarClose');
+    if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+
     // mobile hamburger -> inject into topbar (before the brand spacer)
     const header = $('.portal-header');
     if (header) {
@@ -144,12 +181,13 @@
       burger.className = 'icon-btn';
       burger.id = 'hamburger';
       burger.title = 'תפריט שיעורים';
+      burger.setAttribute('aria-label', 'פתח תפריט שיעורים');
       burger.innerHTML = '☰';
       burger.style.cssText = 'display:none';
-      burger.onclick = () => $('#sidebar').classList.toggle('open');
+      burger.onclick = toggleDrawer;
       header.insertBefore(burger, header.firstChild);
       const mq = window.matchMedia('(max-width:1024px)');
-      const sync = () => burger.style.display = mq.matches ? 'grid' : 'none';
+      const sync = () => { burger.style.display = mq.matches ? 'grid' : 'none'; if (!mq.matches) closeDrawer(); };
       mq.addEventListener('change', sync); sync();
     }
 
@@ -199,7 +237,7 @@
           const l = lessonOf(id);
           if (isLockedLesson(l)) { toast('השיעור הזה נפתח בליווי הצמוד DMA 🔓', '🔒'); return; }
           openLesson(id);
-          if (window.matchMedia('(max-width:1024px)').matches) $('#sidebar').classList.remove('open');
+          if (isMobile()) closeDrawer();
         };
       });
       updateSidebarProgress();
