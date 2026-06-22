@@ -13,7 +13,7 @@
   };
 
   /* ---------- Theme ---------- */
-  const savedTheme = localStorage.getItem(LS.theme) || 'dark';
+  const savedTheme = localStorage.getItem(LS.theme) || 'light';
   document.documentElement.setAttribute('data-theme', savedTheme);
   window.toggleTheme = function () {
     const cur = document.documentElement.getAttribute('data-theme');
