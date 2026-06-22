@@ -70,6 +70,63 @@
 
     .seg { display:inline-flex; gap:6px; align-items:center; }
     .live-dot { width:8px; height:8px; border-radius:50%; background:var(--ok); box-shadow:0 0 0 4px var(--ok-soft); }
+
+    /* ===================== MOBILE RESPONSIVENESS (additive · desktop untouched) ===================== */
+    @media (max-width:760px){
+      /* defensive: allow flex/grid children to shrink instead of forcing overflow */
+      .app-content *{ min-width:0; }
+
+      /* the page itself must never scroll sideways */
+      html, body{ overflow-x:hidden; max-width:100%; }
+      .app-main, .app-content{ max-width:100%; }
+
+      /* every card / section fits the viewport */
+      .portal-card, .admin-section, .tbl-wrap{ width:100%; max-width:100%; box-sizing:border-box; }
+
+      /* headings + intro shrink */
+      h1{ font-size:23px !important; }
+      .admin-section > h3{ font-size:16px; }
+
+      /* KPI tiles + any page grid to a single column */
+      .stats-row{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+      .pop-grid{ grid-template-columns:1fr; }
+
+      /* funnel: shrink fixed label / number columns so the track always fits */
+      .funnel-row{ gap:9px; }
+      .funnel-row .lbl{ width:88px; font-size:12px; }
+      .funnel-row .track{ height:30px; }
+      .funnel-row .fill{ font-size:12px; padding-inline-end:9px; }
+      .funnel-row .num{ width:56px; font-size:13px; }
+
+      /* students table: scroll inside its own wrapper, never the page */
+      .tbl-wrap{ -webkit-overflow-scrolling:touch; }
+      table.admin-tbl{ min-width:560px; }
+      table.admin-tbl th, table.admin-tbl td{ padding:11px 12px; }
+
+      /* content rows + popup cards: keep inner padding sane */
+      .mod-row{ gap:10px; padding:11px 12px; }
+      .search-input{ max-width:100% !important; }
+    }
+
+    @media (max-width:480px){
+      h1{ font-size:20px !important; }
+      .stats-row{ grid-template-columns:1fr; }
+
+      /* funnel stacks so nothing is clipped on a narrow phone */
+      .funnel-row{ flex-wrap:wrap; gap:6px 9px; }
+      .funnel-row .lbl{ width:100%; }
+      .funnel-row .track{ flex:1 1 auto; min-width:0; }
+      .funnel-row .num{ width:auto; text-align:end; }
+      .funnel-row .num small{ display:inline; margin-inline-start:6px; }
+
+      /* KPI tiles a touch tighter */
+      .portal-stat-tile .v{ font-size:22px; }
+
+      /* table cells a little tighter; wrapper still owns the horizontal scroll */
+      table.admin-tbl{ min-width:480px; }
+      table.admin-tbl th, table.admin-tbl td{ padding:10px; font-size:13px; }
+      .pbar-cell{ min-width:110px; }
+    }
   </style>
 </head>
 <body>

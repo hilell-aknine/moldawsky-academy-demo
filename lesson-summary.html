@@ -115,6 +115,50 @@
       .sheet-head, .sheet-body, .sheet-foot { padding-inline:20px; }
       .sheet-head h1 { font-size:22px; }
     }
+
+    /* ---- Mobile: 760px and below ---- */
+    @media (max-width:760px){
+      /* Prevent any horizontal overflow at the body level */
+      body { overflow-x:hidden; }
+
+      /* Toolbar: wrap controls, each takes full width */
+      .ls-toolbar { flex-direction:column; align-items:stretch; gap:10px; padding:14px 14px; }
+      .ls-toolbar .grow { min-width:0; width:100%; }
+      .ls-select { width:100%; }
+      .ls-toolbar .btn { width:100%; text-align:center; }
+      .ls-toolbar .back { text-align:center; }
+
+      /* Sheet: fill the viewport, no side overflow */
+      .ls-sheet-wrap { padding-inline:0; }
+      #summarySheet { width:100%; max-width:100%; border-radius:0; border-inline:none; }
+
+      /* Header band */
+      .sheet-head { padding:20px 16px; }
+      .sheet-head .doc-kind { display:none; } /* too wide on small screens */
+      .sheet-head h1 { font-size:20px; margin-top:14px; }
+
+      /* Body and footer */
+      .sheet-body { padding:22px 16px 18px; }
+      .sheet-foot { padding:14px 16px 18px; flex-direction:column; align-items:flex-start; gap:6px; }
+
+      /* Terms: single column */
+      .ls-terms { flex-direction:column; }
+      .ls-term { width:100%; box-sizing:border-box; }
+
+      /* Tip: stack avatar above text */
+      .ls-tip { flex-direction:column; gap:10px; padding:14px 14px; }
+    }
+
+    /* ---- Very small phones: 480px and below ---- */
+    @media (max-width:480px){
+      .sheet-head .row { flex-wrap:wrap; gap:10px; }
+      .sheet-head h1 { font-size:18px; }
+      .ls-block h2 { font-size:15px; }
+      .sheet-intro { font-size:13.5px; }
+      .ls-list li { font-size:13px; }
+      .ls-term b { font-size:13px; }
+      .ls-term span { font-size:11.5px; }
+    }
   </style>
 </head>
 <body>

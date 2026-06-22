@@ -166,6 +166,42 @@
     }
     .faq-item.open .faq-a { max-height: 300px; padding: 0 22px 18px; }
 
+    /* ---- MOBILE RESPONSIVE ---- */
+    @media (max-width: 760px) {
+      body { overflow-x: hidden; }
+      .dma-hero { padding: 32px 16px; }
+      .dma-hero .h-display { font-size: clamp(22px, 6vw, 36px); }
+      .dma-hero .subline { font-size: 16px; }
+      .dma-badge { font-size: 12px; padding: 6px 12px; text-align: center; }
+      .grid-3 { grid-template-columns: 1fr !important; }
+      .feature-card { box-sizing: border-box; width: 100%; }
+      .social-proof-band { padding: 28px 14px; }
+      .social-proof-band .portal-stat-tile { max-width: 100% !important; padding: 16px 14px !important; box-sizing: border-box; }
+      .stats-row { grid-template-columns: 1fr !important; gap: 12px; }
+      .portal-stat-tile { box-sizing: border-box; width: 100%; }
+      .portal-stat-tile .v { font-size: 1.8rem !important; }
+      .examples-row { grid-template-columns: 1fr 1fr !important; }
+      .steps-row { grid-template-columns: 1fr !important; }
+      .cta-block { padding: 32px 16px; }
+      .cta-block h2 { font-size: 22px; }
+      .faq-q { font-size: 14px; padding: 14px 14px; }
+      .faq-a { padding: 0 14px; }
+      .faq-item.open .faq-a { padding: 0 14px 14px; }
+      blockquote { padding: 14px 14px !important; }
+      .portal-modal .box { box-sizing: border-box; width: 100% !important; max-width: 100% !important; margin: 0 !important; border-radius: 16px 16px 0 0 !important; }
+      .modal-form input, .modal-form select { box-sizing: border-box; width: 100%; }
+    }
+    @media (max-width: 480px) {
+      .dma-hero { padding: 24px 12px; border-radius: 12px; }
+      .dma-hero .h-display { font-size: clamp(19px, 5.5vw, 28px); }
+      .dma-badge { font-size: 11px; white-space: normal; }
+      .examples-row { grid-template-columns: 1fr !important; }
+      .portal-stat-tile .v { font-size: 1.5rem !important; }
+      .cta-block h2 { font-size: 19px; }
+      .step-card { padding: 20px 14px; }
+      .app-content { padding-inline: 12px; }
+    }
+
     /* confetti particles */
     .confetti-particle {
       position: fixed; pointer-events: none; z-index: 999;
