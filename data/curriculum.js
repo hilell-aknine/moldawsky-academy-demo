@@ -4,7 +4,7 @@
    (video _WM5MC28zQc, ~4h). Timestamps are real seconds into the video.
    Every page reads window.CURRICULUM. Do not fork this shape.
    ============================================================ */
-window.VIDEO_ID = '_WM5MC28zQc';
+window.VIDEO_ID = '3gqhMJAmnYA'; // Hillel's own unlisted, embeddable re-upload (Daniel disabled embedding on the original _WM5MC28zQc)
 window.VIDEO_END = 14420; // ~4:00:14 — full video length, used as the end bound of the last lesson
 window.YT_THUMB = (ts) => `https://i.ytimg.com/vi/${window.VIDEO_ID}/hqdefault.jpg`;
 /* Each lesson is its OWN modular segment: it starts at lesson.ts and ENDS where the next
