@@ -104,10 +104,16 @@
   };
 
   /* ---------- Reveal on scroll ---------- */
+  function revealAll(){ document.querySelectorAll('.reveal:not(.in)').forEach(el => el.classList.add('in')); }
   window.addEventListener('load', () => {
-    const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('in')), { threshold:.12 });
+    if (!('IntersectionObserver' in window)) { revealAll(); return; }
+    const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('in')), { threshold:.08 });
     document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    // safety: never leave content invisible if the observer misfires (mobile/headless)
+    setTimeout(revealAll, 1500);
   });
+  // also reveal on first user scroll/touch immediately
+  window.addEventListener('touchstart', revealAll, { once:true, passive:true });
 
   /* ---------- tiny query helper ---------- */
   window.qs = (k) => new URLSearchParams(location.search).get(k);
