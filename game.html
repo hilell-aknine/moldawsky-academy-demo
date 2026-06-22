@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>משחק התרגול — אקדמיית מולדבסקי</title>
+  <link rel="stylesheet" href="css/portal.css">
+  <style>
+    /* ---- Game home ---- */
+    .game-hero {
+      background: linear-gradient(135deg, var(--surface-2) 0%, var(--surface) 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 28px 24px 22px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .game-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 100%, rgba(0,224,138,.10), transparent);
+    }
+    .game-hero h1 { font-size: 28px; position: relative; z-index: 1; }
+    .game-hero .xp-bar { margin-top: 16px; position: relative; z-index: 1; }
+    .xp-label { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-dim); margin-bottom: 6px; }
+    .hero-stats { display: flex; gap: 18px; justify-content: center; margin-top: 18px; position: relative; z-index: 1; }
+    .hero-stat { text-align: center; }
+    .hero-stat .v { font-size: 26px; font-weight: 900; color: var(--green); line-height: 1; }
+    .hero-stat .k { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+
+    /* ---- Stage grid ---- */
+    .stages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+    .stage-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r);
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform .2s var(--ease), border-color .2s, box-shadow .2s;
+      position: relative;
+    }
+    .stage-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--green-line);
+      box-shadow: var(--glow);
+    }
+    .stage-card .stage-icon { font-size: 30px; margin-bottom: 8px; }
+    .stage-card .stage-num { font-size: 11px; font-weight: 700; color: var(--text-mute); margin-bottom: 4px; }
+    .stage-card .stage-name { font-size: 14px; font-weight: 700; line-height: 1.3; }
+    .stage-card .stage-prog { margin-top: 12px; }
+    .stage-card .stage-prog .progress-bar { height: 5px; }
+    .stage-card .stage-score { position: absolute; top: 10px; left: 10px; font-size: 13px; font-weight: 800; color: var(--gold); }
+
+    /* ---- Quiz overlay ---- */
+    #quiz-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 250;
+      background: var(--bg);
+      overflow-y: auto;
+      display: none;
+      flex-direction: column;
+    }
+    #quiz-overlay.open { display: flex; }
+
+    .quiz-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: color-mix(in srgb, var(--surface) 90%, transparent);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .quiz-topbar .close-btn {
+      width: 38px; height: 38px; border-radius: 50%; background: var(--surface-2);
+      border: 1px solid var(--border); font-size: 18px; display: grid; place-items: center;
+      flex-shrink: 0;
+    }
+    .quiz-topbar .quiz-title { font-weight: 800; font-size: 15px; flex: 1; }
+    .quiz-topbar .q-counter { font-size: 13px; color: var(--text-dim); white-space: nowrap; }
+
+    .quiz-progress-wrap { padding: 0 20px 14px; background: var(--surface); }
+    .quiz-progress-wrap .progress-bar { height: 7px; }
+
+    .quiz-body { flex: 1; padding: 24px 20px 40px; max-width: 560px; margin: 0 auto; width: 100%; }
+
+    .question-card { animation: pop .35s var(--ease) both; }
+    .question-text {
+      font-size: 20px;
+      font-weight: 800;
+      line-height: 1.4;
+      margin-bottom: 24px;
+    }
+    .options-list { display: flex; flex-direction: column; gap: 12px; }
+    .option-btn {
+      width: 100%;
+      padding: 16px 20px;
+      border-radius: var(--r);
+      border: 2px solid var(--border);
+      background: var(--surface);
+      text-align: right;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color .15s, background .15s, transform .12s;
+      line-height: 1.4;
+    }
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--green-line);
+      background: var(--green-soft);
+    }
+    .option-btn.correct {
+      border-color: var(--green);
+      background: rgba(0,224,138,.18);
+      color: var(--green);
+    }
+    .option-btn.wrong {
+      border-color: var(--red);
+      background: rgba(255,92,108,.12);
+      color: var(--red);
+    }
+    .option-btn:disabled { cursor: default; }
+
+    /* ---- Feedback panel ---- */
+    .feedback-panel {
+      margin-top: 20px;
+      padding: 18px 20px;
+      border-radius: var(--r);
+      display: none;
+      animation: pop .3s var(--ease) both;
+    }
+    .feedback-panel.show { display: block; }
+    .feedback-panel.correct-fb { background: rgba(0,224,138,.12); border: 1.5px solid var(--green-line); }
+    .feedback-panel.wrong-fb   { background: rgba(255,92,108,.10); border: 1.5px solid rgba(255,92,108,.4); }
+    .feedback-icon { font-size: 26px; margin-bottom: 4px; }
+    .feedback-headline { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+    .feedback-explain { font-size: 14px; color: var(--text-dim); line-height: 1.5; }
+    .feedback-xp { margin-top: 10px; font-size: 13px; font-weight: 700; color: var(--gold); }
+
+    .next-btn-wrap { margin-top: 22px; }
+
+    /* ---- Celebration screen ---- */
+    #celebration {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 70vh;
+      padding: 40px 24px;
+      text-align: center;
+      animation: pop .4s var(--ease) both;
+    }
+    #celebration.show { display: flex; }
+    .cele-emoji { font-size: 72px; margin-bottom: 16px; animation: floaty 2s ease-in-out infinite; }
+    .cele-title { font-size: 32px; font-weight: 900; margin-bottom: 8px; }
+    .cele-subtitle { color: var(--text-dim); font-size: 16px; margin-bottom: 8px; }
+    .cele-score { font-size: 48px; font-weight: 900; color: var(--green); margin: 20px 0 8px; }
+    .cele-score-label { font-size: 15px; color: var(--text-dim); margin-bottom: 24px; }
+    .cele-xp { font-size: 20px; font-weight: 700; color: var(--gold); margin-bottom: 28px; }
+    .stars { font-size: 36px; letter-spacing: 6px; margin-bottom: 8px; }
+
+    .section-title { font-size: 18px; font-weight: 800; margin-bottom: 14px; }
+  </style>
+</head>
+<body>
+  <div id="topbar"></div>
+  <main class="app-main">
+    <div class="app-content">
+
+      <!-- Game home -->
+      <div id="game-home">
+        <div class="game-hero pop">
+          <div style="font-size:38px;margin-bottom:6px;">🎮</div>
+          <h1>משחק התרגול</h1>
+          <p class="muted" style="margin-top:6px;font-size:15px;">ענה נכון, צבור XP, הפוך למומחה איקומרס.</p>
+          <div class="hero-stats" id="hero-stats-row">
+            <div class="hero-stat"><div class="v" id="stat-xp">0</div><div class="k">XP</div></div>
+            <div class="hero-stat"><div class="v" id="stat-streak">3</div><div class="k">🔥 ימים</div></div>
+            <div class="hero-stat"><div class="v" id="stat-done">0</div><div class="k">שלבים</div></div>
+          </div>
+          <div class="xp-bar" style="margin-top:20px;">
+            <div class="xp-label"><span>רמה נוכחית</span><span id="xp-pct-label">0 / 200 XP</span></div>
+            <div class="progress-bar"><i id="xp-bar-fill" style="width:0%"></i></div>
+          </div>
+        </div>
+
+        <div class="section-title">בחר שלב לתרגול</div>
+        <div class="stages-grid" id="stages-grid"></div>
+
+        <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+      </div>
+
+      <!-- Quiz overlay (full-screen) -->
+      <div id="quiz-overlay">
+        <div class="quiz-topbar">
+          <button class="close-btn" onclick="closeQuiz()">✕</button>
+          <div class="quiz-title" id="quiz-stage-title">שלב</div>
+          <div class="q-counter" id="q-counter">1 / 5</div>
+        </div>
+        <div class="quiz-progress-wrap">
+          <div class="progress-bar"><i id="quiz-progress-bar" style="width:0%"></i></div>
+        </div>
+
+        <div class="quiz-body">
+          <!-- Active question -->
+          <div id="question-area"></div>
+
+          <!-- Celebration screen (end of stage) -->
+          <div id="celebration">
+            <div class="cele-emoji" id="cele-emoji">🏆</div>
+            <div class="stars" id="cele-stars"></div>
+            <div class="cele-title" id="cele-title">כל הכבוד!</div>
+            <div class="cele-subtitle" id="cele-subtitle">סיימת את השלב</div>
+            <div class="cele-score" id="cele-score">5/5</div>
+            <div class="cele-score-label">תשובות נכונות</div>
+            <div class="cele-xp" id="cele-xp">+50 XP</div>
+            <button class="btn btn--primary btn--lg" onclick="closeQuiz()">המשך לשלבים ←</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+  <div id="bottomnav"></div>
+
+  <script src="data/curriculum.js"></script>
+  <script src="js/portal-core.js"></script>
+  <script>
+    document.getElementById('topbar').innerHTML = renderTopbar('game.html');
+    document.getElementById('bottomnav').innerHTML = renderBottomNav('game.html');
+
+    /* ============================================================
+       QUESTION BANK
+       ~15-20 real questions across module stages.
+       Each question: { q, options:[...], correct (0-based index), explain }
+    ============================================================ */
+    const QUESTION_BANK = {
+      m1: [
+        {
+          q: 'מה היתרון המרכזי של חנות שופיפיי על פני מכירה בדוכן אמזון?',
+          options: ['אמזון גובה עמלות גבוהות יותר', 'בחנות משלך יש שליטה מלאה, מיתוג, ואין סכנת חסימה שרירותית', 'שופיפיי חינמי לחלוטין', 'אמזון לא מכירה מוצרים ישראלים'],
+          correct: 1,
+          explain: 'בדוכן של מישהו אחר (אמזון/איביי/אטסי) אתה תלוי בחוקים שלהם. בחנות משלך — אתה הבוס.'
+        },
+        {
+          q: 'חנות שמרוויחה 25,000₪ בחודש שווה לפי דניאל בערך...',
+          options: ['100,000₪', '500,000₪', '1-3 מיליון ₪', 'אין לה ערך כי הכנסות יכולות להיפסק'],
+          correct: 2,
+          explain: 'חנות אינטרנטית נמכרת לפי מכפיל של 3-5 שנים. זה נכס, לא רק הכנסה חודשית.'
+        },
+        {
+          q: 'על איזו פלטפורמה בנויים מותגי ענק רבים ומאות אלפי חנויות קטנות גם יחד?',
+          options: ['WooCommerce', 'Shopify', 'Wix', 'WordPress'],
+          correct: 1,
+          explain: 'שופיפיי היא ה-plug & play הגדולה ביותר — בלי לדעת לתכנת, אפשר לבנות חנות מקצועית תוך שעות.'
+        },
+        {
+          q: 'איזה מוצר שופיפיי דניאל ממליץ לבחור כאשר מתחילים?',
+          options: ['מוצר יקר מאוד (מעל 1,000₪) לרווח גבוה', 'מוצר שפותר כאב, במחיר 100-300₪ לרכישה אימפולסיבית', 'מוצר כמו כולם — פופולרי ברשת', 'מוצר שיש לך מלאי ממנו בבית'],
+          correct: 1,
+          explain: '100-300₪ הוא מתחת לסף שהלקוח חושב יותר מדי. מוצר שפותר כאב נמכר מעצמו.'
+        },
+        {
+          q: 'מה ראשי התיבות AIDA בשיווק?',
+          options: ['Attention, Interest, Desire, Action', 'Ad, Image, Data, Analytics', 'Audience, Insight, Design, Awareness', 'Algorithm, Index, Demographic, Automation'],
+          correct: 0,
+          explain: 'AIDA = תשומת-לב, עניין, חשק, פעולה. זו התבנית לכתיבת תיאורי מוצר ותסריטי מודעה שמוכרים.'
+        },
+      ],
+      m2: [
+        {
+          q: 'מדוע דניאל ממליץ על שם מותג גנרי וקצר (כמו "זרה" או "סוני") ולא שם תיאורי?',
+          options: ['כי שמות תיאוריים אסורים בישראל', 'כי שם חלק קל לזכור ומאפשר מיצוב גמיש', 'כי גוגל מדרג שמות גנריים גבוה יותר', 'כי שמות תיאוריים עולים יותר לרישום'],
+          correct: 1,
+          explain: 'זרה, סוני, נייקי — שמות ריקים ממשמעות שאתה ממלא בעצמך. הם גמישים וקל לזכור.'
+        },
+        {
+          q: 'מה הכלי שדניאל ממליץ לעזרה בבחירת שם מותג?',
+          options: ['Google Translate', 'ChatGPT', 'Canva', 'Fiverr'],
+          correct: 1,
+          explain: 'ChatGPT יכול לייצר 20 רעיונות שמות בשניות, ואחר-כך בדוק שהדומיין פנוי.'
+        },
+        {
+          q: 'כמה עולה החודש הראשון בשופיפיי בהצעת הנסיון?',
+          options: ['חינם לגמרי', '$1 לחודש', '$29 לחודש', '$99 לחודש'],
+          correct: 1,
+          explain: 'שופיפיי מציעה הצעת כניסה של $1 לחודש הראשון — מספיק זמן לבנות ולבדוק לפני ההתחייבות.'
+        },
+      ],
+      m3: [
+        {
+          q: 'מה זה AOV בחנות אינטרנטית?',
+          options: ['מספר הביקורות הממוצע', 'ערך ההזמנה הממוצע (Average Order Value)', 'מספר מבקרים ייחודיים', 'שיעור הנטישה של עגלת הקניות'],
+          correct: 1,
+          explain: 'AOV = Average Order Value. ככל שהלקוח קונה יותר בכל הזמנה, הרווח על אותה עלות פרסום גדל משמעותית.'
+        },
+        {
+          q: 'מה הייעוד של אפליקציה כמו AutoDS בחנות שופיפיי?',
+          options: ['עיצוב עמוד הבית', 'דרופשיפינג ומילוי הזמנות אוטומטי מאלי-אקספרס', 'ניהול חשבוניות', 'שיווק במייל'],
+          correct: 1,
+          explain: 'AutoDS מושכת מוצרים ומבצעת מילוי הזמנות אוטומטי — גם ב-1,000 הזמנות ביום, ללא מגע אנושי.'
+        },
+        {
+          q: 'מה עושה אפליקציית AutoTrack לחנות?',
+          options: ['עוקבת אחר תנועת גולשים מפייסבוק', 'מספקת דף מעקב הזמנות שמסתיר שהמשלוח מגיע מסין', 'מנהלת קמפיינים ממומנים', 'מייצרת חשבוניות אוטומטית'],
+          correct: 1,
+          explain: 'AutoTrack נותנת ללקוח דף מעקב מותג שאין בו שום רמז לסין. פחות ביטולים, יותר אמון.'
+        },
+      ],
+      m4: [
+        {
+          q: 'במודל הדרופשיפינג, מי מממן את רכישת הסחורה?',
+          options: ['הספק משלח לפני שהתשלום מגיע', 'בעל החנות משמר מלאי בבית', 'הלקוח — הכסף נכנס לפני שהמוצר הוזמן מהספק', 'הבנק מעמיד אשראי'],
+          correct: 2,
+          explain: 'זה היופי בדרופשיפינג: הלקוח משלם, אחר-כך אתה מזמין מהספק. אפס מלאי, אפס הון עצמי.'
+        },
+        {
+          q: 'איזה קריטריון הכי חשוב לבחירת מוצר לפי דניאל?',
+          options: ['המוצר עם הכי הרבה ביקורות באלי-אקספרס', 'מוצר שפותר כאב אמיתי', 'המוצר הזול ביותר', 'מוצר שמפורסם בטלוויזיה'],
+          correct: 1,
+          explain: 'אנשים קונים כדי להיפטר מכאב. מוצר שפותר בעיה מוחשית מוכר בלי מאמץ שיווקי גדול.'
+        },
+        {
+          q: 'מה טווח המחיר שדניאל ממליץ למוצר אימפולסיבי?',
+          options: ['10-50₪', '50-100₪', '100-300₪', '500-1,000₪'],
+          correct: 2,
+          explain: '100-300₪ הוא "אזור המתיקות": יקר מספיק לרווח, זול מספיק כדי שלא יחשבו יותר מדי.'
+        },
+      ],
+      m5: [
+        {
+          q: 'מה אות ה-A הראשונה בתבנית AIDA מייצגת בתיאור מוצר?',
+          options: ['Action — קריאה לפעולה', 'Authority — סמכות המותג', 'Attention — תשומת-לב', 'Affiliate — שיווק שותפים'],
+          correct: 2,
+          explain: 'הצעד הראשון הוא לתפוס תשומת-לב. בלי זה, שאר התוכן לא נקרא.'
+        },
+        {
+          q: 'מה כלי Facebook Ad Library עוזר לגלות?',
+          options: ['כמה כסף מוציאים מתחרים על פרסום', 'מה המודעות הפעילות של מתחרים — לצורך השראה', 'פרטי קשר של לקוחות', 'דירוג SEO של מתחרים'],
+          correct: 1,
+          explain: 'Ad Library חושפת מודעות חיות של כל מפרסם. אם הם רצים הרבה זמן, המודעה עובדת.'
+        },
+        {
+          q: 'מה תפקידן של שאלות-ותשובות (FAQ) בדף המוצר?',
+          options: ['לשפר קידום אורגני בגוגל בלבד', 'להגדיל את מספר התמונות בדף', 'לייצר ודאות ולסלק חששות שמונעים רכישה', 'לספר את סיפור המותג'],
+          correct: 2,
+          explain: 'לקוח שיש לו שאלה פתוחה לא קונה. FAQ מוציאה את המחסום לפני שהוא עוזב.'
+        },
+      ],
+      m6: [
+        {
+          q: 'למה בעת עיצוב חנות שופיפיי חשוב לבדוק קודם כל במובייל?',
+          options: ['כי שופיפיי לא תומכת בדסקטופ', 'כי רוב הלקוחות קונים מהטלפון', 'כי גוגל מדרגת מובייל גבוה יותר', 'כי עיצוב מובייל זול יותר'],
+          correct: 1,
+          explain: 'מעל 70% מהרכישות בישראל מתבצעות מהטלפון. אם המובייל שבור, ההכנסות שבורות.'
+        },
+        {
+          q: 'באיזה כלי דניאל ממליץ לעצב תמונות באנדל לחנות?',
+          options: ['Photoshop', 'Canva', 'DALL-E', 'Figma'],
+          correct: 1,
+          explain: 'Canva חינמי, קל, ואפשר להוציא תמונות עם רקע שקוף ומראה ממותג תוך דקות.'
+        },
+      ],
+      m7: [
+        {
+          q: 'מה מטרת "תגמולים מדורגים" בעגלת הקניות (כמו Cartify)?',
+          options: ['לתת נקודות לצ\'ופר עתידי', 'לדחוף לקוחות להוסיף מוצרים ולהגיע לסף שמפעיל הנחה/משלוח חינם', 'לסנן לקוחות VIP', 'לאסוף כתובות מייל'],
+          correct: 1,
+          explain: '"עוד 30₪ ותקבל משלוח חינם" — זה AOV booster קלאסי. הלקוח מוסיף מוצר, אתה מרוויח יותר.'
+        },
+        {
+          q: 'כיצד חבילת 1/2/3 יחידות (באנדל) מגדילה את הרווח?',
+          options: ['כי חבילות גדולות עולות פחות לייצר', 'כי מחיר פר-יחידה בחבילה גדולה נראה זול יותר, ומעודד לקנות יותר', 'כי שופיפיי מחייבת מינימום שלוש יחידות', 'כי הספק נותן הנחה על כמות'],
+          correct: 1,
+          explain: 'כשרואים "קנה 3 ב-270₪ (90₪ ליחידה) לעומת 110₪ ליחידה" — ה-anchor effect עושה את העבודה.'
+        },
+      ],
+      m8: [
+        {
+          q: 'מה חוק הרגולציה לגבי תמחור משלוח בישראל?',
+          options: ['חייב להיות חינם מעל 200₪', 'אסור לגבות יותר מ-30₪', 'המחיר חייב לעלות לעשרות אגורות שלמות (לא 9.99)', 'חייב לכלול ביטוח המשלוח'],
+          correct: 2,
+          explain: 'חוק הגנת הצרכן בישראל מחייב עיגול מחירים לעשרות אגורות שלמות. 9.90 בסדר; 9.99 לא.'
+        },
+        {
+          q: 'מה AutoTrack עוזרת להסתיר מהלקוח?',
+          options: ['שמחיר המוצר עלה', 'שהמשלוח מגיע מסין', 'שהמוצר מיוצר בהודו', 'שהחנות פתחה לאחרונה'],
+          correct: 1,
+          explain: 'רוב לקוחות הדרופשיפינג לא מודעים שמדובר בסין — ועדיף שיישאר ככה. AutoTrack מציגה דף מעקב ממותג.'
+        },
+        {
+          q: 'מהיכן מומלץ לקחת תבנית לתנאי שימוש ומדיניות החזרות?',
+          options: ['מגוגל — לחפש "תנאי שימוש"', 'מהתבניות שדניאל סיפק שעורכי-דין שלו ניסחו', 'לכתוב בעצמך מאפס', 'מחנות מתחרה'],
+          correct: 1,
+          explain: 'מדיניות חוקית לא טובה יכולה לעלות ביוקר. דניאל נותן תבניות שכבר עברו יועץ משפטי.'
+        },
+      ],
+      m9: [
+        {
+          q: 'למה חשוב לחייב את הלקוח לספק מייל בצ\'קאאוט?',
+          options: ['כי שופיפיי דורשת מייל חובה', 'כדי לשלוח עדכוני משלוח ולמנוע תלונות', 'כדי לבצע שיווק ב-WhatsApp', 'כי PayPal דורש מייל'],
+          correct: 1,
+          explain: 'לקוח ללא מייל לא מקבל עדכונים, פונה לשירות לקוחות, ומבטל. מייל = פחות עבודה, יותר אמון.'
+        },
+      ],
+      m10: [
+        {
+          q: 'מה האזהרה שדניאל נותן לגבי PayPal?',
+          options: ['PayPal גובה עמלה של 20%', 'לא מומלץ לפתוח חשבון PayPal מתחת לגיל 18', 'PayPal לא עובד בישראל', 'PayPal חוסם חנויות דרופשיפינג'],
+          correct: 1,
+          explain: 'מתחת לגיל 18 חשבון PayPal עלול להיחסם. עדיף להמתין או להשתמש בסליקה חלופית.'
+        },
+        {
+          q: 'מהו PayPlus בהקשר של חנות שופיפיי?',
+          options: ['אפליקציה לניהול תוכן', 'ספק סליקה ישראלי שמאפשר קבלת תשלום באשראי', 'כלי לניתוח ביצועי מודעות', 'שירות לוגיסטיקה'],
+          correct: 1,
+          explain: 'PayPlus היא ספק סליקה ישראלי — מחבר חנות שופיפיי לכרטיסי אשראי ישראלים בצורה פשוטה.'
+        },
+      ],
+      m11: [
+        {
+          q: 'מה מטרת רכישת "ניסיון" בחנות שלך?',
+          options: ['לבדוק שהמוצר טעים', 'לוודא שתהליך ההזמנה, המשלוח, והסאונד עובדים נכון לפני פרסום', 'לצבור ביקורות ראשונות', 'להפעיל את חשבון PayPal'],
+          correct: 1,
+          explain: 'לפני שמושכים לקוחות — בדוק שהצ\'קאאוט, הסאונד, ומילוי ב-AutoDS עובדים מהקצה לקצה.'
+        },
+      ],
+      m12: [
+        {
+          q: 'אנשים קונים מוצרים בעיקר בגלל...',
+          options: ['מחיר זול', 'מפרט טכני מרשים', 'רגש, לא היגיון', 'המלצת חבר בלבד'],
+          correct: 2,
+          explain: 'זה הסוד מאחורי כל שיווק. רגש מניע רכישה; ההיגיון מצדיק אחרי העובדה.'
+        },
+        {
+          q: 'אם אתה מוציא 100₪ ביום על פרסום ומרוויח 500₪ — מה הצעד הבא?',
+          options: ['לעצור ולבדוק אם זה אמיתי', 'להעלות תקציב ולשמור על היחס', 'לעבור למוצר אחר', 'לנסות פלטפורמה שונה'],
+          correct: 1,
+          explain: 'כשמוצאים רווחיות — מכפילים תקציב תוך שמירה על יחס ה-ROAS. זה הגז האמיתי של העסק.'
+        },
+        {
+          q: 'מהו מעמד "עוסק פטור" בהקשר של חנות מקוונת?',
+          options: ['עסק שפטור מהגשת דוחות שנתיים', 'עוסק עם מחזור שנתי מתחת לתקרה שפטור מגביית מע"מ', 'עסק שנרשם בבורסה', 'חנות שמקבלת פטור ממשלתי'],
+          correct: 1,
+          explain: 'עוסק פטור לא גובה מע"מ מלקוחות ולא מחזיר מע"מ תשומות. מתאים לתחילת דרך עם מחזור נמוך.'
+        },
+      ],
+    };
+
+    /* Pick ~5 questions per module, shuffle */
+    function getQuestionsForModule(moduleId) {
+      const pool = QUESTION_BANK[moduleId] || [];
+      const shuffled = [...pool].sort(() => Math.random() - 0.5);
+      return shuffled.slice(0, Math.min(5, shuffled.length));
+    }
+
+    /* ============================================================
+       STAGE GRID
+    ============================================================ */
+    function buildStageGrid() {
+      const grid = document.getElementById('stages-grid');
+      grid.innerHTML = window.CURRICULUM.modules.map((mod, idx) => {
+        const qCount = (QUESTION_BANK[mod.id] || []).length;
+        const best = parseInt(localStorage.getItem('game_best_' + mod.id) || '0', 10);
+        const starsHtml = best > 0 ? '<div class="stage-score">' + starsForScore(best, qCount) + '</div>' : '';
+        return `
+          <div class="stage-card portal-card--hover" onclick="startStage('${mod.id}')">
+            ${starsHtml}
+            <div class="stage-icon">${mod.icon}</div>
+            <div class="stage-num">שלב ${idx + 1}</div>
+            <div class="stage-name">${mod.title}</div>
+            <div class="stage-prog">
+              <div class="progress-bar" style="margin-top:8px">
+                <i style="width:${best > 0 ? Math.round(best / qCount * 100) : 0}%"></i>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function starsForScore(correct, total) {
+      const pct = correct / total;
+      if (pct >= 0.8) return '⭐⭐⭐';
+      if (pct >= 0.5) return '⭐⭐';
+      return '⭐';
+    }
+
+    function updateHeroStats() {
+      document.getElementById('stat-xp').textContent = window.Progress.xp();
+      document.getElementById('stat-streak').textContent = window.Progress.streak();
+      const stagesCompleted = window.CURRICULUM.modules.filter(m => parseInt(localStorage.getItem('game_best_' + m.id) || '0', 10) > 0).length;
+      document.getElementById('stat-done').textContent = stagesCompleted;
+      const xp = window.Progress.xp();
+      const level = Math.floor(xp / 200);
+      const xpInLevel = xp % 200;
+      document.getElementById('xp-pct-label').textContent = xpInLevel + ' / 200 XP';
+      document.getElementById('xp-bar-fill').style.width = Math.round(xpInLevel / 200 * 100) + '%';
+    }
+
+    /* ============================================================
+       QUIZ ENGINE
+    ============================================================ */
+    let currentStageId = null;
+    let questions = [];
+    let currentQ = 0;
+    let correctCount = 0;
+    let answered = false;
+    let earnedXp = 0;
+
+    function startStage(moduleId) {
+      const mod = window.CURRICULUM.modules.find(m => m.id === moduleId);
+      if (!mod) return;
+      currentStageId = moduleId;
+      questions = getQuestionsForModule(moduleId);
+      if (questions.length === 0) { toast('אין שאלות לשלב זה עדיין', '😅'); return; }
+      currentQ = 0;
+      correctCount = 0;
+      answered = false;
+      earnedXp = 0;
+
+      document.getElementById('quiz-stage-title').textContent = mod.icon + ' ' + mod.title;
+      document.getElementById('celebration').classList.remove('show');
+      document.getElementById('question-area').style.display = '';
+
+      const overlay = document.getElementById('quiz-overlay');
+      overlay.classList.add('open');
+      overlay.scrollTop = 0;
+
+      renderQuestion();
+    }
+
+    function closeQuiz() {
+      document.getElementById('quiz-overlay').classList.remove('open');
+      updateHeroStats();
+      buildStageGrid();
+    }
+
+    function renderQuestion() {
+      const q = questions[currentQ];
+      const total = questions.length;
+
+      document.getElementById('q-counter').textContent = (currentQ + 1) + ' / ' + total;
+      document.getElementById('quiz-progress-bar').style.width = Math.round(currentQ / total * 100) + '%';
+
+      const area = document.getElementById('question-area');
+      area.innerHTML = `
+        <div class="question-card">
+          <div class="question-text">${q.q}</div>
+          <div class="options-list">
+            ${q.options.map((opt, i) => `
+              <button class="option-btn" onclick="selectAnswer(${i})">${opt}</button>
+            `).join('')}
+          </div>
+          <div class="feedback-panel" id="feedback-panel"></div>
+          <div class="next-btn-wrap" id="next-btn-wrap" style="display:none">
+            <button class="btn btn--primary btn--block btn--lg" onclick="nextQuestion()">
+              ${currentQ + 1 < questions.length ? 'שאלה הבאה ←' : 'לתוצאות ←'}
+            </button>
+          </div>
+        </div>`;
+      answered = false;
+    }
+
+    function selectAnswer(idx) {
+      if (answered) return;
+      answered = true;
+
+      const q = questions[currentQ];
+      const buttons = document.querySelectorAll('.option-btn');
+      buttons.forEach(b => b.disabled = true);
+
+      const isCorrect = idx === q.correct;
+      buttons[idx].classList.add(isCorrect ? 'correct' : 'wrong');
+      if (!isCorrect) buttons[q.correct].classList.add('correct');
+
+      if (isCorrect) {
+        correctCount++;
+        earnedXp += 10;
+        window.Progress.addXp(10);
+      }
+
+      const fp = document.getElementById('feedback-panel');
+      fp.className = 'feedback-panel show ' + (isCorrect ? 'correct-fb' : 'wrong-fb');
+      fp.innerHTML = `
+        <div class="feedback-icon">${isCorrect ? '✅' : '❌'}</div>
+        <div class="feedback-headline">${isCorrect ? 'מעולה!' : 'לא בדיוק...'}</div>
+        <div class="feedback-explain">${q.explain}</div>
+        ${isCorrect ? '<div class="feedback-xp">+10 XP</div>' : ''}`;
+
+      document.getElementById('next-btn-wrap').style.display = '';
+    }
+
+    function nextQuestion() {
+      currentQ++;
+      if (currentQ >= questions.length) {
+        showCelebration();
+      } else {
+        document.getElementById('quiz-overlay').scrollTop = 0;
+        renderQuestion();
+      }
+    }
+
+    function showCelebration() {
+      document.getElementById('question-area').style.display = 'none';
+      const total = questions.length;
+      const pct = correctCount / total;
+
+      // Save best score
+      const prev = parseInt(localStorage.getItem('game_best_' + currentStageId) || '0', 10);
+      if (correctCount > prev) localStorage.setItem('game_best_' + currentStageId, String(correctCount));
+
+      let emoji, title, subtitle;
+      if (pct >= 0.8) {
+        emoji = '🏆'; title = 'פנומנלי!'; subtitle = 'אתה מבין את המשחק.';
+      } else if (pct >= 0.6) {
+        emoji = '💪'; title = 'כל הכבוד!'; subtitle = 'עוד קצת ואתה מאסטר.';
+      } else if (pct >= 0.4) {
+        emoji = '📚'; title = 'לא רע!'; subtitle = 'כדאי לחזור על החומר.';
+      } else {
+        emoji = '😅'; title = 'תנסה שוב!'; subtitle = 'כל טעות היא שיעור.';
+      }
+
+      const stars = starsForScore(correctCount, total);
+      document.getElementById('cele-emoji').textContent = emoji;
+      document.getElementById('cele-title').textContent = title;
+      document.getElementById('cele-subtitle').textContent = subtitle;
+      document.getElementById('cele-stars').textContent = stars;
+      document.getElementById('cele-score').textContent = correctCount + '/' + total;
+      document.getElementById('cele-xp').textContent = '+' + earnedXp + ' XP';
+
+      const cel = document.getElementById('celebration');
+      cel.classList.add('show');
+      document.getElementById('quiz-overlay').scrollTop = 0;
+
+      toast('כל הכבוד! +' + earnedXp + ' XP', '🏅');
+    }
+
+    /* ============================================================
+       INIT
+    ============================================================ */
+    updateHeroStats();
+    buildStageGrid();
+  </script>
+</body>
+</html>

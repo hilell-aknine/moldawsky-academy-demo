@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שגריר | אקדמיית מולדבסקי</title>
+  <link rel="stylesheet" href="css/portal.css">
+  <style>
+    /* ---- Ambassador page extras ---- */
+    .amb-hero {
+      background: linear-gradient(135deg, #0d1f1b 0%, #0A0E0D 60%);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 36px 30px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .amb-hero::before {
+      content: "";
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: 0;
+      width: 4px;
+      background: var(--grad-green);
+      border-radius: 4px 0 0 4px;
+    }
+    .amb-hero::after {
+      content: "💸";
+      position: absolute;
+      inset-block-start: 50%;
+      inset-inline-end: 30px;
+      transform: translateY(-50%);
+      font-size: 72px;
+      opacity: 0.12;
+    }
+    .amb-hero h1 {
+      font-size: clamp(24px, 5vw, 36px);
+      font-weight: 900;
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+    .amb-hero h1 span { color: var(--green); }
+    .amb-hero p { color: var(--text-dim); font-size: 15px; max-width: 540px; }
+
+    /* ---- Referral link card ---- */
+    .ref-link-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-lg);
+      padding: 24px;
+      margin-bottom: 22px;
+    }
+    .ref-link-card h3 { font-size: 16px; font-weight: 800; margin-bottom: 14px; color: var(--text); }
+    .link-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface-2);
+      border: 1.5px solid var(--green-line);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .link-box .link-url {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--green);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      direction: ltr;
+      text-align: left;
+    }
+    .share-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 14px;
+      border: 1.5px solid var(--border-2);
+      background: var(--surface-2);
+      color: var(--text);
+      transition: .2s;
+    }
+    .share-btn:hover { border-color: var(--green); color: var(--green); background: var(--green-soft); }
+    .share-btn.whatsapp:hover { border-color: #25D366; color: #25D366; background: rgba(37,211,102,.1); }
+    .share-btn.instagram:hover { border-color: #E1306C; color: #E1306C; background: rgba(225,48,108,.1); }
+
+    /* ---- QR placeholder ---- */
+    .qr-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      text-align: center;
+    }
+    .qr-box {
+      width: 110px;
+      height: 110px;
+      background: var(--surface-2);
+      border: 2px dashed var(--border-2);
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      color: var(--text-mute);
+      gap: 6px;
+      flex-direction: column;
+      padding: 10px;
+    }
+    .qr-box .qr-icon { font-size: 32px; }
+
+    /* ---- How it works steps ---- */
+    .steps-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .step-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 22px 18px;
+      text-align: center;
+      position: relative;
+    }
+    .step-card::before {
+      content: attr(data-step);
+      position: absolute;
+      inset-block-start: -14px;
+      inset-inline-start: 50%;
+      transform: translateX(-50%);
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--grad-green);
+      color: #04110B;
+      font-weight: 900;
+      font-size: 13px;
+      display: grid;
+      place-items: center;
+    }
+    .step-card .step-icon { font-size: 32px; margin-bottom: 10px; margin-top: 6px; }
+    .step-card h4 { font-size: 15px; font-weight: 800; margin-bottom: 6px; }
+    .step-card p { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+    .step-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--green);
+      font-size: 22px;
+      margin-top: 28px;
+    }
+
+    /* ---- Leaderboard table ---- */
+    .lb-table { width: 100%; border-collapse: collapse; }
+    .lb-table th {
+      text-align: right;
+      padding: 10px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-mute);
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .lb-table td {
+      padding: 12px 14px;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .lb-table tr:last-child td { border-bottom: none; }
+    .lb-table tr:hover td { background: var(--surface-2); }
+    .lb-rank { font-weight: 900; font-size: 15px; color: var(--text-mute); width: 36px; }
+    .lb-rank.r1 { color: var(--gold); }
+    .lb-rank.r2 { color: var(--silver); }
+    .lb-rank.r3 { color: var(--bronze); }
+    .lb-name { font-weight: 700; color: var(--text); }
+    .lb-refs { color: var(--green); font-weight: 800; }
+    .lb-earn { color: var(--text-dim); font-size: 13px; }
+    .lb-badge { font-size: 18px; }
+
+    /* ---- Section label ---- */
+    .section-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 10px;
+    }
+
+    /* ---- Tier explanation ---- */
+    .tier-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 8px;
+    }
+    .tier-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 18px;
+      text-align: center;
+    }
+    .tier-card .tier-icon { font-size: 28px; margin-bottom: 8px; }
+    .tier-card .tier-val { font-size: 22px; font-weight: 900; color: var(--green); margin-bottom: 4px; }
+    .tier-card .tier-lbl { font-size: 12px; color: var(--text-dim); }
+  </style>
+</head>
+<body>
+
+<div id="topbar"></div>
+
+<main class="app-main">
+  <div class="app-content">
+
+    <!-- Hero -->
+    <div class="amb-hero pop">
+      <h1>הזמן חברים. <span>הרווח אמיתי.</span></h1>
+      <p class="mt-8">כל חבר שמצטרף דרכך ועובר ל-DMA, אתה מרוויח. חינם להצטרף, ואין תקרה על הרווח.</p>
+      <div class="flex gap-8 wrap-f mt-16">
+        <span class="badge badge--green">✓ בחינם לחלוטין</span>
+        <span class="badge badge--gold">⭐ עמלות מדורגות</span>
+        <span class="badge badge--locked">🔒 ללא הגבלת הכנסה</span>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stats-row mb-24 reveal">
+      <div class="portal-stat-tile">
+        <span class="ico">📨</span>
+        <span class="v" id="stat-invited">0</span>
+        <span class="k">הזמנות נרשמו</span>
+      </div>
+      <div class="portal-stat-tile">
+        <span class="ico">⬆️</span>
+        <span class="v" id="stat-upgraded">0</span>
+        <span class="k">שדרגו ל-DMA</span>
+      </div>
+      <div class="portal-stat-tile">
+        <span class="ico">💰</span>
+        <span class="v green" id="stat-earnings">0₪</span>
+        <span class="k">רווח מצטבר</span>
+      </div>
+    </div>
+
+    <!-- Referral link + QR grid -->
+    <div class="grid-2 mb-24 reveal">
+      <div class="ref-link-card">
+        <h3>הקישור האישי שלך</h3>
+        <div class="link-box">
+          <span class="link-url" id="ref-url">https://moldawsky.academy/?ref=DANIEL123</span>
+          <button class="btn btn--primary btn--sm" onclick="copyLink()">העתק</button>
+        </div>
+        <div class="share-row">
+          <button class="share-btn whatsapp" onclick="shareWhatsApp()">
+            <span>💬</span> WhatsApp
+          </button>
+          <button class="share-btn instagram" onclick="shareInstagram()">
+            <span>📸</span> אינסטגרם
+          </button>
+          <button class="share-btn" onclick="copyLink()">
+            <span>🔗</span> העתק קישור
+          </button>
+        </div>
+      </div>
+
+      <div class="qr-card">
+        <p class="section-label">QR הקישור שלך</p>
+        <div class="qr-box">
+          <span class="qr-icon">⬛</span>
+          <span>QR Code<br>יוצג כאן</span>
+        </div>
+        <p style="font-size:13px;color:var(--text-dim);max-width:180px;">שתף בסטורי, בפוסט, או הדפס להדגמות</p>
+        <button class="btn btn--outline btn--sm" onclick="toast('QR יהיה זמין בקרוב 📲')">הורד QR</button>
+      </div>
+    </div>
+
+    <!-- How it works -->
+    <div class="mb-8 reveal">
+      <p class="section-label">איך זה עובד</p>
+    </div>
+    <div class="steps-row reveal">
+      <div class="step-card" data-step="1">
+        <div class="step-icon">🔗</div>
+        <h4>משתף קישור</h4>
+        <p>שולח את הקישור לחבר, מפרסם בסטורי, מדביק בפוסט. אתה עושה, הם נכנסים.</p>
+      </div>
+      <div class="step-card" data-step="2">
+        <div class="step-icon">👤</div>
+        <h4>חבר נרשם</h4>
+        <p>החבר נרשם לפורטל החינמי. נספר לך, תראה את המספרים עולים בזמן אמת.</p>
+      </div>
+      <div class="step-card" data-step="3">
+        <div class="step-icon">💸</div>
+        <h4>אתה מרוויח</h4>
+        <p>ברגע שהחבר עובר ל-DMA, העמלה שלך מחושבת אוטומטית ומועברת ישירות אליך.</p>
+      </div>
+    </div>
+
+    <!-- Commission tiers -->
+    <div class="portal-card mb-24 reveal">
+      <p class="section-label">מדרגות עמלה</p>
+      <div class="tier-row">
+        <div class="tier-card">
+          <div class="tier-icon">🥉</div>
+          <div class="tier-val">5%</div>
+          <div class="tier-lbl">1-4 שדרוגים</div>
+        </div>
+        <div class="tier-card">
+          <div class="tier-icon">🥈</div>
+          <div class="tier-val">10%</div>
+          <div class="tier-lbl">5-14 שדרוגים</div>
+        </div>
+        <div class="tier-card">
+          <div class="tier-icon">🥇</div>
+          <div class="tier-val">15%</div>
+          <div class="tier-lbl">15+ שדרוגים</div>
+        </div>
+      </div>
+      <p class="mt-16" style="font-size:13px;color:var(--text-dim);">מחיר ה-DMA עומד על 1,997₪. 15 שדרוגים = 4,493₪ בכיס שלך. ממנת עמלה 1% כל חודש שהחבר נשאר פעיל.</p>
+    </div>
+
+    <!-- Podium -->
+    <div class="mb-8 reveal">
+      <p class="section-label">מובילי החודש</p>
+    </div>
+    <div class="portal-card mb-24 reveal">
+      <div class="portal-podium" id="podium"></div>
+    </div>
+
+    <!-- Full leaderboard -->
+    <div class="portal-card reveal">
+      <div class="flex between items-center mb-16">
+        <p class="section-label" style="margin:0">טבלת מובילים</p>
+        <span class="pill">יוני 2026</span>
+      </div>
+      <table class="lb-table" id="lb-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>שגריר</th>
+            <th>הזמנות</th>
+            <th>שדרוגים</th>
+            <th>רווח</th>
+          </tr>
+        </thead>
+        <tbody id="lb-body"></tbody>
+      </table>
+    </div>
+
+    <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+  </div>
+</main>
+
+<div id="bottomnav"></div>
+
+<script src="data/curriculum.js"></script>
+<script src="js/portal-core.js"></script>
+<script>
+  document.getElementById('topbar').innerHTML    = renderTopbar('ambassador.html');
+  document.getElementById('bottomnav').innerHTML = renderBottomNav('ambassador.html');
+
+  /* ---- Demo data ---- */
+  const AMBASSADORS = [
+    { name:'יוסי כהן',     ref:38, upg:22, earn:8778  },
+    { name:'מיכל לוי',     ref:31, upg:18, earn:7194  },
+    { name:'עומר פרידמן',  ref:27, upg:14, earn:4196  },
+    { name:'שירה ביטון',   ref:24, upg:11, earn:3298  },
+    { name:'רוי אברהם',    ref:19, upg: 9, earn:2697  },
+    { name:'אביב שמיר',    ref:16, upg: 7, earn:2098  },
+    { name:'נועה גולן',    ref:12, upg: 5, earn:1499  },
+    { name:'תום ברק',      ref: 9, upg: 3, earn: 300  },
+  ];
+  const EMOJIS = ['🏆','🥈','🥉'];
+  const PODIUM_ORDER = [1, 0, 2]; // silver-gold-bronze visual order
+
+  /* ---- Build referral link from user name ---- */
+  function buildRefCode(name) {
+    return name.toUpperCase().replace(/\s+/g, '').slice(0, 8) + Math.floor(Math.random() * 900 + 100);
+  }
+  const user = window.User.get();
+  const refCode = buildRefCode(user.name || 'DANIEL');
+  const refUrl  = `https://moldawsky.academy/?ref=${refCode}`;
+  document.getElementById('ref-url').textContent = refUrl;
+
+  /* ---- Demo user stats (seeded numbers) ---- */
+  document.getElementById('stat-invited').textContent  = '12';
+  document.getElementById('stat-upgraded').textContent = '4';
+  document.getElementById('stat-earnings').textContent = '399₪';
+
+  /* ---- Share actions ---- */
+  window.copyLink = function () {
+    navigator.clipboard.writeText(refUrl).then(() => {
+      toast('הקישור הועתק ✓', '🔗');
+    }).catch(() => toast('שגיאה בהעתקה', '⚠️'));
+  };
+  window.shareWhatsApp = function () {
+    const msg = encodeURIComponent(`היי! הצטרף/י לאקדמיית מולדבסקי בחינם ולמד איך לפתוח חנות אינטרנטית שמוכרת:\n${refUrl}`);
+    window.open(`https://wa.me/?text=${msg}`, '_blank');
+  };
+  window.shareInstagram = function () {
+    navigator.clipboard.writeText(refUrl).then(() => {
+      toast('קישור הועתק לסטורי 📸', '📸');
+    });
+  };
+
+  /* ---- Podium ---- */
+  const podiumEl = document.getElementById('podium');
+  const top3 = AMBASSADORS.slice(0, 3);
+  const order = [top3[1], top3[0], top3[2]]; // silver | gold | bronze visually
+  const gClasses = ['g2', 'g1', 'g3'];
+
+  order.forEach((a, i) => {
+    if (!a) return;
+    const realRank = AMBASSADORS.indexOf(a) + 1;
+    const spot = document.createElement('div');
+    spot.className = `podium-spot ${gClasses[i]}`;
+    spot.innerHTML = `
+      <div class="ava">${a.name.charAt(0)}</div>
+      <div style="font-size:11px;font-weight:700;margin-bottom:8px;color:var(--text-dim)">${a.name.split(' ')[0]}</div>
+      <div class="pillar">
+        <span style="font-size:20px;margin-bottom:4px">${EMOJIS[realRank-1]}</span>
+        <span style="font-size:13px;color:var(--text-dim)">${a.upg} שדרוגים</span>
+      </div>`;
+    podiumEl.appendChild(spot);
+  });
+
+  /* ---- Leaderboard table ---- */
+  const tbody = document.getElementById('lb-body');
+  AMBASSADORS.forEach((a, i) => {
+    const rank = i + 1;
+    const rankClass = rank <= 3 ? `r${rank}` : '';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="lb-rank ${rankClass}">${rank <= 3 ? EMOJIS[rank-1] : rank}</td>
+      <td class="lb-name">${a.name}</td>
+      <td class="lb-refs">${a.ref}</td>
+      <td><span class="badge badge--green">${a.upg}</span></td>
+      <td class="lb-earn">${a.earn.toLocaleString('he-IL')}₪</td>`;
+    tbody.appendChild(tr);
+  });
+
+  /* ---- Scroll reveal ---- */
+  window.addEventListener('load', () => {
+    const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('in')), { threshold: .1 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>הקורס · אקדמיית מולדבסקי</title>
+  <link rel="stylesheet" href="css/portal.css">
+  <style>
+    /* page-specific tweaks only */
+    .sidebar-head .search-wrap { position:relative; }
+    .sidebar-head .search-wrap .s-ico { position:absolute; inset-inline-start:13px; inset-block-start:50%; transform:translateY(-50%); color:var(--text-mute); pointer-events:none; }
+    .sidebar-head .search-input { padding-inline-start:38px; }
+    .group-head .g-left { display:flex; align-items:center; gap:10px; min-width:0; }
+    .group-head .g-ico { font-size:17px; }
+    .group-head .g-prog { font-size:12px; color:var(--text-mute); font-weight:600; }
+    .group-head.is-here .g-prog { color:var(--green); }
+    .sidebar-progress { padding:14px 18px 18px; }
+    .sidebar-progress .lbl { display:flex; justify-content:space-between; font-size:12px; color:var(--text-dim); margin-block-end:8px; font-weight:600; }
+
+    .page-head { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-block-end:22px; flex-wrap:wrap; }
+    .page-head h1 { font-size:clamp(26px,5vw,36px); }
+    .page-head .sub { color:var(--text-dim); margin-block-start:4px; }
+
+    .lesson-card .meta { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-block-start:10px; }
+    .lesson-card .lc-thumb-wrap { position:relative; }
+    .lesson-card .lc-thumb-wrap .play { position:absolute; inset:0; display:grid; place-items:center; opacity:0; transition:.2s; background:rgba(4,9,8,.42); border-radius:var(--r-sm); }
+    .lesson-card:hover .lc-thumb-wrap .play { opacity:1; }
+    .lesson-card .lc-thumb-wrap .play span { width:46px; height:46px; border-radius:50%; background:var(--grad-green); color:#04110B; display:grid; place-items:center; font-size:18px; box-shadow:0 8px 20px rgba(0,224,138,.45); }
+    .lesson-card .lc-thumb-wrap .dur-tag { position:absolute; inset-block-end:8px; inset-inline-start:8px; background:rgba(4,9,8,.78); color:#fff; font-size:11px; font-weight:700; padding:3px 8px; border-radius:7px; }
+    .lesson-card .lc-thumb-wrap .done-tag { position:absolute; inset-block-start:8px; inset-inline-end:8px; width:26px; height:26px; border-radius:50%; background:var(--green); color:#04110B; display:grid; place-items:center; font-weight:900; font-size:14px; box-shadow:var(--shadow-sm); }
+    .lesson-card h4 { font-size:15.5px; margin-block-start:2px; }
+    .lesson-card.is-locked { opacity:.62; }
+    .lesson-card.is-locked .lc-thumb-wrap::after { content:"🔒"; position:absolute; inset:0; display:grid; place-items:center; font-size:26px; background:rgba(4,9,8,.55); border-radius:var(--r-sm); }
+
+    .module-block { margin-block-start:34px; }
+    .module-block > .mb-head { display:flex; align-items:center; gap:10px; margin-block-end:14px; }
+    .module-block > .mb-head .mb-ico { font-size:22px; }
+    .module-block > .mb-head h3 { font-size:19px; }
+    .module-block > .mb-head .mb-count { color:var(--text-mute); font-size:13px; font-weight:600; margin-inline-start:auto; }
+
+    /* lesson view */
+    .lesson-view-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-block-end:14px; flex-wrap:wrap; }
+    .lv-crumb { color:var(--text-dim); font-size:13px; font-weight:600; display:flex; align-items:center; gap:7px; }
+    .lv-crumb .back { color:var(--green); cursor:pointer; }
+    .lesson-view h1 { font-size:clamp(22px,4vw,30px); margin-block:14px 6px; }
+    .lv-actions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-block:16px; }
+    .mark-btn.is-done { background:var(--green-soft); border-color:var(--green-line); color:var(--green); }
+    .prevnext { display:flex; gap:10px; margin-inline-start:auto; }
+    .prevnext .btn:disabled { opacity:.35; pointer-events:none; }
+    .tab-panels { margin-block-start:18px; }
+    .tab-panel { display:none; animation:pop .35s var(--ease) both; }
+    .tab-panel.active { display:block; }
+    .notes-area { width:100%; min-height:170px; padding:16px; border-radius:var(--r); background:var(--surface-2); border:1px solid var(--border); color:var(--text); resize:vertical; line-height:1.7; }
+    .notes-area:focus { outline:none; border-color:var(--green-line); }
+    .helper-link { display:flex; align-items:center; gap:12px; padding:15px 16px; border-radius:var(--r); background:var(--surface-2); border:1px solid var(--border); transition:.2s; }
+    .helper-link:hover { border-color:var(--green-line); transform:translateX(-4px); }
+    .helper-link .hl-ico { width:42px; height:42px; border-radius:12px; background:var(--green-soft); display:grid; place-items:center; font-size:20px; flex-shrink:0; }
+    .helper-link .hl-go { margin-inline-start:auto; color:var(--green); font-weight:800; }
+
+    /* confetti */
+    .confetti-pc { position:fixed; top:-12px; width:10px; height:14px; z-index:400; pointer-events:none; border-radius:2px; will-change:transform; }
+
+    @media (max-width:560px){
+      .portal-hero-card .thumb { width:100%; }
+      .prevnext { margin-inline-start:0; width:100%; }
+      .prevnext .btn { flex:1; }
+    }
+  </style>
+</head>
+<body class="layout-course">
+
+  <div id="topbar"></div>
+
+  <aside class="app-sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <div class="search-wrap">
+        <span class="s-ico">🔍</span>
+        <input id="syllabusSearch" class="search-input" type="search" placeholder="חיפוש שיעור..." autocomplete="off">
+      </div>
+    </div>
+    <nav id="navGroups"></nav>
+    <div class="sidebar-progress">
+      <div class="lbl"><span>ההתקדמות שלך</span><span id="sideProgPct" class="green">0%</span></div>
+      <div class="progress-bar"><i id="sideProgBar" style="width:0%"></i></div>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <div class="app-content">
+
+      <!-- ===== WELCOME VIEW ===== -->
+      <section id="welcomeView">
+        <div class="page-head">
+          <div>
+            <h1>בוא נבנה לך חנות שמוכרת 💸</h1>
+            <p class="sub">מאפס לחנות פעילה. שיעור אחרי שיעור, בלי לדלג, עד שמגיע צליל ההזמנה הראשונה.</p>
+          </div>
+          <span class="badge badge--green" id="welcomeCountBadge"></span>
+        </div>
+
+        <!-- next lesson hero -->
+        <div id="heroSlot"></div>
+
+        <!-- stats -->
+        <div class="stats-row mt-24" id="statsRow"></div>
+
+        <!-- all lessons -->
+        <div class="page-head mt-32" style="margin-block-end:0">
+          <div>
+            <h3 style="font-size:21px">כל השיעורים</h3>
+            <p class="sub">12 מודולים · 31 שיעורים · המסלול המלא של דניאל</p>
+          </div>
+        </div>
+        <div id="modulesAll"></div>
+      </section>
+
+      <!-- ===== LESSON VIEW ===== -->
+      <section id="lessonView" class="lesson-view hidden"></section>
+
+      <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+    </div>
+  </main>
+
+  <div id="bottomnav"></div>
+
+  <script src="data/curriculum.js"></script>
+  <script src="js/portal-core.js"></script>
+  <script>
+  (function () {
+    const $  = (s, r=document) => r.querySelector(s);
+    const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+    const esc = (s) => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    const MODULES = window.CURRICULUM.modules;
+    const LOCKED_MODULE = 'm12';
+
+    // mount shared chrome
+    $('#topbar').innerHTML = renderTopbar('course-library.html');
+    $('#bottomnav').innerHTML = renderBottomNav('course-library.html');
+
+    // mobile hamburger -> inject into topbar (before the brand spacer)
+    const header = $('.portal-header');
+    if (header) {
+      const burger = document.createElement('button');
+      burger.className = 'icon-btn';
+      burger.id = 'hamburger';
+      burger.title = 'תפריט שיעורים';
+      burger.innerHTML = '☰';
+      burger.style.cssText = 'display:none';
+      burger.onclick = () => $('#sidebar').classList.toggle('open');
+      header.insertBefore(burger, header.firstChild);
+      const mq = window.matchMedia('(max-width:1024px)');
+      const sync = () => burger.style.display = mq.matches ? 'grid' : 'none';
+      mq.addEventListener('change', sync); sync();
+    }
+
+    const lessonOf = (id) => window.ALL_LESSONS.find(l => l.id === id);
+    const moduleOf = (id) => MODULES.find(m => m.lessons.some(l => l.id === id));
+    const isLockedLesson = (l) => l.moduleId === LOCKED_MODULE && !window.User.isPaid();
+
+    /* ============ SIDEBAR ============ */
+    function buildSidebar(activeId) {
+      const activeMod = activeId ? moduleOf(activeId) : null;
+      const html = MODULES.map((m, mi) => {
+        const st = window.Progress.moduleStats(m);
+        const here = activeMod && activeMod.id === m.id;
+        const open = here || (!activeMod && mi === 0 && false); // collapsed by default; active module opens
+        const lessons = m.lessons.map((l) => {
+          const done = window.Progress.isDone(l.id);
+          const locked = isLockedLesson(l);
+          const cls = ['portal-nav-item', done?'is-completed':'', l.id===activeId?'is-active':'', locked?'is-locked':''].filter(Boolean).join(' ');
+          const dotInner = done ? '✓' : (locked ? '' : (window.ALL_LESSONS.indexOf(l)+1));
+          return `<div class="${cls}" data-lesson="${l.id}" data-title="${esc(l.title)}">
+            <span class="dot">${dotInner}</span><span class="ni-title">${esc(l.title)}</span>
+          </div>`;
+        }).join('');
+        return `<div class="portal-nav-group ${open?'open':''}" data-mod="${m.id}">
+          <div class="group-head ${here?'is-here':''}">
+            <span class="g-left"><span class="g-ico">${m.icon}</span><span>${esc(m.title)}</span></span>
+            <span class="flex items-center gap-8"><span class="g-prog">${st.done}/${st.total}</span><span class="chev">›</span></span>
+          </div>
+          <div class="group-lessons">${lessons}</div>
+        </div>`;
+      }).join('');
+      $('#navGroups').innerHTML = html;
+
+      // group toggle (one open at a time)
+      $$('.portal-nav-group .group-head').forEach(h => {
+        h.onclick = () => {
+          const g = h.parentElement;
+          const wasOpen = g.classList.contains('open');
+          $$('.portal-nav-group').forEach(x => x.classList.remove('open'));
+          if (!wasOpen) g.classList.add('open');
+        };
+      });
+      // lesson click
+      $$('.portal-nav-item').forEach(it => {
+        it.onclick = () => {
+          const id = it.dataset.lesson;
+          const l = lessonOf(id);
+          if (isLockedLesson(l)) { toast('השיעור הזה פתוח בתוכנית הליווי DMA 🔓', '🔒'); return; }
+          openLesson(id);
+          if (window.matchMedia('(max-width:1024px)').matches) $('#sidebar').classList.remove('open');
+        };
+      });
+      updateSidebarProgress();
+    }
+
+    function updateSidebarProgress() {
+      const pct = window.Progress.totalPct();
+      $('#sideProgBar').style.width = pct + '%';
+      $('#sideProgPct').textContent = pct + '%';
+    }
+
+    /* live search */
+    $('#syllabusSearch').addEventListener('input', (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      $$('.portal-nav-group').forEach(g => {
+        let any = false;
+        $$('.portal-nav-item', g).forEach(it => {
+          const match = !q || it.dataset.title.toLowerCase().includes(q);
+          it.style.display = match ? '' : 'none';
+          if (match) any = true;
+        });
+        g.style.display = any ? '' : 'none';
+        if (q && any) g.classList.add('open');
+      });
+    });
+
+    /* ============ WELCOME VIEW ============ */
+    function buildWelcome() {
+      const done = window.Progress.completedCount();
+      $('#welcomeCountBadge').textContent = `${done}/${window.LESSON_COUNT} הושלמו`;
+
+      // hero — next lesson
+      const n = window.Progress.nextLesson();
+      const pct = window.Progress.totalPct();
+      if (n) {
+        const started = done > 0;
+        $('#heroSlot').innerHTML = `
+          <div class="portal-hero-card pop">
+            <img class="thumb" src="${window.YT_THUMB(n.ts)}" alt="${esc(n.title)}">
+            <div class="content">
+              <span class="badge badge--green">${started ? 'השיעור הבא שלך' : 'מתחילים מכאן'}</span>
+              <h2>${esc(n.title)}</h2>
+              <p class="muted">${n.moduleIcon} ${esc(n.moduleTitle)} · ${n.dur} דקות</p>
+              <div class="progress-bar mt-16" style="max-width:420px"><i style="width:${pct}%"></i></div>
+              <p class="muted mt-8" style="font-size:13px">השלמת ${pct}% מהמסלול. עוד קצת ואתה עם חנות באוויר.</p>
+              <div class="mt-16">
+                <button class="btn btn--primary btn--lg" data-open="${n.id}">${started ? 'המשך עכשיו ←' : 'התחל עכשיו ←'}</button>
+              </div>
+            </div>
+          </div>`;
+      } else {
+        $('#heroSlot').innerHTML = `
+          <div class="portal-hero-card pop">
+            <img class="thumb" src="${window.YT_THUMB(0)}" alt="">
+            <div class="content">
+              <span class="badge badge--gold">🏆 סיימת את הכל</span>
+              <h2>כל השיעורים הושלמו. עכשיו תרים חנות אמיתית.</h2>
+              <p class="muted">השלמת 100% מהמסלול. הצעד הבא הוא ליווי צמוד עד התוצאה.</p>
+              <div class="mt-16"><a class="btn btn--primary btn--lg" href="dma.html">הכנס ל-DMA 🚀</a></div>
+            </div>
+          </div>`;
+      }
+
+      // stats
+      $('#statsRow').innerHTML = `
+        <div class="portal-stat-tile"><span class="ico">🔥</span><span class="v">${window.Progress.streak()}</span><span class="k">ימים ברצף</span></div>
+        <div class="portal-stat-tile"><span class="ico">⏱️</span><span class="v" style="font-size:24px">${window.Progress.timeLeftLabel()}</span><span class="k">זמן שנותר למסלול</span></div>
+        <div class="portal-stat-tile"><span class="ico">📚</span><span class="v">${done}<span style="font-size:18px;color:var(--text-mute)">/${window.LESSON_COUNT}</span></span><span class="k">שיעורים שהושלמו</span></div>`;
+
+      // all modules grid
+      $('#modulesAll').innerHTML = MODULES.map(m => {
+        const st = window.Progress.moduleStats(m);
+        const cards = m.lessons.map(l => lessonCard(l)).join('');
+        return `<div class="module-block">
+          <div class="mb-head">
+            <span class="mb-ico">${m.icon}</span><h3>${esc(m.title)}</h3>
+            <span class="mb-count">${st.done}/${st.total} שיעורים</span>
+          </div>
+          <div class="lesson-grid">${cards}</div>
+        </div>`;
+      }).join('');
+
+      bindCardClicks();
+    }
+
+    function lessonCard(l) {
+      const done = window.Progress.isDone(l.id);
+      const locked = isLockedLesson(l);
+      const num = window.ALL_LESSONS.indexOf(l) + 1;
+      return `<div class="portal-card portal-card--hover portal-card--accent lesson-card ${locked?'is-locked':''}" data-open="${l.id}">
+        <div class="lc-thumb-wrap">
+          <img class="thumb" src="${window.YT_THUMB(l.ts)}" alt="${esc(l.title)}" loading="lazy">
+          <span class="dur-tag">▶ ${l.dur}</span>
+          ${done ? '<span class="done-tag">✓</span>' : ''}
+          ${!locked ? '<span class="play"><span>▶</span></span>' : ''}
+        </div>
+        <div class="flex items-center gap-8" style="margin-block-start:10px">
+          <span class="badge ${locked?'badge--locked':'badge--green'}">${l.moduleIcon} שיעור ${num}</span>
+        </div>
+        <h4>${esc(l.title)}</h4>
+        <div class="meta">
+          <span class="muted" style="font-size:13px">${locked ? '🔒 נעול · DMA' : (done ? '✓ הושלם' : 'להמשך צפייה')}</span>
+        </div>
+      </div>`;
+    }
+
+    function bindCardClicks() {
+      $$('[data-open]').forEach(el => {
+        el.onclick = () => {
+          const id = el.dataset.open;
+          const l = lessonOf(id);
+          if (isLockedLesson(l)) { toast('השיעור הזה פתוח בתוכנית הליווי DMA 🔓', '🔒'); return; }
+          openLesson(id);
+        };
+      });
+    }
+
+    /* ============ LESSON VIEW ============ */
+    let activeTab = 'overview';
+
+    function openLesson(id) {
+      const l = lessonOf(id); if (!l) return;
+      const m = moduleOf(id);
+      const idx = window.ALL_LESSONS.indexOf(l);
+      const prev = window.ALL_LESSONS[idx-1] || null;
+      const next = window.ALL_LESSONS[idx+1] || null;
+      const done = window.Progress.isDone(l.id);
+      const notesKey = 'mold_notes_' + l.id;
+      const savedNotes = localStorage.getItem(notesKey) || '';
+      activeTab = 'overview';
+
+      $('#welcomeView').classList.add('hidden');
+      const lv = $('#lessonView');
+      lv.classList.remove('hidden');
+      window.scrollTo({ top:0, behavior:'smooth' });
+
+      lv.innerHTML = `
+        <div class="lesson-view-head">
+          <div class="lv-crumb"><span class="back" id="goBack">← כל השיעורים</span><span>·</span><span>${m.icon} ${esc(m.title)}</span></div>
+          <span class="badge badge--green">שיעור ${idx+1} מתוך ${window.LESSON_COUNT}</span>
+        </div>
+
+        <div class="video-container">
+          <iframe src="${window.YT_EMBED(l.ts)}" title="${esc(l.title)}"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+
+        <h1>${esc(l.title)}</h1>
+        <p class="muted">${m.icon} ${esc(m.title)} · ${l.dur} דקות</p>
+
+        <div class="lv-actions">
+          <button class="btn btn--outline mark-btn ${done?'is-done':''}" id="markBtn">
+            <span id="markIco">${done?'✓':'○'}</span> <span id="markTxt">${done?'הושלם · לחץ לביטול':'סמן כהושלם'}</span>
+          </button>
+          <div class="prevnext">
+            <button class="btn btn--ghost" id="prevBtn" ${prev?'':'disabled'}>→ הקודם</button>
+            <button class="btn btn--primary" id="nextBtn" ${next?'':'disabled'}>הבא ←</button>
+          </div>
+        </div>
+
+        <div class="portal-tabs mt-24" id="tabs">
+          <button data-tab="overview" class="active">סקירה</button>
+          <button data-tab="notes">הערות אישיות</button>
+          <button data-tab="ai">העוזר האישי</button>
+          <button data-tab="resources">חומרי עזר</button>
+        </div>
+
+        <div class="tab-panels">
+          <div class="tab-panel active" data-panel="overview">
+            <div class="portal-card portal-card--solid mt-16">
+              <div class="flex items-center gap-12 mb-16">
+                <span class="badge badge--green">⏱️ ${l.dur} דקות</span>
+                <span class="badge badge--gold">+50 XP בסיום</span>
+              </div>
+              <p style="font-size:16px;line-height:1.8">${esc(l.summary)}</p>
+            </div>
+          </div>
+
+          <div class="tab-panel" data-panel="notes">
+            <div class="mt-16">
+              <p class="muted mb-8">רשום לעצמך מה לקחת מהשיעור. ההערות נשמרות אוטומטית רק אצלך.</p>
+              <textarea class="notes-area" id="notesArea" placeholder="לדוגמה: לבדוק שם דומיין פנוי, להוריד את אפליקציית AutoDS...">${esc(savedNotes)}</textarea>
+              <div class="flex items-center gap-12 mt-16 wrap-f">
+                <span class="muted" id="notesStatus" style="font-size:13px">${savedNotes?'נשמר ✓':'מתחיל לכתוב...'}</span>
+                <button class="btn btn--outline btn--sm" id="exportPdf" style="margin-inline-start:auto">📄 ייצוא PDF</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-panel" data-panel="ai">
+            <div class="portal-card portal-card--accent portal-card--hover mt-16 center">
+              <div style="font-size:42px;margin-block-end:8px">🤖</div>
+              <h3 style="font-size:20px">תקוע? שאל את מורה ה-AI על השיעור הזה</h3>
+              <p class="muted mt-8" style="max-width:520px;margin-inline:auto">מורה ה-AI מכיר את כל הקורס של דניאל. שאל אותו כל שאלה על "${esc(l.title)}" וקבל תשובה ברורה, מיד.</p>
+              <a class="btn btn--primary btn--lg mt-16" href="ai-mentor.html?lesson=${l.id}">פתח את מורה ה-AI ←</a>
+            </div>
+          </div>
+
+          <div class="tab-panel" data-panel="resources">
+            <div class="mt-16 col flex gap-12">
+              <a class="helper-link" href="workbooks.html?lesson=${l.id}">
+                <span class="hl-ico">📔</span>
+                <span><b>חוברת העבודה של המודול</b><br><span class="muted" style="font-size:13px">צ'קליסט מעשי לשיעור הזה</span></span>
+                <span class="hl-go">פתח ←</span>
+              </a>
+              <a class="helper-link" href="workbooks.html">
+                <span class="hl-ico">🗂️</span>
+                <span><b>כל החוברות והתבניות</b><br><span class="muted" style="font-size:13px">תבניות מדיניות, תיאורי מוצר, ועוד</span></span>
+                <span class="hl-go">פתח ←</span>
+              </a>
+              <a class="helper-link" href="ai-mentor.html?lesson=${l.id}">
+                <span class="hl-ico">🤖</span>
+                <span><b>שאל את מורה ה-AI</b><br><span class="muted" style="font-size:13px">תשובות מותאמות לשיעור</span></span>
+                <span class="hl-go">פתח ←</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // url + sidebar
+      history.replaceState(null, '', '?lesson=' + l.id);
+      buildSidebar(l.id);
+
+      // back
+      $('#goBack').onclick = backToWelcome;
+
+      // tabs
+      $$('#tabs button').forEach(b => {
+        b.onclick = () => {
+          activeTab = b.dataset.tab;
+          $$('#tabs button').forEach(x => x.classList.toggle('active', x===b));
+          $$('.tab-panel').forEach(p => p.classList.toggle('active', p.dataset.panel===activeTab));
+        };
+      });
+
+      // mark done
+      $('#markBtn').onclick = () => {
+        const nowDone = window.Progress.toggle(l.id);
+        const btn = $('#markBtn');
+        btn.classList.toggle('is-done', nowDone);
+        $('#markIco').textContent = nowDone ? '✓' : '○';
+        $('#markTxt').textContent = nowDone ? 'הושלם · לחץ לביטול' : 'סמן כהושלם';
+        // refresh sidebar dot + progress
+        buildSidebar(l.id);
+        if (nowDone) { toast('כל הכבוד! שיעור הושלם 🎉', '🎉'); celebrate(); }
+      };
+
+      // prev/next
+      if (prev) $('#prevBtn').onclick = () => openLesson(prev.id);
+      if (next) $('#nextBtn').onclick = () => {
+        if (isLockedLesson(next)) { toast('השיעור הבא פתוח ב-DMA 🔓', '🔒'); return; }
+        openLesson(next.id);
+      };
+
+      // notes autosave
+      const ta = $('#notesArea');
+      let nt;
+      ta.addEventListener('input', () => {
+        clearTimeout(nt);
+        $('#notesStatus').textContent = 'שומר...';
+        nt = setTimeout(() => {
+          localStorage.setItem(notesKey, ta.value);
+          $('#notesStatus').textContent = 'נשמר ✓';
+        }, 350);
+      });
+      $('#exportPdf').onclick = () => toast('ייצוא PDF יהיה זמין בגרסה המלאה 📄', '📄');
+    }
+
+    function backToWelcome() {
+      $('#lessonView').classList.add('hidden');
+      $('#welcomeView').classList.remove('hidden');
+      history.replaceState(null, '', location.pathname);
+      buildWelcome();
+      buildSidebar(null);
+      window.scrollTo({ top:0, behavior:'smooth' });
+    }
+
+    /* ============ CONFETTI ============ */
+    function celebrate() {
+      const colors = ['#00E08A','#00B870','#F0B743','#C9D4D1','#4FB0FF'];
+      for (let i=0;i<70;i++){
+        const p = document.createElement('div');
+        p.className = 'confetti-pc';
+        p.style.background = colors[i%colors.length];
+        p.style.left = Math.random()*100 + 'vw';
+        const dur = 1.6 + Math.random()*1.4;
+        const drift = (Math.random()*200-100) + 'px';
+        p.style.transform = 'translateY(0) rotate(0deg)';
+        document.body.appendChild(p);
+        p.animate([
+          { transform:'translateY(0) translateX(0) rotate(0deg)', opacity:1 },
+          { transform:`translateY(105vh) translateX(${drift}) rotate(${720+Math.random()*360}deg)`, opacity:.9 }
+        ], { duration: dur*1000, easing:'cubic-bezier(.2,.6,.4,1)' });
+        setTimeout(()=>p.remove(), dur*1000);
+      }
+    }
+
+    /* ============ BOOT / ROUTING ============ */
+    const initLesson = window.qs('lesson');
+    if (initLesson && lessonOf(initLesson) && !isLockedLesson(lessonOf(initLesson))) {
+      buildWelcome();          // prep underlying state
+      $('#welcomeView').classList.add('hidden');
+      openLesson(initLesson);
+    } else {
+      buildWelcome();
+      buildSidebar(null);
+    }
+  })();
+  </script>
+</body>
+</html>

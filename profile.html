@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>הפרופיל שלי · אקדמיית מולדבסקי</title>
+  <link rel="stylesheet" href="css/portal.css">
+  <style>
+    /* --- Profile header card --- */
+    .profile-hero {
+      background: linear-gradient(135deg, var(--surface-2) 0%, var(--surface) 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--r-xl);
+      padding: 32px 28px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .profile-hero::after {
+      content: "";
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: -60px;
+      width: 320px;
+      background: radial-gradient(circle at center, rgba(0,224,138,.13), transparent 70%);
+      pointer-events: none;
+    }
+    .profile-avatar-lg {
+      width: 86px; height: 86px; flex-shrink: 0;
+      border-radius: 50%;
+      background: var(--grad-green);
+      color: #04110B;
+      display: grid; place-items: center;
+      font-size: 38px; font-weight: 900;
+      box-shadow: 0 0 0 4px var(--surface), 0 0 0 7px var(--green-line);
+      position: relative; z-index: 1;
+    }
+    .profile-meta { flex: 1; min-width: 0; position: relative; z-index: 1; }
+    .profile-name { font-size: 24px; font-weight: 900; line-height: 1.2; }
+    .profile-level { color: var(--text-dim); font-size: 14px; margin-top: 2px; display: flex; align-items: center; gap: 8px; }
+    .xp-bar-wrap { margin-top: 12px; }
+    .xp-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-mute); margin-bottom: 6px; }
+    .plan-badge-wrap { position: absolute; inset-block-start: 20px; inset-inline-start: 20px; z-index: 1; }
+
+    /* --- Module rings grid --- */
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 14px;
+    }
+    .module-ring-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      text-align: center;
+      transition: transform .2s var(--ease), border-color .2s;
+    }
+    .module-ring-card:hover { transform: translateY(-3px); border-color: var(--green-line); }
+    .module-ring-card .module-icon { font-size: 22px; line-height: 1; }
+    .module-ring-card .module-title { font-size: 12px; font-weight: 700; color: var(--text-dim); line-height: 1.35; }
+    .module-ring-card .done-label { font-size: 11px; color: var(--text-mute); }
+
+    /* --- Achievements grid --- */
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+      gap: 14px;
+    }
+    .achievement-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      text-align: center;
+      transition: transform .2s var(--ease), border-color .2s, box-shadow .2s;
+    }
+    .achievement-card.unlocked { border-color: var(--green-line); background: linear-gradient(160deg, rgba(0,224,138,.06), var(--surface)); }
+    .achievement-card.unlocked:hover { transform: translateY(-3px); box-shadow: var(--glow); }
+    .achievement-card.locked { opacity: .45; filter: grayscale(.6); }
+    .achievement-icon { font-size: 32px; line-height: 1; }
+    .achievement-name { font-size: 13px; font-weight: 700; }
+    .achievement-desc { font-size: 11px; color: var(--text-mute); line-height: 1.4; }
+    .achievement-tag { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; }
+    .achievement-tag.earned { background: var(--green-soft); color: var(--green); border: 1px solid var(--green-line); }
+    .achievement-tag.not-earned { background: var(--surface-3); color: var(--text-mute); }
+
+    /* --- Notes --- */
+    .notes-list { display: flex; flex-direction: column; gap: 10px; }
+    .note-item {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 14px 16px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .note-lesson-label { font-size: 11px; color: var(--text-mute); margin-top: 6px; }
+    .notes-empty { text-align: center; padding: 40px 20px; color: var(--text-mute); }
+    .notes-empty .empty-icon { font-size: 40px; margin-bottom: 10px; }
+
+    /* --- Section headings --- */
+    .section-head {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .section-head h2 { font-size: 19px; font-weight: 800; }
+
+    /* --- CTA bar --- */
+    .cta-bar {
+      background: linear-gradient(120deg, rgba(0,224,138,.12), rgba(0,224,138,.04));
+      border: 1px solid var(--green-line);
+      border-radius: var(--r-lg);
+      padding: 26px 28px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      flex-wrap: wrap;
+    }
+    .cta-bar-text { font-size: 17px; font-weight: 800; }
+    .cta-bar-sub { font-size: 13px; color: var(--text-dim); margin-top: 3px; }
+
+    @media (max-width: 560px) {
+      .profile-hero { flex-direction: column; text-align: center; }
+      .profile-avatar-lg { align-self: center; }
+      .plan-badge-wrap { position: static; margin-bottom: -4px; align-self: center; }
+      .cta-bar { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <div id="topbar"></div>
+
+  <main class="app-main">
+    <div class="app-content">
+
+      <!-- Profile Hero -->
+      <div class="profile-hero pop mb-24" id="profileHero">
+        <div class="plan-badge-wrap" id="planBadge"></div>
+        <div class="profile-avatar-lg" id="avatarLg"></div>
+        <div class="profile-meta">
+          <div class="profile-name" id="profileName"></div>
+          <div class="profile-level" id="profileLevel">
+            <span id="levelBadge"></span>
+          </div>
+          <div class="xp-bar-wrap">
+            <div class="xp-label">
+              <span id="xpLabel"></span>
+              <span id="xpNext"></span>
+            </div>
+            <div class="progress-bar"><i id="xpBarFill"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stats-row mb-24 reveal" id="statsRow"></div>
+
+      <!-- Module progress rings -->
+      <div class="reveal mb-24">
+        <div class="section-head">
+          <h2>ההתקדמות שלך לפי מודול</h2>
+        </div>
+        <div class="modules-grid" id="modulesGrid"></div>
+      </div>
+
+      <!-- Achievements -->
+      <div class="reveal mb-24">
+        <div class="section-head">
+          <h2>🏆 הישגים</h2>
+        </div>
+        <div class="achievements-grid" id="achievementsGrid"></div>
+      </div>
+
+      <!-- Notes -->
+      <div class="reveal mb-24">
+        <div class="section-head">
+          <h2>📝 הפנקס שלי</h2>
+          <span class="muted" style="font-size:13px" id="notesCount"></span>
+        </div>
+        <div id="notesList"></div>
+      </div>
+
+      <!-- CTA -->
+      <div class="cta-bar reveal mb-24">
+        <div>
+          <div class="cta-bar-text">מוכן להמשיך לשיעור הבא?</div>
+          <div class="cta-bar-sub" id="ctaSub"></div>
+        </div>
+        <a href="course-library.html" class="btn btn--primary btn--lg">המשך ללמוד ←</a>
+      </div>
+
+      <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+    </div>
+  </main>
+
+  <div id="bottomnav"></div>
+
+  <script src="data/curriculum.js"></script>
+  <script src="js/portal-core.js"></script>
+  <script>
+    document.getElementById('topbar').innerHTML = renderTopbar('profile.html');
+    document.getElementById('bottomnav').innerHTML = renderBottomNav('profile.html');
+
+    /* ---- Populate page ---- */
+    const u = window.User.get();
+    const xp = window.Progress.xp();
+    const level = Math.floor(xp / 300) + 1;
+    const xpInLevel = xp % 300;
+    const xpPct = Math.round(xpInLevel / 300 * 100);
+    const completed = window.Progress.completedCount();
+    const streak = window.Progress.streak();
+    const isPaid = window.User.isPaid();
+
+    /* Avatar + name */
+    document.getElementById('avatarLg').textContent = u.initial;
+    document.getElementById('profileName').textContent = u.name;
+
+    /* Level */
+    const levelNames = ['סוחר מתחיל','סוחר מתפתח','סוחר מנוסה','אומן המכירות','מולדבסקי בכוח'];
+    const levelName = levelNames[Math.min(level - 1, levelNames.length - 1)];
+    document.getElementById('levelBadge').innerHTML =
+      `<span class="badge badge--gold">⚡ רמה ${level} · ${levelName}</span>`;
+
+    /* Plan badge */
+    document.getElementById('planBadge').innerHTML = isPaid
+      ? `<span class="badge badge--green">✓ DMA</span>`
+      : `<span class="badge badge--locked">חינמי</span>`;
+
+    /* XP bar */
+    document.getElementById('xpLabel').textContent = `${xp} XP`;
+    document.getElementById('xpNext').textContent = `${300 - xpInLevel} עד רמה ${level + 1}`;
+    document.getElementById('xpBarFill').style.width = xpPct + '%';
+
+    /* Stats */
+    const tileData = [
+      { ico: '🔥', v: streak,                        k: 'רצף ימים' },
+      { ico: '✅', v: `${completed}/${window.LESSON_COUNT}`, k: 'שיעורים הושלמו' },
+      { ico: '⏱️', v: window.Progress.timeLeftLabel(), k: 'זמן שנותר' },
+      { ico: '⭐', v: xp,                             k: 'XP שצברת' },
+    ];
+    document.getElementById('statsRow').innerHTML = tileData.map(t =>
+      `<div class="portal-stat-tile">
+        <span class="ico">${t.ico}</span>
+        <span class="v">${t.v}</span>
+        <span class="k">${t.k}</span>
+      </div>`
+    ).join('');
+
+    /* Module rings */
+    document.getElementById('modulesGrid').innerHTML = window.CURRICULUM.modules.map(m => {
+      const s = window.Progress.moduleStats(m);
+      const pct = s.pct;
+      return `<div class="module-ring-card">
+        <div class="ring" style="--p:${pct}" data-label="${pct}%"></div>
+        <span class="module-icon">${m.icon}</span>
+        <span class="module-title">${m.title}</span>
+        <span class="done-label">${s.done}/${s.total} שיעורים</span>
+      </div>`;
+    }).join('');
+
+    /* Achievements */
+    const ACHIEVEMENTS = [
+      {
+        icon: '🎓', name: 'השיעור הראשון', desc: 'סיימת את השיעור הראשון',
+        unlocked: completed >= 1,
+      },
+      {
+        icon: '🏁', name: 'מודול ראשון הושלם', desc: 'סיימת מודול שלם',
+        unlocked: window.CURRICULUM.modules.some(m => window.Progress.moduleStats(m).pct === 100),
+      },
+      {
+        icon: '🔥', name: 'רצף 3 ימים', desc: 'למדת 3 ימים ברצף',
+        unlocked: streak >= 3,
+      },
+      {
+        icon: '⚡', name: 'חצי הדרך', desc: `${Math.floor(window.LESSON_COUNT / 2)} שיעורים הושלמו`,
+        unlocked: completed >= Math.floor(window.LESSON_COUNT / 2),
+      },
+      {
+        icon: '🏆', name: 'סיימת את הקורס', desc: 'כל 31 שיעורים הושלמו',
+        unlocked: completed >= window.LESSON_COUNT,
+      },
+      {
+        icon: '🤖', name: 'הרצת אג\'נט AI', desc: 'שאלת את מורה ה-AI',
+        unlocked: !!localStorage.getItem('mold_ai_used'),
+      },
+      {
+        icon: '💬', name: 'פוסט ראשון בקהילה', desc: 'שיתפת בקהילה',
+        unlocked: !!localStorage.getItem('mold_community_post'),
+      },
+    ];
+
+    document.getElementById('achievementsGrid').innerHTML = ACHIEVEMENTS.map(a => {
+      const cls = a.unlocked ? 'unlocked' : 'locked';
+      const tag = a.unlocked
+        ? `<span class="achievement-tag earned">✓ הושג</span>`
+        : `<span class="achievement-tag not-earned">נעול</span>`;
+      return `<div class="achievement-card ${cls}">
+        <div class="achievement-icon">${a.icon}</div>
+        <div class="achievement-name">${a.name}</div>
+        <div class="achievement-desc">${a.desc}</div>
+        ${tag}
+      </div>`;
+    }).join('');
+
+    /* Notes from localStorage */
+    const noteKeys = Object.keys(localStorage).filter(k => k.startsWith('mold_note_'));
+    const lessonMap = {};
+    window.ALL_LESSONS.forEach(l => { lessonMap[l.id] = l.title; });
+
+    const notesList = document.getElementById('notesList');
+    document.getElementById('notesCount').textContent = noteKeys.length ? `${noteKeys.length} פתקים` : '';
+
+    if (noteKeys.length === 0) {
+      notesList.innerHTML = `<div class="notes-empty">
+        <div class="empty-icon">📝</div>
+        <div style="font-weight:700;margin-bottom:6px">עדיין אין פתקים</div>
+        <div class="muted">תוך כדי שיעורים תוכל לרשום הערות, והן יופיעו כאן</div>
+      </div>`;
+    } else {
+      notesList.innerHTML = `<div class="notes-list">${noteKeys.map(k => {
+        const lessonId = k.replace('mold_note_', '');
+        const text = localStorage.getItem(k) || '';
+        const lessonTitle = lessonMap[lessonId] || lessonId;
+        return `<div class="note-item">
+          <div>${text}</div>
+          <div class="note-lesson-label">📚 ${lessonTitle}</div>
+        </div>`;
+      }).join('')}</div>`;
+    }
+
+    /* CTA subtitle */
+    const next = window.Progress.nextLesson();
+    document.getElementById('ctaSub').textContent = next
+      ? `השיעור הבא: ${next.moduleIcon} ${next.title}`
+      : 'כל הכבוד. סיימת את הקורס!';
+
+    /* Scroll reveal re-trigger */
+    setTimeout(() => {
+      document.querySelectorAll('.reveal').forEach(el => {
+        if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
+      });
+    }, 100);
+  </script>
+</body>
+</html>

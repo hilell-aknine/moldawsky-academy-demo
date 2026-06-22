@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>מורה ה-AI שלך · אקדמיית מולדבסקי</title>
+  <link rel="stylesheet" href="css/portal.css">
+  <style>
+    /* page-local layout helpers (no token redefinition) */
+    .ai-hero { display:flex; align-items:center; gap:20px; padding:26px; border-radius:var(--r-lg);
+      background:linear-gradient(120deg, var(--surface-2), var(--surface)); border:1px solid var(--border);
+      position:relative; overflow:hidden; }
+    .ai-hero::after { content:""; position:absolute; inset-block:0; inset-inline-end:-60px; width:260px;
+      background:radial-gradient(circle at center, rgba(0,224,138,.18), transparent 70%); }
+    .ai-hero .ava-bot { width:78px; height:78px; border-radius:22px; flex-shrink:0; display:grid; place-items:center;
+      font-size:38px; background:var(--grad-green); color:#04110B; box-shadow:0 10px 28px rgba(0,224,138,.4);
+      animation:floaty 4s ease-in-out infinite; position:relative; z-index:1; }
+    .ai-hero .content { position:relative; z-index:1; }
+    .ai-hero h1 { font-size:clamp(22px,5vw,30px); margin-bottom:6px; }
+
+    .agent-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:16px; }
+    .agent-card { cursor:pointer; display:flex; flex-direction:column; gap:10px; min-height:166px; }
+    .agent-card .ico-wrap { width:50px; height:50px; border-radius:14px; display:grid; place-items:center; font-size:26px;
+      background:var(--surface-2); border:1px solid var(--border); }
+    .agent-card h3 { font-size:17px; }
+    .agent-card .desc { font-size:13.5px; color:var(--text-dim); flex:1; }
+    .agent-card .go { color:var(--green); font-weight:700; font-size:13px; }
+
+    .field { margin-bottom:14px; }
+    .field label { display:block; font-size:13px; font-weight:700; margin-bottom:6px; color:var(--text-dim); }
+    .field input, .field textarea, .field select {
+      width:100%; padding:12px 14px; border-radius:12px; background:var(--surface-2);
+      border:1px solid var(--border); color:var(--text); font-size:15px; }
+    .field input:focus, .field textarea:focus, .field select:focus { outline:none; border-color:var(--green-line); }
+    .field textarea { resize:vertical; min-height:74px; }
+
+    .out-box { margin-top:16px; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--r);
+      padding:16px; font-size:14.5px; line-height:1.7; max-height:340px; overflow:auto; }
+    .out-box:empty { display:none; }
+    .typing { color:var(--text-dim); font-size:14px; display:flex; gap:6px; align-items:center; }
+    .typing .d { width:7px; height:7px; border-radius:50%; background:var(--green); animation:floaty 1s ease-in-out infinite; }
+    .typing .d:nth-child(2){ animation-delay:.15s } .typing .d:nth-child(3){ animation-delay:.3s }
+
+    .name-row { display:flex; justify-content:space-between; align-items:center; gap:10px;
+      padding:9px 12px; border-radius:10px; background:var(--surface); border:1px solid var(--border); margin-bottom:8px; }
+    .name-row .nm { font-weight:700; font-size:15px; }
+
+    .aida-block { margin-bottom:14px; }
+    .aida-block .tag { font-size:11px; font-weight:800; letter-spacing:.04em; color:var(--green); text-transform:uppercase; margin-bottom:4px; }
+
+    .score-row { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px; }
+    .score-row .lbl { font-size:14px; font-weight:600; min-width:90px; }
+    .score-row .bar { flex:1; }
+    .score-row .pts { font-weight:800; font-size:14px; min-width:42px; text-align:left; }
+
+    .modal-box { max-width:560px !important; max-height:88vh; overflow:auto; }
+    .modal-head { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+    .modal-head .ico-wrap { width:46px; height:46px; border-radius:13px; display:grid; place-items:center; font-size:24px;
+      background:var(--surface-2); border:1px solid var(--border); }
+    .modal-close { position:absolute; inset-block-start:14px; inset-inline-start:14px; width:34px; height:34px; border-radius:10px;
+      background:var(--surface-2); border:1px solid var(--border); color:var(--text-dim); display:grid; place-items:center; }
+    .modal-box { position:relative; }
+
+    .meter-card { display:flex; align-items:center; gap:16px; }
+    .meter-card .ring-wrap { flex-shrink:0; }
+    .meter-card .info { flex:1; }
+
+    .chat-box { background:var(--surface-2); border:1px solid var(--border); border-radius:var(--r);
+      padding:16px; max-height:380px; overflow:auto; }
+    .chat-input-row { display:flex; gap:10px; margin-top:12px; }
+    .chat-input-row input { flex:1; padding:13px 16px; border-radius:14px; background:var(--surface-2);
+      border:1px solid var(--border); color:var(--text); font-size:15px; }
+    .chat-input-row input:focus { outline:none; border-color:var(--green-line); }
+    .chip-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+    .chip { padding:7px 14px; border-radius:999px; background:var(--surface-2); border:1px solid var(--border);
+      font-size:13px; font-weight:600; color:var(--text-dim); cursor:pointer; transition:.2s; }
+    .chip:hover { color:var(--green); border-color:var(--green-line); }
+  </style>
+</head>
+<body>
+  <div id="topbar"></div>
+  <main class="app-main"><div class="app-content">
+
+    <!-- HERO -->
+    <section class="ai-hero reveal mb-24">
+      <div class="ava-bot">🤖</div>
+      <div class="content">
+        <span class="badge badge--green mb-8">סוכני AI · בלעדי לאקדמיה</span>
+        <h1>מורה ה-AI שלך</h1>
+        <p class="muted">בקורס דניאל פותח שוב ושוב את ChatGPT. אז הפכנו את זה לכלים שעובדים בלחיצה. עושים במקומך בדיוק מה שדניאל עושה בקורס · שם מותג, תיאור מוצר, בורר מוצרים, מדיניות וקופי למודעה.</p>
+      </div>
+    </section>
+
+    <!-- USAGE METER -->
+    <section class="portal-card portal-card--solid meter-card reveal mb-24">
+      <div class="ring-wrap">
+        <div class="ring" id="usageRing" style="--p:100" data-label="10/10"></div>
+      </div>
+      <div class="info">
+        <div class="flex between items-center wrap-f gap-8">
+          <strong id="usageLabel">10/10 הרצות חינם נותרו היום</strong>
+          <span class="badge badge--locked">🔒 חינם · מוגבל</span>
+        </div>
+        <p class="muted mt-8" style="font-size:13.5px">ב-<b class="green">DMA</b> הסוכנים פתוחים ללא הגבלה, עם מאגרי מוצרים מנצחים ותבניות פרימיום.
+          <a href="dma.html" class="green" style="font-weight:700">שדרג עכשיו ←</a></p>
+      </div>
+    </section>
+
+    <!-- AGENTS -->
+    <h2 class="mb-16" style="font-size:20px">🧰 הסוכנים שלך</h2>
+    <section class="agent-grid mb-32" id="agentGrid"></section>
+
+    <!-- CHAT -->
+    <h2 class="mb-16" style="font-size:20px">💬 שאל את מורה ה-AI</h2>
+    <section class="portal-card reveal mb-24">
+      <div class="chat-box"><div class="chat-thread" id="chatThread"></div></div>
+      <div class="chat-input-row">
+        <input id="chatInput" placeholder="כתוב שאלה על איקומרס, מוצרים, מחירים, שיווק..." onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="btn btn--primary" onclick="sendChat()">שלח ←</button>
+      </div>
+      <div class="chip-row">
+        <span class="chip" onclick="quickChat(this)">איך בוחרים מוצר מנצח?</span>
+        <span class="chip" onclick="quickChat(this)">כמה לתמחר?</span>
+        <span class="chip" onclick="quickChat(this)">מה זה דרופשיפינג?</span>
+        <span class="chip" onclick="quickChat(this)">איך מתחילים שיווק?</span>
+      </div>
+    </section>
+
+    <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+  </div></main>
+  <div id="bottomnav"></div>
+
+  <!-- AGENT MODAL -->
+  <div class="portal-modal" id="agentModal">
+    <div class="box modal-box">
+      <button class="modal-close" onclick="closeAgent()">✕</button>
+      <div class="modal-head">
+        <div class="ico-wrap" id="mIco">🤖</div>
+        <div>
+          <h3 id="mTitle" style="font-size:19px"></h3>
+          <p class="muted" id="mSub" style="font-size:13px"></p>
+        </div>
+      </div>
+      <div id="mBody"></div>
+    </div>
+  </div>
+
+  <script src="data/curriculum.js"></script>
+  <script src="js/portal-core.js"></script>
+  <script>
+    document.getElementById('topbar').innerHTML = renderTopbar('ai-mentor.html');
+    document.getElementById('bottomnav').innerHTML = renderBottomNav('ai-mentor.html');
+
+    /* ---------- usage meter (mock, per-day) ---------- */
+    const USAGE_KEY = 'mold_ai_runs_' + new Date().toISOString().slice(0,10);
+    function runsLeft(){ return Math.max(0, 10 - parseInt(localStorage.getItem(USAGE_KEY)||'0',10)); }
+    function spendRun(){
+      const used = parseInt(localStorage.getItem(USAGE_KEY)||'0',10);
+      if (runsLeft() <= 0){
+        toast('נגמרו ההרצות החינמיות להיום · ב-DMA זה ללא הגבלה','🔒');
+        return false;
+      }
+      localStorage.setItem(USAGE_KEY, String(used+1));
+      refreshMeter();
+      return true;
+    }
+    function refreshMeter(){
+      const left = runsLeft();
+      const ring = document.getElementById('usageRing');
+      ring.style.setProperty('--p', left*10);
+      ring.setAttribute('data-label', left+'/10');
+      document.getElementById('usageLabel').textContent = left>0
+        ? left+'/10 הרצות חינם נותרו היום'
+        : '0/10 · נגמר להיום · ב-DMA ללא הגבלה';
+    }
+    refreshMeter();
+
+    /* ---------- helpers ---------- */
+    const rand = a => a[Math.floor(Math.random()*a.length)];
+    function think(box, render){
+      box.innerHTML = '<div class="typing"><span>חושב</span><span class="d"></span><span class="d"></span><span class="d"></span></div>';
+      setTimeout(()=>{ box.innerHTML = render(); box.classList.add('pop'); }, 650 + Math.random()*350);
+    }
+
+    /* ================= AGENT DEFINITIONS ================= */
+    const SYL = ['lu','no','ra','vi','zo','mi','ka','lo','ne','sa','ta','ri','me','va','de','so','be','na','li','ro'];
+    function brandName(){
+      const n = Math.random()<.5 ? 2 : 3;
+      let s = '';
+      for(let i=0;i<n;i++) s += rand(SYL);
+      return s.charAt(0).toUpperCase()+s.slice(1);
+    }
+
+    const AGENTS = {
+      brand: {
+        ico:'🏷️', title:'מחולל שמות מותג', sub:'20 שמות גנריים וברנדים · עם בדיקת דומיין',
+        body:`<div class="field"><label>נישה (לא חובה)</label>
+          <input id="aNiche" placeholder="לדוגמה: כלי בית, חיות מחמד, אופנה..."></div>
+          <button class="btn btn--primary btn--block" onclick="genBrands()">✨ צור 20 שמות</button>
+          <div class="out-box" id="brandOut"></div>`
+      },
+      copy: {
+        ico:'✍️', title:'כותב תיאור מוצר (AIDA)', sub:'תשומת-לב · עניין · חשק · פעולה',
+        body:`<div class="field"><label>שם המוצר</label><input id="cName" placeholder="לדוגמה: מנורת לילה מרחפת"></div>
+          <div class="field"><label>איזה כאב הוא פותר?</label><input id="cPain" placeholder="לדוגמה: קושי להירדם, חדר משעמם"></div>
+          <button class="btn btn--primary btn--block" onclick="genCopy()">✨ כתוב תיאור ממיר</button>
+          <div class="out-box" id="copyOut"></div>`
+      },
+      picker: {
+        ico:'🔍', title:'בורר מוצרים', sub:'ניקוד מול הקריטריונים של דניאל',
+        body:`<div class="field"><label>רעיון מוצר / נישה</label><input id="pIdea" placeholder="לדוגמה: מתקן עיסוי צוואר חשמלי"></div>
+          <button class="btn btn--primary btn--block" onclick="genPicker()">🔍 נתח את המוצר</button>
+          <div class="out-box" id="pickOut"></div>`
+      },
+      policy: {
+        ico:'⚖️', title:'מחולל מדיניות', sub:'החזרות · פרטיות · משלוחים',
+        body:`<div class="field"><label>שם המותג</label><input id="polName" placeholder="לדוגמה: Lunova"></div>
+          <button class="btn btn--primary btn--block" onclick="genPolicy()">⚖️ צור מסמכי מדיניות</button>
+          <div class="out-box" id="polOut"></div>`
+      },
+      ad: {
+        ico:'📣', title:'כותב קופי למודעה', sub:'הוק 3 שניות · תסריט קצר',
+        body:`<div class="field"><label>המוצר</label><input id="adProd" placeholder="לדוגמה: בקבוק מים חכם"></div>
+          <div class="field"><label>קהל היעד</label><input id="adAud" placeholder="לדוגמה: ספורטאים, אמהות עסוקות"></div>
+          <button class="btn btn--primary btn--block" onclick="genAd()">📣 כתוב מודעה</button>
+          <div class="out-box" id="adOut"></div>`
+      }
+    };
+
+    /* render agent cards */
+    document.getElementById('agentGrid').innerHTML = Object.entries(AGENTS).map(([k,a])=>`
+      <div class="portal-card portal-card--hover portal-card--accent agent-card reveal" onclick="openAgent('${k}')">
+        <div class="ico-wrap">${a.ico}</div>
+        <h3>${a.title}</h3>
+        <p class="desc">${a.sub}</p>
+        <span class="go">פתח את הסוכן ←</span>
+      </div>`).join('');
+
+    /* modal control */
+    function openAgent(k){
+      const a = AGENTS[k];
+      document.getElementById('mIco').textContent = a.ico;
+      document.getElementById('mTitle').textContent = a.title;
+      document.getElementById('mSub').textContent = a.sub;
+      document.getElementById('mBody').innerHTML = a.body;
+      document.getElementById('agentModal').classList.add('open');
+    }
+    function closeAgent(){ document.getElementById('agentModal').classList.remove('open'); }
+    document.getElementById('agentModal').addEventListener('click', e=>{ if(e.target.id==='agentModal') closeAgent(); });
+
+    /* ---------- 1. brand names ---------- */
+    function genBrands(){
+      if(!spendRun()) return;
+      const out = document.getElementById('brandOut');
+      think(out, ()=>{
+        let rows='';
+        const seen = new Set();
+        for(let i=0;i<20;i++){
+          let nm; do { nm = brandName(); } while(seen.has(nm)); seen.add(nm);
+          const free = Math.random() > .42;
+          rows += `<div class="name-row">
+            <span class="nm">${nm}<span class="muted" style="font-weight:400">.com</span></span>
+            <span class="badge ${free?'badge--green':'badge--locked'}">${free?'דומיין פנוי ✓':'תפוס ✗'}</span></div>`;
+        }
+        return `<p class="muted mb-8" style="font-size:13px">שמות קצרים, גנריים וקלים לזכירה · בדיוק כמו זרה או סוני. הסתכל רק על הפנויים.</p>${rows}
+          <button class="btn btn--outline btn--block mt-16" onclick="genBrands()">🔄 צור שוב</button>`;
+      });
+    }
+
+    /* ---------- 2. AIDA copy ---------- */
+    function genCopy(){
+      const name = (document.getElementById('cName').value||'').trim();
+      const pain = (document.getElementById('cPain').value||'').trim();
+      if(!name){ toast('כתוב שם מוצר קודם','✍️'); return; }
+      if(!spendRun()) return;
+      const p = pain || 'בעיה יומיומית שמטרידה אותך';
+      const out = document.getElementById('copyOut');
+      think(out, ()=>{
+        const heads = [`${name} · הפתרון שחיכית לו`, `סוף ל${p}. הכירו את ${name}`, `${name}. כי מגיע לך יותר`];
+        const cta = [`הזמן עכשיו · משלוח חינם`, `אני רוצה אחד כזה ←`, `תפוס מבצע לפני שייגמר`];
+        return `
+          <div class="aida-block"><div class="tag">A · תשומת לב</div>
+            <strong style="font-size:17px">${rand(heads)}</strong></div>
+          <div class="aida-block"><div class="tag">I · עניין</div>
+            כולנו מכירים את התסכול של ${p}. רוב הפתרונות בשוק יקרים, מסובכים או פשוט לא עובדים.
+            ${name} נבנה אחרת · פשוט, יעיל, ועושה בדיוק את העבודה.</div>
+          <div class="aida-block"><div class="tag">D · חשק</div>
+            תאר לעצמך בוקר בלי ${p}. אלפי לקוחות כבר עברו ל${name} ולא מבינים איך הסתדרו בלעדיו.
+            איכות פרימיום, עיצוב נקי, ותוצאה שמרגישים מהיום הראשון.</div>
+          <div class="aida-block"><div class="tag">A · פעולה</div>
+            <span class="green" style="font-weight:800; font-size:16px">${rand(cta)}</span><br>
+            <span class="muted" style="font-size:13px">⏳ מלאי מוגבל · 30 יום אחריות · החזר כספי מלא.</span></div>
+          <button class="btn btn--outline btn--block mt-16" onclick="genCopy()">🔄 גרסה אחרת</button>`;
+      });
+    }
+
+    /* ---------- 3. product picker ---------- */
+    function genPicker(){
+      const idea = (document.getElementById('pIdea').value||'').trim();
+      if(!idea){ toast('כתוב רעיון מוצר','🔍'); return; }
+      if(!spendRun()) return;
+      const out = document.getElementById('pickOut');
+      think(out, ()=>{
+        const crit = [
+          { lbl:'פתרון כאב', s: 60+Math.floor(Math.random()*40) },
+          { lbl:'טווח 100-300₪', s: 55+Math.floor(Math.random()*45) },
+          { lbl:'קנייה אימפולסיבית', s: 50+Math.floor(Math.random()*50) },
+          { lbl:'מרג\'ין רווחי', s: 55+Math.floor(Math.random()*40) },
+        ];
+        const avg = Math.round(crit.reduce((a,c)=>a+c.s,0)/crit.length);
+        const verdict = avg>=78 ? {t:'מנצח 🏆 · שווה לבדוק לעומק', c:'badge--green'}
+                       : avg>=62 ? {t:'פוטנציאל בינוני · חדד את ההצעה', c:'badge--gold'}
+                                 : {t:'חלש · חפש רעיון אחר', c:'badge--locked'};
+        const bars = crit.map(c=>`
+          <div class="score-row"><span class="lbl">${c.lbl}</span>
+            <span class="bar progress-bar"><i style="width:${c.s}%"></i></span>
+            <span class="pts">${c.s}</span></div>`).join('');
+        return `<p class="muted mb-16" style="font-size:13px">ניתוח "<b>${idea}</b>" מול 4 הקריטריונים של דניאל למוצר מנצח:</p>
+          ${bars}
+          <div class="flex between items-center mt-16" style="padding-top:14px; border-top:1px solid var(--border)">
+            <span style="font-weight:700">ציון כולל</span>
+            <span class="badge ${verdict.c}">${avg}/100 · ${verdict.t}</span></div>
+          <button class="btn btn--outline btn--block mt-16" onclick="genPicker()">🔄 נתח שוב</button>`;
+      });
+    }
+
+    /* ---------- 4. policy ---------- */
+    function genPolicy(){
+      const brand = (document.getElementById('polName').value||'').trim() || 'המותג שלך';
+      if(!spendRun()) return;
+      const out = document.getElementById('polOut');
+      think(out, ()=>`
+        <div class="aida-block"><div class="tag">מדיניות החזרות</div>
+          ב-${brand} אנו עומדים מאחורי כל מוצר. ניתן להחזיר תוך 14 יום מקבלת ההזמנה, כל עוד המוצר במצבו המקורי. ההחזר הכספי מתבצע תוך 5 עד 10 ימי עסקים.</div>
+        <div class="aida-block"><div class="tag">מדיניות פרטיות</div>
+          ${brand} מכבדת את פרטיותך. הפרטים שאתה מוסר משמשים אך ורק לעיבוד הזמנתך ולשיפור השירות, ולעולם לא יימכרו לצד שלישי.</div>
+        <div class="aida-block"><div class="tag">מדיניות משלוחים</div>
+          ${brand} שולחת לכל הארץ. זמן אספקה מוערך 5 עד 12 ימי עסקים. עדכוני מעקב נשלחים למייל עם יציאת החבילה.</div>
+        <p class="muted" style="font-size:12px">⚠️ תבנית בסיס לדמו. בקורס דניאל נותן תבניות שעורכי דין שלו ניסחו.</p>
+        <button class="btn btn--outline btn--block mt-16" onclick="genPolicy()">🔄 צור שוב</button>`);
+    }
+
+    /* ---------- 5. ad copy ---------- */
+    function genAd(){
+      const prod = (document.getElementById('adProd').value||'').trim();
+      const aud  = (document.getElementById('adAud').value||'').trim() || 'הקהל שלך';
+      if(!prod){ toast('כתוב שם מוצר','📣'); return; }
+      if(!spendRun()) return;
+      const out = document.getElementById('adOut');
+      think(out, ()=>{
+        const hooks = [`עצרו הכל · זה ישנה לכם את היום.`, `לא האמנתי שזה עובד עד שניסיתי.`, `${aud} · זה בשבילכם בדיוק.`];
+        return `
+          <div class="aida-block"><div class="tag">🎬 הוק (0-3 שניות)</div>
+            <strong style="font-size:17px">${rand(hooks)}</strong></div>
+          <div class="aida-block"><div class="tag">תסריט מודעה</div>
+            <b>שנייה 1-3:</b> צילום מקרוב של ${prod} בפעולה · הוק שעוצר את הגלילה.<br>
+            <b>שנייה 4-10:</b> "אם אתם מ${aud}, אתם חייבים את זה." · מראים את הבעיה והפתרון.<br>
+            <b>שנייה 11-18:</b> הוכחה · תגובות לקוחות מרוצים והדגמה מהירה.<br>
+            <b>שנייה 19-22:</b> CTA · "לחצו על הקישור והזמינו עכשיו · מלאי מוגבל."</div>
+          <p class="muted" style="font-size:12px">💡 דניאל: אנשים קונים מרגש, לא מהיגיון. ראו שיעור "שיווק ופסיכולוגיה צרכנית".</p>
+          <button class="btn btn--outline btn--block mt-16" onclick="genAd()">🔄 גרסה אחרת</button>`;
+      });
+    }
+
+    /* ================= CHAT ================= */
+    const chatThread = document.getElementById('chatThread');
+    function pushMsg(text, who){
+      const d = document.createElement('div');
+      d.className = 'chat-msg '+who;
+      d.innerHTML = text;
+      chatThread.appendChild(d);
+      chatThread.parentElement.scrollTop = chatThread.parentElement.scrollHeight;
+      return d;
+    }
+    function botReply(q){
+      const t = q.toLowerCase();
+      if(/מוצר|למכור|נישה|דרופ/.test(t))
+        return 'מוצר מנצח עונה על 4 דברים · פותר כאב אמיתי, מתומחר 100 עד 300 ש"ח לקנייה אימפולסיבית, מעורר רגש, ומשאיר מרג\'ין יפה. נסה את <b>בורר המוצרים</b> למעלה. בקורס · שיעור "מציאת מוצרים מנצחים".';
+      if(/מחיר|תמחר|כמה|רווח|מרג/.test(t))
+        return 'תמחור · קח את עלות המוצר וכפול פי 2.5 עד 3 לפחות, ושים לב שאתה נשאר בטווח 100 עד 300 ש"ח. המרג\'ין הזה מכסה פרסום ועדיין משאיר רווח. ראה שיעור "העלאת מוצר · מחיר, עלות, מרג\'ין".';
+      if(/שיווק|פרסום|מודעה|פייסבוק|טיקטוק|קמפיין/.test(t))
+        return 'מתחילים קטן · 100 ש"ח ביום, בודקים אילו מודעות מביאות מכירות, ואז מגדילים תקציב על המנצחות. השתמש ב<b>כותב הקופי למודעה</b> כדי לכתוב הוק. שיעור "קידום ממומן".';
+      if(/חינם|מחיר|כסף|עלות|כמה עולה|dma/.test(t))
+        return 'הסוכנים כאן חינמיים עד 10 הרצות ביום. ב-<b class="green">DMA</b> זה ללא הגבלה, עם ליווי צמוד ומאגרי מוצרים. <a href="dma.html" class="green">פרטים כאן ←</a>';
+      if(/שלום|היי|הי|מה נשמע|מה קורה/.test(t))
+        return 'היי! אני מורה ה-AI של האקדמיה. שאל אותי על מוצרים, תמחור, שיווק או דרופשיפינג · או נסה אחד מהסוכנים למעלה. 🚀';
+      return 'שאלה טובה. הדרך הכי מהירה · נסה את אחד הסוכנים למעלה (שם מותג, תיאור מוצר, בורר מוצרים), או צפה בשיעור הרלוונטי בעמוד <a href="course-library.html" class="green">הקורס</a>. רוצה שאכוון אותך לשיעור ספציפי?';
+    }
+    function sendChat(){
+      const inp = document.getElementById('chatInput');
+      const q = inp.value.trim();
+      if(!q) return;
+      pushMsg(q,'me'); inp.value='';
+      const typing = pushMsg('<span class="typing"><span class="d"></span><span class="d"></span><span class="d"></span></span>','bot');
+      setTimeout(()=>{ typing.innerHTML = botReply(q); chatThread.parentElement.scrollTop = chatThread.parentElement.scrollHeight; }, 600+Math.random()*400);
+    }
+    function quickChat(el){ document.getElementById('chatInput').value = el.textContent; sendChat(); }
+    /* greeting */
+    pushMsg('היי דניאל 👋 אני מורה ה-AI שלך. שאל אותי כל דבר על בניית חנות שמוכרת · או נסה אחד הסוכנים למעלה.', 'bot');
+  </script>
+</body>
+</html>

@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>קהילה · אקדמיית מולדבסקי</title>
+  <link rel="stylesheet" href="css/portal.css">
+  <style>
+    /* Community two-column layout */
+    .community-layout {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 22px;
+      align-items: start;
+    }
+    @media (max-width: 820px) {
+      .community-layout {
+        grid-template-columns: 1fr;
+      }
+      .community-sidebar {
+        order: -1;
+      }
+    }
+
+    /* Composer */
+    .composer-textarea {
+      width: 100%;
+      background: var(--surface-2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--text);
+      font-size: 15px;
+      padding: 12px 14px;
+      resize: none;
+      min-height: 80px;
+      transition: border-color .2s;
+      line-height: 1.55;
+    }
+    .composer-textarea:focus {
+      outline: none;
+      border-color: var(--green-line);
+    }
+    .composer-textarea::placeholder { color: var(--text-mute); }
+
+    /* Post card */
+    .post-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      transition: border-color .2s;
+    }
+    .post-card:hover { border-color: var(--border-2); }
+
+    .post-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--grad-green);
+      color: #04110B;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .post-avatar.alt-1 { background: linear-gradient(135deg,#4FB0FF,#2277CC); color:#fff; }
+    .post-avatar.alt-2 { background: linear-gradient(135deg,#F0B743,#C98A4B); color:#04110B; }
+    .post-avatar.alt-3 { background: linear-gradient(135deg,#FF5C6C,#CC2233); color:#fff; }
+    .post-avatar.alt-4 { background: linear-gradient(135deg,#00E08A,#00935A); color:#04110B; }
+    .post-avatar.alt-5 { background: linear-gradient(135deg,#A855F7,#7C3AED); color:#fff; }
+
+    .post-name { font-weight: 700; font-size: 14.5px; }
+    .post-time { font-size: 12px; color: var(--text-mute); }
+    .post-body { font-size: 15px; line-height: 1.65; margin-top: 12px; }
+
+    .post-actions { margin-top: 14px; display: flex; gap: 6px; align-items: center; }
+    .action-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 6px 12px; border-radius: 999px;
+      font-size: 13px; font-weight: 600; color: var(--text-dim);
+      background: var(--surface-2); border: 1px solid var(--border);
+      cursor: pointer; transition: .15s;
+    }
+    .action-btn:hover { color: var(--green); border-color: var(--green-line); }
+    .action-btn.liked { color: var(--green); border-color: var(--green-line); background: var(--green-soft); }
+
+    /* Comments */
+    .comments-section { margin-top: 14px; border-top: 1px solid var(--border); padding-top: 14px; display: none; }
+    .comments-section.open { display: block; }
+    .comment-item {
+      display: flex; gap: 10px; align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .comment-ava {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: var(--surface-3); display: grid; place-items: center;
+      font-size: 11px; font-weight: 700; flex-shrink: 0; color: var(--text-dim);
+    }
+    .comment-bubble {
+      background: var(--surface-2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 8px 12px; font-size: 13.5px; line-height: 1.5;
+      flex: 1;
+    }
+    .comment-author { font-weight: 700; font-size: 12px; color: var(--text-dim); margin-bottom: 2px; }
+
+    /* Badge inside post */
+    .post-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 9px; border-radius: 999px;
+      font-size: 11px; font-weight: 700;
+    }
+
+    /* Sidebar: leaderboard */
+    .leaderboard-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .leaderboard-row:last-child { border-bottom: none; }
+    .lb-rank { font-weight: 900; font-size: 13px; color: var(--text-mute); width: 20px; text-align: center; flex-shrink: 0; }
+    .lb-rank.gold { color: var(--gold); }
+    .lb-rank.silver { color: var(--silver); }
+    .lb-rank.bronze { color: var(--bronze); }
+    .lb-name { font-size: 13.5px; font-weight: 600; flex: 1; }
+    .lb-pts { font-size: 12px; color: var(--green); font-weight: 700; }
+
+    .lb-ava {
+      width: 30px; height: 30px; border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 12px; font-weight: 800; flex-shrink: 0;
+    }
+
+    /* Rules card */
+    .rule-item {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: 13px; line-height: 1.5; color: var(--text-dim);
+      padding: 5px 0;
+    }
+    .rule-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+    /* Mini profile */
+    .mini-profile-xp {
+      height: 6px; border-radius: 999px; background: var(--surface-3); overflow: hidden; margin-top: 4px;
+    }
+    .mini-profile-xp > i {
+      display: block; height: 100%; border-radius: 999px;
+      background: var(--grad-green); transition: width .6s;
+    }
+
+    .page-title {
+      font-size: 22px; font-weight: 900; margin-bottom: 4px;
+    }
+    .page-sub { font-size: 14px; color: var(--text-dim); }
+
+    .new-post-anim { animation: pop .35s cubic-bezier(.4,0,.2,1) both; }
+  </style>
+</head>
+<body>
+  <div id="topbar"></div>
+
+  <main class="app-main">
+    <div class="app-content">
+
+      <!-- Page header -->
+      <div class="mb-24">
+        <div class="page-title">👥 קהילת הסוחרים</div>
+        <div class="page-sub">ניצחונות, שאלות, טיפים. 340 סוחרים פעילים.</div>
+      </div>
+
+      <div class="community-layout">
+
+        <!-- ===== MAIN FEED ===== -->
+        <div>
+
+          <!-- Composer -->
+          <div class="portal-card mb-24" id="composer-card">
+            <div class="flex gap-12 items-center mb-16">
+              <div class="post-avatar" id="composer-ava">ד</div>
+              <div style="flex:1; color:var(--text-dim); font-size:14px;">שלום <strong id="composer-name">דניאל</strong> 👋</div>
+            </div>
+            <textarea class="composer-textarea" id="composer-text" placeholder="שתף ניצחון, שאלה או מוצר שעובד לך..."></textarea>
+            <div class="flex between items-center mt-16">
+              <div class="flex gap-8">
+                <button class="btn btn--outline btn--sm" onclick="addTag('ניצחון 🏆')">ניצחון 🏆</button>
+                <button class="btn btn--outline btn--sm" onclick="addTag('שאלה ❓')">שאלה ❓</button>
+                <button class="btn btn--outline btn--sm" onclick="addTag('טיפ 💡')">טיפ 💡</button>
+              </div>
+              <button class="btn btn--primary btn--sm" id="post-btn" onclick="publishPost()">פרסם</button>
+            </div>
+          </div>
+
+          <!-- Feed -->
+          <div id="feed" class="flex col gap-16"></div>
+
+        </div>
+
+        <!-- ===== SIDEBAR ===== -->
+        <div class="community-sidebar flex col gap-16">
+
+          <!-- Mini profile -->
+          <div class="portal-card portal-card--glass" id="mini-profile-card">
+            <div class="flex items-center gap-12 mb-16">
+              <div class="avatar" id="sidebar-ava">ד</div>
+              <div>
+                <div style="font-weight:800; font-size:15px;" id="sidebar-name">דניאל</div>
+                <div class="badge badge--green mt-8">סוחר פעיל</div>
+              </div>
+            </div>
+            <div class="flex between" style="font-size:13px; color:var(--text-dim); margin-bottom:6px;">
+              <span>XP</span><span class="green" id="sidebar-xp">0</span>
+            </div>
+            <div class="mini-profile-xp"><i id="xp-bar" style="width:0%"></i></div>
+            <div class="flex between mt-16" style="font-size:13px;">
+              <div class="flex col items-center gap-8">
+                <span style="font-size:20px; font-weight:900; color:var(--green);" id="sidebar-streak">3</span>
+                <span class="muted" style="font-size:11px;">ימי רצף</span>
+              </div>
+              <div class="flex col items-center gap-8">
+                <span style="font-size:20px; font-weight:900; color:var(--gold);" id="sidebar-done">0</span>
+                <span class="muted" style="font-size:11px;">שיעורים</span>
+              </div>
+              <div class="flex col items-center gap-8">
+                <span style="font-size:20px; font-weight:900; color:var(--silver);" id="sidebar-pct">0%</span>
+                <span class="muted" style="font-size:11px;">התקדמות</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Leaderboard -->
+          <div class="portal-card reveal">
+            <div class="flex between items-center mb-16">
+              <div style="font-weight:800; font-size:15px;">מובילי הקהילה</div>
+              <span class="badge badge--gold">🏆 חודשי</span>
+            </div>
+            <div id="leaderboard"></div>
+          </div>
+
+          <!-- Rules -->
+          <div class="portal-card reveal">
+            <div style="font-weight:800; font-size:15px; margin-bottom:12px;">📋 כללי הקהילה</div>
+            <div class="rule-item"><span class="rule-icon">✅</span>שתף מה עובד לך, אפילו פנייה קטנה.</div>
+            <div class="rule-item"><span class="rule-icon">🤝</span>עזור לאחרים. היום אתה שואל, מחר אתה עונה.</div>
+            <div class="rule-item"><span class="rule-icon">🚫</span>אין ספאם, אין פרסום שירותים מתחרים.</div>
+            <div class="rule-item"><span class="rule-icon">💬</span>שאלות = מוזמנות. אין שאלה מביכה כאן.</div>
+            <div class="rule-item"><span class="rule-icon">🔒</span>סודות עסקיים נשארים בקהילה.</div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+    </div>
+  </main>
+
+  <div id="bottomnav"></div>
+
+  <script src="data/curriculum.js"></script>
+  <script src="js/portal-core.js"></script>
+  <script>
+    /* ---------- Shell ---------- */
+    document.getElementById('topbar').innerHTML = renderTopbar('community.html');
+    document.getElementById('bottomnav').innerHTML = renderBottomNav('community.html');
+
+    /* ---------- User ---------- */
+    const u = window.User.get();
+    document.getElementById('composer-ava').textContent = u.initial;
+    document.getElementById('composer-name').textContent = u.name;
+    document.getElementById('sidebar-ava').textContent = u.initial;
+    document.getElementById('sidebar-name').textContent = u.name;
+
+    /* XP bar */
+    const xp = window.Progress.xp();
+    document.getElementById('sidebar-xp').textContent = xp + ' XP';
+    document.getElementById('xp-bar').style.width = Math.min(100, (xp % 500) / 5) + '%';
+    document.getElementById('sidebar-streak').textContent = window.Progress.streak();
+    document.getElementById('sidebar-done').textContent = window.Progress.completedCount();
+    document.getElementById('sidebar-pct').textContent = window.Progress.totalPct() + '%';
+
+    /* ---------- Leaderboard ---------- */
+    const LB = [
+      { name:'שי כהן',    pts:4820, initial:'ש', cls:'alt-4', rank:'gold'   },
+      { name:'מיה לוי',   pts:3740, initial:'מ', cls:'alt-2', rank:'silver' },
+      { name:'רועי ברנר', pts:3210, initial:'ר', cls:'alt-1', rank:'bronze' },
+      { name:'נועה דוד',  pts:2580, initial:'נ', cls:'alt-3', rank:''       },
+      { name:'אסף גרין',  pts:1970, initial:'א', cls:'alt-5', rank:''       },
+    ];
+    document.getElementById('leaderboard').innerHTML = LB.map((p, i) => `
+      <div class="leaderboard-row">
+        <div class="lb-rank ${p.rank}">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</div>
+        <div class="lb-ava ${p.cls}" style="background:${avatarBg(p.cls)};color:${avatarColor(p.cls)}">${p.initial}</div>
+        <div class="lb-name">${p.name}</div>
+        <div class="lb-pts">${p.pts.toLocaleString()} XP</div>
+      </div>`).join('');
+
+    function avatarBg(cls) {
+      const map = { 'alt-1':'linear-gradient(135deg,#4FB0FF,#2277CC)', 'alt-2':'linear-gradient(135deg,#F0B743,#C98A4B)', 'alt-3':'linear-gradient(135deg,#FF5C6C,#CC2233)', 'alt-4':'linear-gradient(135deg,#00E08A,#00935A)', 'alt-5':'linear-gradient(135deg,#A855F7,#7C3AED)' };
+      return map[cls] || 'var(--grad-green)';
+    }
+    function avatarColor(cls) {
+      return (cls === 'alt-1' || cls === 'alt-3' || cls === 'alt-5') ? '#fff' : '#04110B';
+    }
+
+    /* ---------- Seed posts ---------- */
+    const SEED_POSTS = [
+      {
+        id: 'p1',
+        author: 'שי כהן',
+        initial: 'ש',
+        avaCls: 'alt-4',
+        time: 'לפני 12 דקות',
+        tag: 'ניצחון 🏆',
+        tagStyle: 'badge--green',
+        body: 'קיבלתי את ההתראה הראשונה!! ₪149 🔔🎉 לא האמנתי שזה קורה אמיתי. הגדרתי את החנות אתמול בלילה לפי השיעור של דניאל על AutoDS ובוקר קיבלתי PING. הסאונד הזה של שופיפיי הוא הכי טוב בעולם.',
+        likes: 47,
+        comments: [
+          { author: 'מיה לוי',   initial: 'מ', text: 'ברוך הבא לועדת ה-PING! מכאן רק למעלה 🙌' },
+          { author: 'אסף גרין',  initial: 'א', text: 'אני זוכר את ההרגשה. עשיתי סקרינשוט ושמרתי. יום אחד תסתכל עליו ותצחק כמה קטן זה היה.' },
+        ],
+        userLiked: false,
+      },
+      {
+        id: 'p2',
+        author: 'נועה דוד',
+        initial: 'נ',
+        avaCls: 'alt-3',
+        time: 'לפני 38 דקות',
+        tag: 'שאלה ❓',
+        tagStyle: 'badge--locked',
+        body: 'שאלה לכל מי שכבר מקבל תשלומים: לחבר PayPlus או להתחיל עם PayPal? ראיתי בשיעור שדניאל אמר להיזהר עם PayPal מתחת לגיל 18 אבל אני 22, האם PayPlus שווה את התהליך הבירוקרטי? כמה זמן לקח לכם לאשר?',
+        likes: 14,
+        comments: [
+          { author: 'רועי ברנר', initial: 'ר', text: 'אצלי PayPlus לקח 3 ימי עסקים. ממליץ בחום, העמלות יותר הגיוניות ממה שנראה.' },
+          { author: 'שי כהן',    initial: 'ש', text: 'PayPlus כל הדרך. תכין ת.ז + פרטי חשבון בנק ותהיה מוכן.' },
+        ],
+        userLiked: false,
+      },
+      {
+        id: 'p3',
+        author: 'רועי ברנר',
+        initial: 'ר',
+        avaCls: 'alt-1',
+        time: 'לפני שעה',
+        tag: 'טיפ 💡',
+        tagStyle: 'badge--gold',
+        body: 'שיתוף: מודעת הווידאו שעבדה לי הכי טוב החודש.\n\n3 שניות ראשונות: הצגת הכאב (בלי מוצר).\nשניה 4-8: המוצר בפעולה.\nשניה 9-15: ביקורת אחת וCTA.\n\nתקציב 80₪ ביום, הביא 490₪ מכירות ביום הראשון. תנסו, זה עובד.',
+        likes: 63,
+        comments: [
+          { author: 'נועה דוד',  initial: 'נ', text: 'שמרתי! על איזה פלטפורמה הרצת, פייסבוק?' },
+          { author: 'רועי ברנר', initial: 'ר', text: 'אינסטגרם Reels. ב-FB פחות טוב לי בקהל הזה.' },
+        ],
+        userLiked: false,
+      },
+      {
+        id: 'p4',
+        author: 'מיה לוי',
+        initial: 'מ',
+        avaCls: 'alt-2',
+        time: 'לפני 3 שעות',
+        tag: 'ניצחון 🏆',
+        tagStyle: 'badge--green',
+        body: 'חצינו 10,000₪ החודש! 🎯\n\nלפני 3 חודשים הייתי בפחד להוציא 200₪ על מוצר בדיקה. היום מחזור חודשי 10K. עדיין לא מאמינה שזה אמיתי.\n\nמה שינה הכל: הוספת הבאנדל 1/2/3 מהשיעור של BundleUp. ה-AOV קפץ מ-130₪ ל-245₪. חשבת שזה פשוט אבל זה עשה את כל ההבדל.',
+        likes: 112,
+        comments: [
+          { author: 'שי כהן',   initial: 'ש', text: '10K זה milestone אמיתי. מכאן 20K הוא הצעד הקרוב.' },
+          { author: 'אסף גרין', initial: 'א', text: 'ה-AOV זה הנקודה שאנשים מפספסים! אותו תנועה, פחות כסף. מאזין.' },
+        ],
+        userLiked: false,
+      },
+      {
+        id: 'p5',
+        author: 'אסף גרין',
+        initial: 'א',
+        avaCls: 'alt-5',
+        time: 'לפני 5 שעות',
+        tag: 'שאלה ❓',
+        tagStyle: 'badge--locked',
+        body: 'מישהו פתר את בעיית המטבע בקאסה? לי מוצג ₪ בדף המוצר אבל בצ\'קאאוט עובר לדולר. ניסיתי לשנות ב-Settings > Markets אבל עדיין קורה. גירסת שופיפיי Basic.',
+        likes: 9,
+        comments: [
+          { author: 'מיה לוי', initial: 'מ', text: 'תוודא שב-Checkout settings בחרת "Same as store currency". אצלי פתר.' },
+        ],
+        userLiked: false,
+      },
+      {
+        id: 'p6',
+        author: 'גל שפיר',
+        initial: 'ג',
+        avaCls: '',
+        time: 'לפני 7 שעות',
+        tag: 'טיפ 💡',
+        tagStyle: 'badge--gold',
+        body: 'טיפ לכל מי שעושה דרופשיפינג: תוסיף "מעקב הזמנה" ברור ובולט לתפריט. מאז שהוספתי AutoTrack ירדו שאלות "איפה ההזמנה שלי?" ב-70%. זה גם חוסך לך זמן וגם מוריד chargebacks. מוסיף אמון ענק ללקוח.',
+        likes: 38,
+        comments: [
+          { author: 'נועה דוד', initial: 'נ', text: 'מוסיף עכשיו! לא חשבתי על זה כגורם לchargebacks.' },
+          { author: 'רועי ברנר', initial: 'ר', text: 'גם סוגר את הבעיה שהלקוח מבין שהמשלוח מסין.' },
+        ],
+        userLiked: false,
+      },
+    ];
+
+    /* ---------- localStorage state ---------- */
+    const LS_KEY = 'mold_community';
+    function loadState() {
+      try { return JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch { return null; }
+    }
+    function saveState(posts) { localStorage.setItem(LS_KEY, JSON.stringify(posts)); }
+
+    let posts = loadState();
+    if (!posts) { posts = SEED_POSTS; saveState(posts); }
+
+    /* ---------- Render ---------- */
+    function renderFeed() {
+      document.getElementById('feed').innerHTML = posts.map(renderPost).join('');
+      // Re-bind comments visibility from state
+      posts.forEach(p => {
+        if (p.commentsOpen) {
+          const el = document.getElementById('comments-' + p.id);
+          if (el) el.classList.add('open');
+        }
+      });
+    }
+
+    function tagBadgeClass(style) {
+      return style || 'badge--locked';
+    }
+
+    function renderPost(p) {
+      const avaBg = p.avaCls ? `style="background:${avatarBg(p.avaCls)};color:${avatarColor(p.avaCls)}"` : '';
+      const bodyHtml = p.body.replace(/\n/g, '<br>');
+      const commentsHtml = (p.comments || []).map(c => `
+        <div class="comment-item">
+          <div class="comment-ava">${c.initial}</div>
+          <div class="comment-bubble">
+            <div class="comment-author">${c.author}</div>
+            ${c.text}
+          </div>
+        </div>`).join('');
+
+      return `
+        <div class="post-card" id="post-${p.id}">
+          <div class="flex gap-12 items-center">
+            <div class="post-avatar ${p.avaCls}" ${avaBg}>${p.initial}</div>
+            <div style="flex:1">
+              <div class="flex items-center gap-8 wrap-f">
+                <span class="post-name">${p.author}</span>
+                <span class="badge ${tagBadgeClass(p.tagStyle)}" style="font-size:11px">${p.tag}</span>
+              </div>
+              <div class="post-time">${p.time}</div>
+            </div>
+          </div>
+          <div class="post-body">${bodyHtml}</div>
+          <div class="post-actions">
+            <button class="action-btn ${p.userLiked ? 'liked' : ''}" onclick="toggleLike('${p.id}')">
+              ❤️ <span id="likes-${p.id}">${p.likes}</span>
+            </button>
+            <button class="action-btn" onclick="toggleComments('${p.id}')">
+              💬 <span>${(p.comments || []).length}</span>
+            </button>
+            <button class="action-btn" onclick="sharePost('${p.id}')">🔗 שתף</button>
+          </div>
+          <div class="comments-section" id="comments-${p.id}">
+            ${commentsHtml}
+          </div>
+        </div>`;
+    }
+
+    function toggleLike(id) {
+      const p = posts.find(x => x.id === id);
+      if (!p) return;
+      p.userLiked = !p.userLiked;
+      p.likes = p.userLiked ? p.likes + 1 : p.likes - 1;
+      saveState(posts);
+      const btn = document.querySelector(`#post-${id} .action-btn`);
+      if (btn) btn.classList.toggle('liked', p.userLiked);
+      const span = document.getElementById('likes-' + id);
+      if (span) span.textContent = p.likes;
+    }
+
+    function toggleComments(id) {
+      const p = posts.find(x => x.id === id);
+      if (!p) return;
+      p.commentsOpen = !p.commentsOpen;
+      saveState(posts);
+      const el = document.getElementById('comments-' + id);
+      if (el) el.classList.toggle('open', p.commentsOpen);
+    }
+
+    function sharePost(id) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(window.location.href + '#post-' + id)
+          .then(() => toast('הקישור הועתק ללוח', '🔗'))
+          .catch(() => toast('שתף את הפוסט עם חברים!', '🔗'));
+      } else {
+        toast('שתף את הפוסט עם חברים!', '🔗');
+      }
+    }
+
+    /* ---------- Composer ---------- */
+    let activeTag = '';
+    function addTag(t) {
+      activeTag = t;
+      const ta = document.getElementById('composer-text');
+      ta.focus();
+    }
+
+    function publishPost() {
+      const ta = document.getElementById('composer-text');
+      const text = ta.value.trim();
+      if (!text) { toast('כתוב משהו לפני שמפרסמים 😊', '✏️'); ta.focus(); return; }
+
+      const tag = activeTag || 'שיתוף 📣';
+      const tagStyle = activeTag.includes('ניצחון') ? 'badge--green' : activeTag.includes('טיפ') ? 'badge--gold' : 'badge--locked';
+
+      const now = { id: 'u' + Date.now(), author: u.name, initial: u.initial, avaCls: '', time: 'עכשיו', tag, tagStyle, body: text, likes: 0, comments: [], userLiked: false, commentsOpen: false };
+      posts.unshift(now);
+      saveState(posts);
+
+      const feed = document.getElementById('feed');
+      const div = document.createElement('div');
+      div.innerHTML = renderPost(now);
+      const card = div.firstElementChild;
+      card.classList.add('new-post-anim');
+      feed.prepend(card);
+
+      ta.value = '';
+      activeTag = '';
+      toast('הפוסט פורסם בהצלחה!', '🚀');
+    }
+
+    /* ---------- Init ---------- */
+    renderFeed();
+
+    /* Scroll reveal */
+    window.addEventListener('load', () => {
+      const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('in')), { threshold: .1 });
+      document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    });
+  </script>
+</body>
+</html>

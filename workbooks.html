@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>חוברות עבודה — אקדמיית מולדבסקי</title>
+  <link rel="stylesheet" href="css/portal.css">
+  <style>
+    .wb-header { margin-bottom: 28px; }
+    .wb-header h1 { font-size: clamp(22px,4vw,34px); margin-bottom: 6px; }
+
+    .wb-card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .wb-card-icon { font-size: 36px; line-height: 1; }
+    .wb-card-title { font-size: 17px; font-weight: 800; margin: 0; }
+    .wb-card-desc { font-size: 14px; color: var(--text-dim); flex: 1; }
+    .wb-card-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+
+    /* modal overrides — wider for content */
+    .portal-modal .box.wb-box {
+      max-width: 640px;
+      max-height: 88vh;
+      overflow-y: auto;
+      padding: 28px 28px 24px;
+    }
+    .wb-modal-title { font-size: 20px; font-weight: 900; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+    .wb-modal-close { margin-inline-start: auto; font-size: 22px; cursor: pointer; color: var(--text-dim); background: none; border: none; line-height: 1; }
+    .wb-modal-close:hover { color: var(--green); }
+
+    /* content typography inside modal */
+    .wb-content h3 { font-size: 15px; font-weight: 800; color: var(--green); margin: 20px 0 6px; }
+    .wb-content h4 { font-size: 14px; font-weight: 700; margin: 14px 0 4px; }
+    .wb-content p, .wb-content li { font-size: 14px; line-height: 1.7; color: var(--text); }
+    .wb-content ul, .wb-content ol { padding-inline-start: 18px; margin: 6px 0 12px; }
+    .wb-content li { margin-bottom: 5px; }
+    .wb-content .tpl-block {
+      background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r-sm);
+      padding: 14px 16px; margin: 10px 0; font-size: 13.5px; line-height: 1.75;
+    }
+    .wb-content .tpl-block code { color: var(--green); font-family: inherit; font-style: italic; }
+    .wb-content .wb-note {
+      background: rgba(240,183,67,.1); border: 1px solid rgba(240,183,67,.3); border-radius: var(--r-sm);
+      padding: 10px 14px; font-size: 13px; color: var(--gold); margin: 14px 0;
+    }
+    .wb-content table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+    .wb-content th { background: var(--surface-3); padding: 9px 12px; text-align: right; font-weight: 700; border: 1px solid var(--border); }
+    .wb-content td { padding: 9px 12px; border: 1px solid var(--border); vertical-align: top; line-height: 1.55; }
+    .wb-content tr:nth-child(even) td { background: var(--surface-2); }
+    .wb-content .skeleton { border: 2px dashed var(--border-2); border-radius: var(--r-sm); padding: 14px 16px; margin: 10px 0; font-size: 13.5px; color: var(--text-mute); line-height: 1.8; }
+    .wb-content .skeleton span { color: var(--green); font-weight: 700; }
+
+    /* AOV calculator */
+    .aov-calc { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--r); padding: 18px; margin: 14px 0; }
+    .aov-calc label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 5px; color: var(--text-dim); }
+    .aov-calc input { width: 100%; padding: 10px 14px; border-radius: 10px; background: var(--surface-3); border: 1px solid var(--border-2); color: var(--text); font-size: 15px; font-family: inherit; margin-bottom: 14px; }
+    .aov-calc input:focus { outline: none; border-color: var(--green); }
+    .aov-result { background: var(--green-soft); border: 1px solid var(--green-line); border-radius: var(--r-sm); padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .aov-result .v { font-size: 26px; font-weight: 900; color: var(--green); }
+    .aov-result .k { font-size: 13px; color: var(--text-dim); }
+
+    /* locked overlay */
+    .card-locked-overlay { position: absolute; inset: 0; border-radius: var(--r); background: rgba(10,14,13,.65); backdrop-filter: blur(3px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; z-index: 2; }
+    .card-locked-overlay span { font-size: 30px; }
+    .card-locked-overlay p { font-size: 13px; color: var(--text-dim); font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div id="topbar"></div>
+
+  <main class="app-main">
+    <div class="app-content">
+
+      <!-- Header -->
+      <div class="wb-header reveal">
+        <span class="eyebrow">ארסנל הכלים</span>
+        <h1>חוברות עבודה ותבניות</h1>
+        <p class="muted">הכלים שדניאל משתמש בהם בפועל. אין צורך להמציא מחדש.</p>
+      </div>
+
+      <!-- Grid -->
+      <div class="grid-2" id="wbGrid"></div>
+
+      <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+    </div>
+  </main>
+
+  <div id="bottomnav"></div>
+
+  <!-- ===== MODALS ===== -->
+
+  <!-- Modal 1: מדיניות אתר -->
+  <div class="portal-modal" id="modal-policy">
+    <div class="box wb-box">
+      <div class="wb-modal-title">📋 תבנית מדיניות אתר <button class="wb-modal-close" onclick="closeModal('modal-policy')">×</button></div>
+      <div class="wb-content">
+        <div class="wb-note">החלף <code>[שם המותג]</code> בשם החנות שלך בכל המקומות. כאשר תרצה לנסח בצורה יותר אישית — פשוט שכתב עם ChatGPT.</div>
+
+        <h3>מדיניות החזרות</h3>
+        <div class="tpl-block">
+          <p>ב-<code>[שם המותג]</code> אנחנו מחויבים לשביעות רצונך. ניתן להחזיר כל פריט בתוך 14 ימים מיום קבלת ההזמנה, בתנאי שהפריט לא נעשה בו שימוש ואריזתו המקורית שלמה.</p>
+          <p>להגשת בקשת החזרה, פנה אלינו בדוא"ל: <code>support@[שם המותג].co.il</code> עם מספר ההזמנה ותמונת הפריט. עלות המשלוח החוזר חלה על הלקוח.</p>
+          <p>לאחר קבלת הפריט והאישור, ההחזר יינתן לכרטיס האשראי המקורי תוך 3-7 ימי עסקים.</p>
+        </div>
+
+        <h3>מדיניות פרטיות</h3>
+        <div class="tpl-block">
+          <p><code>[שם המותג]</code> מכבדת את פרטיות המשתמשים שלה. אנחנו אוספים מידע אישי (שם, כתובת, אימייל, טלפון) לצורך עיבוד הזמנות ושיפור השירות בלבד.</p>
+          <p>המידע לא יועבר לצד שלישי ללא הסכמתך, למעט ספקי שירות הנדרשים לביצוע ההזמנה (חברות משלוח, עיבוד תשלומים). אנחנו משתמשים ב-SSL להצפנת כל המידע.</p>
+          <p>לפי חוק הגנת הפרטיות, יש לך זכות לעיין, לתקן או למחוק את המידע שלך. לבקשות: <code>privacy@[שם המותג].co.il</code></p>
+        </div>
+
+        <h3>תנאי שימוש</h3>
+        <div class="tpl-block">
+          <p>השימוש באתר <code>[שם המותג].co.il</code> כפוף לתנאים הבאים. הגלישה באתר מהווה הסכמה לתנאים אלו. <code>[שם המותג]</code> שומרת לעצמה את הזכות לשנות תנאים אלו בכל עת.</p>
+          <p>כל התכנים, התמונות והטקסטים באתר הם רכוש <code>[שם המותג]</code> ואסור לעשות בהם שימוש ללא אישור בכתב. הפרת זכויות קניין רוחני עלולה להוביל לתביעה משפטית.</p>
+          <p>החברה אינה אחראית לנזקים עקיפים הנובעים מהשימוש באתר. סמכות שיפוטית: בתי המשפט בישראל.</p>
+        </div>
+
+        <h3>מדיניות משלוחים</h3>
+        <div class="tpl-block">
+          <p>הזמנות מטופלות תוך 1-3 ימי עסקים לאחר אישור התשלום. זמן המשלוח הצפוי הוא <strong>8-13 ימי עסקים</strong> (סטנדרט מסחר בינ"ל — הפריטים מגיעים מהיצרן ישירות).</p>
+          <p>לאחר השילוח תקבל/י מייל עם קוד מעקב. ניתן לעקוב אחר ההזמנה בדף מעקב ייעודי באתר. <code>[שם המותג]</code> לא אחראית לעיכובים הנגרמים על ידי גורמי מכס או חברות שילוח.</p>
+          <p>משלוח עד הבית: 29₪ | משלוח חינם על הזמנות מעל 199₪.</p>
+        </div>
+      </div>
+      <div class="flex gap-8 mt-24 wrap-f">
+        <button class="btn btn--primary btn--sm" onclick="toast('המסמך מוכן להורדה 📄')">הורד PDF</button>
+        <button class="btn btn--outline btn--sm" onclick="closeModal('modal-policy')">סגור</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: AIDA -->
+  <div class="portal-modal" id="modal-aida">
+    <div class="box wb-box">
+      <div class="wb-modal-title">✍️ צ'יטשיט AIDA לתיאור מוצר <button class="wb-modal-close" onclick="closeModal('modal-aida')">×</button></div>
+      <div class="wb-content">
+        <p>AIDA היא הנוסחה שעומדת מאחורי כמעט כל קופי שמוכר. ארבע שלבות שמובילות את הלקוח מ"לא מכיר" ל"קנה עכשיו".</p>
+
+        <h3>A — Attention (תשומת לב)</h3>
+        <p>שורה אחת שעוצרת גלילה. חייבת לנגוע בכאב או בחלום.</p>
+        <div class="tpl-block"><strong>שורת פתיחה לדוגמה:</strong> "הברך שלך כואבת? גם אחרי שנה של טיפולים?"</div>
+
+        <h3>I — Interest (עניין)</h3>
+        <p>פרט שמגרה סקרנות. מה כל כך מיוחד במוצר הזה?</p>
+        <div class="tpl-block">"הבובה הנושמת ™ פועלת לפי טכנולוגיית לחץ-מפרקים שמפחיתה כאב תוך 15 דקות של שימוש."</div>
+
+        <h3>D — Desire (חשק)</h3>
+        <p>הלקוח צריך לראות את עצמו אחרי הרכישה. תמונה מנטלית של החיים שאחרי.</p>
+        <div class="tpl-block">"דמיין לעצמך לקום בבוקר בלי הכאב הזה שרודף אותך. הולך ברגל לעבודה. משחק עם הילדים. חי."</div>
+
+        <h3>A — Action (פעולה)</h3>
+        <p>CTA ברור. מה עושים עכשיו? לא "אפשר לקנות" אלא "לחץ כאן עכשיו".</p>
+        <div class="tpl-block">"לחץ על 'הוסף לסל' עכשיו. המלאי מוגבל ל-48 שעות הקרובות."</div>
+
+        <h3>תבנית מלאה למילוי</h3>
+        <div class="skeleton">
+          <span>A:</span> _____ [הכאב / הבעיה של הלקוח]?<br>
+          <span>I:</span> [שם המוצר] עובד על ידי _____ ומשיג _____ בתוך _____.<br>
+          <span>D:</span> דמיין _____ [תמונת חיים אחרי הרכישה]. בלי _____, עם _____.<br>
+          <span>A:</span> לחץ על "הוסף לסל" עכשיו. [מלאי / הטבה מוגבלת].
+        </div>
+
+        <div class="wb-note">דניאל מדגיש: כתוב בשפה של הלקוח שלך, לא של מהנדס. אם הלקוח הוא אמא בת 40, כתוב כמו שאמא בת 40 מדברת.</div>
+      </div>
+      <div class="flex gap-8 mt-24 wrap-f">
+        <button class="btn btn--primary btn--sm" onclick="toast('המסמך מוכן להורדה 📄')">הורד PDF</button>
+        <button class="btn btn--outline btn--sm" onclick="closeModal('modal-aida')">סגור</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: צ'קליסט מוצר -->
+  <div class="portal-modal" id="modal-checklist">
+    <div class="box wb-box">
+      <div class="wb-modal-title">🔍 צ'קליסט מוצר מנצח <button class="wb-modal-close" onclick="closeModal('modal-checklist')">×</button></div>
+      <div class="wb-content">
+        <p>לפני שמעלים מוצר לחנות, הוא חייב לעבור את כל הקריטריונים האלה. אם הוא נכשל אפילו באחד, חפש מוצר אחר.</p>
+
+        <div id="checklist-items"></div>
+
+        <h3>איך בודקים בפועל</h3>
+        <ul>
+          <li><strong>Facebook Ad Library:</strong> חפש את שם המוצר. יש מודעות שרצות הרבה זמן? זה אומר שהן מרוויחות. זו ההוכחה הכי טובה שיש ביקוש.</li>
+          <li><strong>AliExpress:</strong> מחפשים ביקורות, כמות הזמנות, וזמן משלוח. 8-13 ימי עסקים = ממוצע בענף.</li>
+          <li><strong>AutoDS:</strong> בוחנים מחיר עלות ממוצע ומחשבים מרג'ין.</li>
+        </ul>
+
+        <div class="wb-note">הדוגמה הקלאסית של דניאל: הבובה הנושמת. פותרת כאב אמיתי (חרדה/לחץ), 120₪ מחיר, עלות 40₪, מרג'ין 200%, קנייה אימפולסיבית ברורה.</div>
+      </div>
+      <div class="flex gap-8 mt-24 wrap-f">
+        <button class="btn btn--primary btn--sm" onclick="toast('המסמך מוכן להורדה 📄')">הורד PDF</button>
+        <button class="btn btn--outline btn--sm" onclick="closeModal('modal-checklist')">סגור</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 4: אפליקציות -->
+  <div class="portal-modal" id="modal-apps">
+    <div class="box wb-box">
+      <div class="wb-modal-title">🧰 רשימת האפליקציות <button class="wb-modal-close" onclick="closeModal('modal-apps')">×</button></div>
+      <div class="wb-content">
+        <p>אלה האפליקציות שדניאל מפעיל על כל חנות. כל אחת פותרת בעיה ספציפית.</p>
+        <table>
+          <thead>
+            <tr><th>אפליקציה</th><th>מה היא עושה</th><th>מתי להפעיל</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>BundleUp</strong></td>
+              <td>יוצרת חבילות של 1/2/3 יחידות עם תמחור מדורג שמדגיש חיסכון. מעלה AOV.</td>
+              <td>מיד אחרי העלאת המוצר הראשון.</td>
+            </tr>
+            <tr>
+              <td><strong>AutoDS</strong></td>
+              <td>מושכת מוצרים מאלי-אקספרס ומספקים נוספים, וממלאת הזמנות אוטומטית — כולל שליחת פרטי הלקוח לספק.</td>
+              <td>צעד ראשון לפני הוספת מוצרים.</td>
+            </tr>
+            <tr>
+              <td><strong>Sales RTL</strong></td>
+              <td>הופכת את ממשק שופיפיי לעברית/RTL מלא — כפתורים, כיווניות, קאסה. חובה לשוק ישראל.</td>
+              <td>ברגע שהחנות ישראלית.</td>
+            </tr>
+            <tr>
+              <td><strong>Cartify</strong></td>
+              <td>מוסיפה אפסל בעגלה + תגמולים מדורגים (משלוח חינם / הנחה / מתנה לפי סף הזמנה) + טיימר ספירה לאחור.</td>
+              <td>לאחר 10 מכירות ראשונות — לייעל AOV.</td>
+            </tr>
+            <tr>
+              <td><strong>Vouch AI</strong></td>
+              <td>אפליקציית ביקורות חכמה עם AI. מייצרת הוכחה חברתית אוטומטית, מציגה ביקורות עם תמונות ומה שכתוב בג'ינגל.</td>
+              <td>אחרי 5 מכירות ראשונות שבהן ניתן לבקש ביקורת.</td>
+            </tr>
+            <tr>
+              <td><strong>AutoTrack</strong></td>
+              <td>דף מעקב הזמנה ברנדד שמסתיר שהמשלוח מסין. מוריד פניות לתמיכה ב-60%+.</td>
+              <td>לפני שיווק — חובה.</td>
+            </tr>
+            <tr>
+              <td><strong>PayPlus</strong></td>
+              <td>ספק סליקה ישראלי שתומך בכרטיסי אשראי ישראליים (ישראכרט, מקס, ויזה). ממשק עברי ועמלות תחרותיות.</td>
+              <td>לפני פתיחה לציבור — ללא סליקה, אין מכירות.</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="wb-note">סדר ההתקנה חשוב: AutoDS ← Sales RTL ← AutoTrack ← PayPlus ← Vouch AI ← BundleUp ← Cartify.</div>
+      </div>
+      <div class="flex gap-8 mt-24 wrap-f">
+        <button class="btn btn--primary btn--sm" onclick="toast('המסמך מוכן להורדה 📄')">הורד PDF</button>
+        <button class="btn btn--outline btn--sm" onclick="closeModal('modal-apps')">סגור</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 5: פרומפטים -->
+  <div class="portal-modal" id="modal-prompts">
+    <div class="box wb-box">
+      <div class="wb-modal-title">🤖 ספריית פרומפטים ל-ChatGPT <button class="wb-modal-close" onclick="closeModal('modal-prompts')">×</button></div>
+      <div class="wb-content">
+        <p>העתק, הדבק, ושנה את מה שבסוגריים. ChatGPT עושה את השאר.</p>
+
+        <h3>שם מותג (20 רעיונות)</h3>
+        <div class="tpl-block">
+          "תציע לי 20 שמות מותג לחנות אינטרנטית שמוכרת [סוג מוצר / קטגוריה]. השמות צריכים להיות גנריים, קצרים (2-3 הברות), נשמעים ניטרליים ולא מייחסים מקום מוצא מסוים. כמו זרה, עדידס, סוני. ספק גם בדיקה קצרה — האם כל שם נשמע בין-לאומי?"
+        </div>
+
+        <h3>תיאור מוצר AIDA</h3>
+        <div class="tpl-block">
+          "כתוב תיאור מוצר בעברית בתבנית AIDA עבור [שם המוצר]. הקהל הוא [תיאור הלקוח, גיל, בעיה]. הדגש את הכאב, הציג את הפתרון, ותן קריאה לפעולה ברורה. אורך: 120-160 מילים. שפה: יומיומית, ישירה, ללא ז'ארגון."
+        </div>
+
+        <h3>טקסט "קצת עלינו" לדף About</h3>
+        <div class="tpl-block">
+          "כתוב טקסט 'קצת עלינו' לחנות [שם המותג] שמוכרת [קטגוריה]. הטון: חם, אמין, לא קורפורטיבי. ספר סיפור של מישהו שמצא פתרון ורצה לשתף אותו. 80-100 מילים. אל תזכיר מקום ייצור או יצרן."
+        </div>
+
+        <h3>שאלות ותשובות למוצר</h3>
+        <div class="tpl-block">
+          "צור 6 שאלות ותשובות נפוצות עבור לקוח שמתלבט לפני קנייה של [שם המוצר] ב-[מחיר]. כלול שאלות על: זמן משלוח, החזרות, אמינות המוצר, איך הוא עובד, ואחריות. תשובות קצרות, ישירות, בעברית."
+        </div>
+
+        <h3>רעיונות לקריאייטיב מודעות</h3>
+        <div class="tpl-block">
+          "תן לי 5 רעיונות לסרטוני מודעה קצרים (15-30 שניות) עבור [שם המוצר]. כל רעיון: תיאור מה יופיע בפריים הראשון (hook), מה הסיפור המרכזי, ומה הטקסט ב-CTA. קהל יעד: [תיאור הקהל]."
+        </div>
+      </div>
+      <div class="flex gap-8 mt-24 wrap-f">
+        <button class="btn btn--primary btn--sm" onclick="toast('המסמך מוכן להורדה 📄')">הורד PDF</button>
+        <button class="btn btn--outline btn--sm" onclick="closeModal('modal-prompts')">סגור</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 6: מחשבון AOV -->
+  <div class="portal-modal" id="modal-aov">
+    <div class="box wb-box">
+      <div class="wb-modal-title">💰 מחשבון רווחיות AOV <button class="wb-modal-close" onclick="closeModal('modal-aov')">×</button></div>
+      <div class="wb-content">
+        <h3>מה זה AOV?</h3>
+        <p>AOV = Average Order Value. הסכום הממוצע שלקוח משלם בכל הזמנה. זה הנתון שמכריע אם אתה מרוויח או מפסיד על כל הזמנה לאחר עלות מוצר, פרסום ומשלוח.</p>
+        <p>דניאל אומר: "אם המרג'ין שלך פחות מ-כפול, אתה עובד בשביל מישהו אחר."</p>
+
+        <h3>חשב את הרווחיות שלך</h3>
+        <div class="aov-calc">
+          <label>עלות המוצר מהספק (₪)</label>
+          <input type="number" id="cost" placeholder="לדוגמה: 45" oninput="calcAov()">
+          <label>מחיר מכירה ללקוח (₪)</label>
+          <input type="number" id="price" placeholder="לדוגמה: 149" oninput="calcAov()">
+          <div class="aov-result" id="aov-result">
+            <div><div class="k">מרג'ין גולמי</div><div class="v" id="margin-pct">---</div></div>
+            <div><div class="k">רווח לפני פרסום</div><div class="v" id="margin-ils">---</div></div>
+            <div><div class="k">הערכת ROAS נדרש</div><div class="v" id="roas">---</div></div>
+          </div>
+        </div>
+
+        <h3>לוגיקת Bundle / Upsell</h3>
+        <ul>
+          <li><strong>קנה 1 ב-149₪</strong> — המרג'ין הבסיסי.</li>
+          <li><strong>קנה 2 ב-259₪ (חיסכון 39₪)</strong> — AOV קפץ ב-74%, עלות השיווק נשארת זהה.</li>
+          <li><strong>קנה 3 ב-369₪ (חיסכון 78₪)</strong> — הלקוח מרגיש שהוא מנצח. הרווח שלך עלה 147%.</li>
+        </ul>
+        <p class="muted" style="font-size:13px">Cartify ו-BundleUp עושים את זה אוטומטית — אתה רק מגדיר את המחירים.</p>
+      </div>
+      <div class="flex gap-8 mt-24 wrap-f">
+        <button class="btn btn--primary btn--sm" onclick="toast('המסמך מוכן להורדה 📄')">הורד PDF</button>
+        <button class="btn btn--outline btn--sm" onclick="closeModal('modal-aov')">סגור</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data/curriculum.js"></script>
+  <script src="js/portal-core.js"></script>
+  <script>
+    document.getElementById('topbar').innerHTML = renderTopbar('workbooks.html');
+    document.getElementById('bottomnav').innerHTML = renderBottomNav('workbooks.html');
+
+    /* ---- Workbook card definitions ---- */
+    const WORKBOOKS = [
+      {
+        icon: '📋',
+        title: 'תבנית מדיניות אתר',
+        desc: 'מדיניות החזרות, פרטיות, תנאי שימוש ומשלוחים — מוכן להדביק',
+        modal: 'modal-policy',
+        badge: null,
+        module: 'm8',
+      },
+      {
+        icon: '✍️',
+        title: "צ'יטשיט AIDA לתיאור מוצר",
+        desc: 'הנוסחה שמוכרת: Attention, Interest, Desire, Action + דוגמה עם מוצר אמיתי',
+        modal: 'modal-aida',
+        badge: null,
+        module: 'm5',
+      },
+      {
+        icon: '🔍',
+        title: "צ'קליסט מוצר מנצח",
+        desc: '5 קריטריונים שכל מוצר חייב לעמוד בהם לפני שמעלים לחנות',
+        modal: 'modal-checklist',
+        badge: null,
+        module: 'm4',
+      },
+      {
+        icon: '🧰',
+        title: 'רשימת האפליקציות',
+        desc: 'BundleUp, AutoDS, Sales RTL, Cartify, Vouch AI, AutoTrack, PayPlus — מה ומתי',
+        modal: 'modal-apps',
+        badge: null,
+        module: 'm3',
+      },
+      {
+        icon: '🤖',
+        title: "ספריית פרומפטים ל-ChatGPT",
+        desc: 'שם מותג, AIDA, About, שאלות-תשובות, קריאייטיב — העתק ושלח',
+        modal: 'modal-prompts',
+        badge: null,
+        module: 'm2',
+      },
+      {
+        icon: '💰',
+        title: 'מחשבון רווחיות AOV',
+        desc: 'חשב מרג\'ין ורווח בזמן אמת + הסבר על לוגיקת Bundle ו-Upsell',
+        modal: 'modal-aov',
+        badge: null,
+        module: 'm7',
+      },
+      {
+        icon: '📊',
+        title: 'ניתוח מתחרים — מדריך',
+        desc: 'Facebook Ad Library: איך לרגל, מה לחפש, ואיך ניצחים',
+        modal: null,
+        badge: 'dma',
+        module: 'm12',
+      },
+      {
+        icon: '🎯',
+        title: 'תסריט מודעת פייסבוק',
+        desc: 'מבנה ה-Hook, הגוף, ה-CTA — תסריט מלא להעתקה',
+        modal: null,
+        badge: 'dma',
+        module: 'm12',
+      },
+    ];
+
+    /* ---- Build checklist items dynamically ---- */
+    const CRITERIA = [
+      { text: 'פותר כאב ממשי וניתן להוכחה', detail: 'לא "כי יפה" — אלא כי יש בעיה שהמוצר פותר.' },
+      { text: 'טווח מחיר מכירה 100-300₪', detail: 'זה טווח ה"רכישה אימפולסיבית" — לא צריך לחשוב יותר מדי.' },
+      { text: 'מרג\'ין כפול עד שלוש-פעמים מעלות הספק', detail: 'אם קנית ב-50₪, מכור ב-120₪ לפחות. פחות מזה, לא שווה.' },
+      { text: 'קנייה אימפולסיבית — לא מוצר שחוקרים שבועות', detail: 'האם אתה קונה את זה בלי לחשוב? אם כן, גם הלקוח יקנה.' },
+      { text: 'יש מתחרים מצליחים שמפרסמים זמן רב', detail: 'חפש ב-Facebook Ad Library. מודעה שרצה 3 חודשים = מודעה שמרוויחה.' },
+      { text: 'לא ניתן לבדיקה פיזית (בגדים, נעליים — לא)', detail: 'מוצר שהלקוח לא צריך "למדוד" = פחות החזרות.' },
+    ];
+
+    document.getElementById('checklist-items').innerHTML = CRITERIA.map((c, i) => `
+      <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;padding:12px;background:var(--surface-2);border-radius:var(--r-sm);border:1px solid var(--border);">
+        <span style="font-size:20px;flex-shrink:0;margin-top:1px">✅</span>
+        <div>
+          <div style="font-weight:700;font-size:14px;margin-bottom:2px">${c.text}</div>
+          <div style="font-size:13px;color:var(--text-dim)">${c.detail}</div>
+        </div>
+      </div>
+    `).join('');
+
+    /* ---- Render workbook grid ---- */
+    function renderGrid() {
+      const paid = window.User.isPaid();
+      const grid = document.getElementById('wbGrid');
+      grid.innerHTML = WORKBOOKS.map(wb => {
+        const locked = wb.badge === 'dma' && !paid;
+        return `
+          <div class="portal-card portal-card--hover portal-card--accent wb-card reveal" style="position:relative;">
+            ${locked ? `<div class="card-locked-overlay"><span>🔒</span><p>זמין חברי DMA</p><button class="btn btn--primary btn--sm" onclick="unlockDma()">שדרג ל-DMA</button></div>` : ''}
+            <div class="wb-card-icon">${wb.icon}</div>
+            <h3 class="wb-card-title">${wb.title}</h3>
+            <p class="wb-card-desc">${wb.desc}</p>
+            <div class="wb-card-actions">
+              ${!locked && wb.modal ? `<button class="btn btn--primary btn--sm" onclick="openModal('${wb.modal}')">פתח</button>` : ''}
+              ${!locked && wb.modal ? `<button class="btn btn--outline btn--sm" onclick="toast('המסמך מוכן להורדה 📄')">הורד PDF</button>` : ''}
+              ${locked ? `<span class="badge badge--locked">🔒 DMA בלבד</span>` : ''}
+              ${wb.badge === 'dma' && !locked ? `<span class="badge badge--gold">DMA</span>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // re-observe reveal
+      if (window.__revealIo) {
+        document.querySelectorAll('.reveal').forEach(el => window.__revealIo.observe(el));
+      }
+    }
+
+    /* ---- Modal helpers ---- */
+    function openModal(id) {
+      document.getElementById(id).classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    // close on backdrop click
+    document.querySelectorAll('.portal-modal').forEach(m => {
+      m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
+    });
+    // ESC key
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') document.querySelectorAll('.portal-modal.open').forEach(m => closeModal(m.id));
+    });
+
+    /* ---- DMA upgrade ---- */
+    function unlockDma() {
+      window.User.upgrade();
+      toast('שודרגת ל-DMA! כל החוברות פתוחות עכשיו.', '🚀');
+      renderGrid();
+    }
+
+    /* ---- AOV calculator ---- */
+    function calcAov() {
+      const cost = parseFloat(document.getElementById('cost').value) || 0;
+      const price = parseFloat(document.getElementById('price').value) || 0;
+      if (!cost || !price || price <= cost) {
+        document.getElementById('margin-pct').textContent = '---';
+        document.getElementById('margin-ils').textContent = '---';
+        document.getElementById('roas').textContent = '---';
+        return;
+      }
+      const profit = price - cost;
+      const pct = Math.round((profit / price) * 100);
+      const roas = (price / (price - cost * 1.2)).toFixed(1); // rough roas needed
+      document.getElementById('margin-pct').textContent = pct + '%';
+      document.getElementById('margin-ils').textContent = profit.toFixed(0) + '₪';
+      document.getElementById('roas').textContent = 'x' + roas;
+    }
+
+    /* ---- Init ---- */
+    renderGrid();
+
+    // expose reveal IO so renderGrid can re-observe
+    window.addEventListener('load', () => {
+      const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting && e.target.classList.add('in')), { threshold: .12 });
+      window.__revealIo = io;
+      document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    });
+  </script>
+</body>
+</html>

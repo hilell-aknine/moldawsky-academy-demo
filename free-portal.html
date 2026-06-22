@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>אקדמיית מולדבסקי — מאפס לחנות שמוכרת</title>
+  <link rel="stylesheet" href="css/portal.css">
+  <style>
+    /* ---- Landing-specific overrides ---- */
+    .lp-topbar {
+      position: fixed; inset-block-start: 0; inset-inline: 0; z-index: 110;
+      height: 58px; display: flex; align-items: center; padding-inline: 24px; gap: 14px;
+      background: color-mix(in srgb, var(--surface) 82%, transparent);
+      backdrop-filter: blur(18px); border-block-end: 1px solid var(--border);
+    }
+    .lp-topbar .topbar-spacer { flex: 1; }
+
+    /* hero */
+    .lp-hero { padding-block: 112px 72px; text-align: center; position: relative; overflow: hidden; }
+    .lp-hero::before {
+      content: '';
+      position: absolute; inset-block-start: -120px; inset-inline-start: 50%;
+      transform: translateX(-50%);
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(0,224,138,.12) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .lp-hero .h-display { margin-block: 18px 16px; max-width: 820px; margin-inline: auto; }
+    .lp-hero .sub {
+      max-width: 580px; margin-inline: auto; font-size: 18px; color: var(--text-dim); margin-block-end: 36px;
+    }
+    .lp-hero .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+    /* order chip */
+    .order-chip {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--surface); border: 1px solid var(--green-line);
+      border-radius: 999px; padding: 10px 20px; font-size: 14px; font-weight: 700;
+      box-shadow: var(--glow); color: var(--green); margin-block-end: 30px;
+      animation: floaty 3s ease-in-out infinite;
+    }
+    .order-chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 1.4s infinite; flex-shrink: 0; }
+    @keyframes pulse { 0%,100%{ opacity:1; transform:scale(1); } 50%{ opacity:.5; transform:scale(.7); } }
+
+    /* stats strip */
+    .lp-stats { background: var(--surface); border-block: 1px solid var(--border); padding-block: 40px; }
+    .lp-stats .stats-row { max-width: var(--max); margin-inline: auto; padding-inline: 22px; }
+
+    /* features */
+    .feature-icon { font-size: 32px; margin-block-end: 12px; }
+    .feature-link { color: var(--green); font-size: 13px; font-weight: 700; margin-block-start: 10px; display: inline-block; }
+    .feature-link:hover { text-decoration: underline; }
+
+    /* curriculum accordion */
+    .curriculum-list { display: flex; flex-direction: column; gap: 6px; }
+    .curriculum-item {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm);
+      overflow: hidden; transition: border-color .2s;
+    }
+    .curriculum-item:hover { border-color: var(--green-line); }
+    .curriculum-item-head {
+      display: flex; align-items: center; gap: 14px; padding: 16px 18px;
+      cursor: pointer; font-weight: 700; user-select: none;
+    }
+    .curriculum-item-head .ci-icon { font-size: 20px; flex-shrink: 0; }
+    .curriculum-item-head .ci-title { flex: 1; }
+    .curriculum-item-head .ci-count { font-size: 12px; color: var(--text-mute); font-weight: 600; }
+    .curriculum-item-head .ci-chev { color: var(--text-mute); transition: transform .25s; font-size: 13px; }
+    .curriculum-item.open .ci-chev { transform: rotate(90deg); }
+    .curriculum-item-body { display: none; padding: 0 18px 14px; }
+    .curriculum-item.open .curriculum-item-body { display: block; }
+    .curriculum-item-body ul { list-style: none; display: flex; flex-direction: column; gap: 8px; padding-block-start: 4px; }
+    .curriculum-item-body li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text-dim); }
+    .curriculum-item-body li::before { content: '▸'; color: var(--green); font-size: 11px; flex-shrink: 0; }
+
+    /* testimonials */
+    .testimonial-card { display: flex; flex-direction: column; gap: 12px; }
+    .testimonial-card .ava-row { display: flex; align-items: center; gap: 12px; }
+    .testimonial-card .ava-circle {
+      width: 44px; height: 44px; border-radius: 50%; background: var(--grad-green);
+      color: #04110B; display: grid; place-items: center; font-weight: 900; font-size: 18px; flex-shrink: 0;
+    }
+    .testimonial-card .quote { font-size: 15px; color: var(--text-dim); line-height: 1.6; }
+    .testimonial-card .result { color: var(--green); font-weight: 800; font-size: 15px; }
+    .testimonial-label { font-size: 11px; color: var(--text-mute); font-weight: 600; margin-block-start: 6px; }
+
+    /* final CTA band */
+    .lp-cta-band {
+      background: linear-gradient(135deg, var(--surface-2) 0%, var(--surface) 100%);
+      border-block: 1px solid var(--border); text-align: center; padding-block: 72px;
+      position: relative; overflow: hidden;
+    }
+    .lp-cta-band::after {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at center, rgba(0,224,138,.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .lp-cta-band h2 { font-size: clamp(26px, 4vw, 42px); margin-block-end: 12px; }
+    .lp-cta-band p { color: var(--text-dim); margin-block-end: 30px; font-size: 17px; }
+    .lp-cta-band .cta-row { position: relative; z-index: 1; }
+
+    /* auth modal extras */
+    .auth-tabs { display: flex; gap: 0; background: var(--surface-2); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; margin-block-end: 22px; }
+    .auth-tabs button { flex: 1; padding: 11px; font-weight: 700; font-size: 14px; color: var(--text-dim); transition: .2s; border-radius: 0; }
+    .auth-tabs button.active { background: var(--surface); color: var(--green); }
+    .form-group { display: flex; flex-direction: column; gap: 6px; margin-block-end: 14px; }
+    .form-group label { font-size: 13px; font-weight: 700; color: var(--text-dim); }
+    .form-group input {
+      padding: 13px 16px; border-radius: 12px; background: var(--surface-2);
+      border: 1px solid var(--border); color: var(--text); font-size: 15px; outline: none;
+      transition: border-color .2s;
+    }
+    .form-group input:focus { border-color: var(--green); }
+    .divider { display: flex; align-items: center; gap: 12px; margin-block: 16px; color: var(--text-mute); font-size: 13px; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .btn-google {
+      width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 13px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--border);
+      font-weight: 700; font-size: 14px; cursor: pointer; transition: .2s; color: var(--text);
+    }
+    .btn-google:hover { border-color: var(--green-line); background: var(--green-soft); }
+    .modal-close { position: absolute; top: 14px; left: 14px; font-size: 22px; color: var(--text-mute); cursor: pointer; line-height: 1; }
+    .portal-modal .box { position: relative; }
+
+    /* section spacing for landing page (override topbar offset) */
+    .lp-body { padding-block-start: 58px; }
+
+    @media (max-width: 600px) {
+      .lp-hero { padding-block: 88px 52px; }
+      .lp-hero .sub { font-size: 16px; }
+      .lp-cta-band { padding-block: 52px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ========== TOPBAR ========== -->
+<header class="lp-topbar">
+  <a class="brand" href="free-portal.html">
+    <span class="logo">M</span>
+    אקדמיית <b>מולדבסקי</b>
+  </a>
+  <div class="topbar-spacer"></div>
+  <button class="icon-btn" title="מצב תצוגה" onclick="toggleTheme()">◐</button>
+  <button class="btn btn--primary btn--sm" id="open-auth-btn">כניסה / הרשמה</button>
+</header>
+
+<div class="lp-body">
+
+  <!-- ========== HERO ========== -->
+  <section class="lp-hero section">
+    <div class="wrap">
+      <div class="order-chip">
+        <span class="dot"></span>
+        🔔 התקבלה הזמנה · ₪149
+        <span style="color:var(--text-mute);font-size:12px;font-weight:600">לפני שנייה</span>
+      </div>
+      <div class="eyebrow reveal">הפורטל החינמי</div>
+      <h1 class="h-display reveal">
+        מאפס לחנות שמוכרת.<br>
+        בלי ניסיון, בלי אנגלית, בלי קוד.
+      </h1>
+      <p class="sub reveal">
+        31 שיעורי וידאו מובנים, 12 מודולים, ו-7 אג'נטים חכמים שעושים את העבודה בשבילך.
+        הקורס המלא של דניאל מולדבסקי עם כל הכלים, בחינם, בלי לתת כרטיס אשראי.
+      </p>
+      <div class="cta-row reveal">
+        <a href="course-library.html" class="btn btn--primary btn--lg">התחל ללמוד חינם ←</a>
+        <a href="#curriculum" class="btn btn--outline btn--lg">צפה בקורס</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== STATS STRIP ========== -->
+  <div class="lp-stats">
+    <div class="stats-row">
+      <div class="portal-stat-tile reveal">
+        <div class="ico">🎬</div>
+        <div class="v" id="stat-lessons">31</div>
+        <div class="k">שיעורי וידאו</div>
+      </div>
+      <div class="portal-stat-tile reveal">
+        <div class="ico">📦</div>
+        <div class="v">12</div>
+        <div class="k">מודולים</div>
+      </div>
+      <div class="portal-stat-tile reveal">
+        <div class="ico">🤖</div>
+        <div class="v">7</div>
+        <div class="k">אג'נטים חכמים</div>
+      </div>
+      <div class="portal-stat-tile reveal">
+        <div class="ico">📚</div>
+        <div class="v">6+</div>
+        <div class="k">חוברות ותבניות</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== WHAT'S INSIDE ========== -->
+  <section class="section">
+    <div class="wrap">
+      <div class="eyebrow center reveal">מה יש בפנים</div>
+      <h2 class="center reveal" style="font-size:clamp(24px,4vw,36px);margin-block:12px 36px">
+        פורטל שלם. לא רק וידאו.
+      </h2>
+      <div class="grid-3">
+        <a href="course-library.html" class="portal-card portal-card--hover portal-card--accent reveal" style="text-decoration:none">
+          <div class="feature-icon">📚</div>
+          <h3 style="font-size:17px;margin-block-end:6px">ספריית קורס וידאו</h3>
+          <p class="muted" style="font-size:14px">31 שיעורים מלאים, מאורגנים למודולים. ממשק נקי עם מעקב התקדמות אישי.</p>
+          <span class="feature-link">לקורס →</span>
+        </a>
+        <a href="ai-mentor.html" class="portal-card portal-card--hover portal-card--accent reveal" style="text-decoration:none">
+          <div class="feature-icon">🤖</div>
+          <h3 style="font-size:17px;margin-block-end:6px">מורה AI אישי</h3>
+          <p class="muted" style="font-size:14px">שאל כל שאלה על הקורס. האג'נט מכיר את כל השיעורים ומחזיר תשובות מדויקות.</p>
+          <span class="feature-link">לשאול →</span>
+        </a>
+        <a href="workbooks.html" class="portal-card portal-card--hover portal-card--accent reveal" style="text-decoration:none">
+          <div class="feature-icon">📔</div>
+          <h3 style="font-size:17px;margin-block-end:6px">חוברות ותבניות</h3>
+          <p class="muted" style="font-size:14px">חוברות PDF מוכנות להורדה: מחיר, קופי, עיצוב, מדיניות. לא צריך להמציא בעצמך.</p>
+          <span class="feature-link">להורדה →</span>
+        </a>
+        <a href="game.html" class="portal-card portal-card--hover portal-card--accent reveal" style="text-decoration:none">
+          <div class="feature-icon">🎮</div>
+          <h3 style="font-size:17px;margin-block-end:6px">משחק תרגול</h3>
+          <p class="muted" style="font-size:14px">קוויז אינטראקטיבי שמחזק את הנושאים. מרוויחים XP ועולים ברמות.</p>
+          <span class="feature-link">לשחק →</span>
+        </a>
+        <a href="community.html" class="portal-card portal-card--hover portal-card--accent reveal" style="text-decoration:none">
+          <div class="feature-icon">👥</div>
+          <h3 style="font-size:17px;margin-block-end:6px">קהילת סוחרים</h3>
+          <p class="muted" style="font-size:14px">לוח הכבוד, שיתוף מכירות, ותמיכה הדדית. לא יוצאים לדרך לבד.</p>
+          <span class="feature-link">לקהילה →</span>
+        </a>
+        <a href="ambassador.html" class="portal-card portal-card--hover portal-card--accent reveal" style="text-decoration:none">
+          <div class="feature-icon">🔗</div>
+          <h3 style="font-size:17px;margin-block-end:6px">מודל שגרירים</h3>
+          <p class="muted" style="font-size:14px">שתף את הפורטל עם לינק אישי ותרוויח על כל חבר שמצטרף לתוכנית DMA.</p>
+          <span class="feature-link">לינק שלי →</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== CURRICULUM PREVIEW ========== -->
+  <section class="section" id="curriculum" style="background:var(--surface);border-block:1px solid var(--border)">
+    <div class="wrap">
+      <div class="eyebrow center reveal">תוכן הקורס</div>
+      <h2 class="center reveal" style="font-size:clamp(22px,4vw,34px);margin-block:12px 32px">
+        12 מודולים. מהתחלה עד ההזמנה הראשונה.
+      </h2>
+      <div class="curriculum-list" id="curriculum-list">
+        <!-- rendered by JS -->
+      </div>
+      <div class="center mt-32 reveal">
+        <a href="course-library.html" class="btn btn--primary btn--lg">לכל הקורס המלא ←</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== SOCIAL PROOF ========== -->
+  <section class="section">
+    <div class="wrap">
+      <div class="eyebrow center reveal">תוצאות אמיתיות</div>
+      <h2 class="center reveal" style="font-size:clamp(22px,4vw,34px);margin-block:12px 36px">
+        הם התחילו בדיוק ממקומך.
+      </h2>
+      <div class="grid-3">
+
+        <div class="portal-card portal-card--glass portal-card--hover reveal">
+          <div class="testimonial-card">
+            <div class="ava-row">
+              <div class="ava-circle">ל</div>
+              <div>
+                <div style="font-weight:800">ליאב כהן, 21</div>
+                <div style="font-size:13px;color:var(--text-mute)">תל אביב</div>
+              </div>
+            </div>
+            <p class="quote">"פתחתי חנות באחסון ביחד עם לינק של הפורטל. חודש ראשון 34K, חודש שני 88K, חודש שלישי 150K. הכל בלי להשקיע שקל במלאי."</p>
+            <div class="result">150,000₪ בחודש 3</div>
+            <div class="testimonial-label">* מבוסס על דוגמאות שדניאל שיתף בקורס</div>
+          </div>
+        </div>
+
+        <div class="portal-card portal-card--glass portal-card--hover reveal">
+          <div class="testimonial-card">
+            <div class="ava-row">
+              <div class="ava-circle">ר</div>
+              <div>
+                <div style="font-weight:800">רועי אברהם, 26</div>
+                <div style="font-size:13px;color:var(--text-mute)">חיפה</div>
+              </div>
+            </div>
+            <p class="quote">"עבדתי במשמרות. פתחתי חנות שופיפיי לפי הקורס בזמן הפנאי. היום המחזור עבר 400K בחודש ועזבתי את העבודה לפני חצי שנה."</p>
+            <div class="result">400,000₪ מחזור חודשי</div>
+            <div class="testimonial-label">* מבוסס על דוגמאות שדניאל שיתף בקורס</div>
+          </div>
+        </div>
+
+        <div class="portal-card portal-card--glass portal-card--hover reveal">
+          <div class="testimonial-card">
+            <div class="ava-row">
+              <div class="ava-circle">ב</div>
+              <div>
+                <div style="font-weight:800">בן לוי, 15</div>
+                <div style="font-size:13px;color:var(--text-mute)">ירושלים</div>
+              </div>
+            </div>
+            <p class="quote">"בן 15, תלמיד תיכון. הורי חשבו שאני בטלן. היום אני מרוויח 4,000₪ ביום מחנות שמנהל עצמה. ממש כמו שדניאל הסביר."</p>
+            <div class="result">4,000₪ ביום</div>
+            <div class="testimonial-label">* מבוסס על דוגמאות שדניאל שיתף בקורס</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== FINAL CTA BAND ========== -->
+  <div class="lp-cta-band">
+    <div class="wrap">
+      <div class="eyebrow center reveal">מוכן להתחיל?</div>
+      <h2 class="reveal">הקורס המלא. חינם. עכשיו.</h2>
+      <p class="reveal">אין צורך בכרטיס אשראי. אין מלאי. רק אתה, המחשב, ו-31 שיעורים שיקחו אותך לשם.</p>
+      <div class="cta-row reveal">
+        <a href="course-library.html" class="btn btn--primary btn--lg">התחל ללמוד ←</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== FOOTER ========== -->
+  <footer style="padding-block:24px;border-block-start:1px solid var(--border);text-align:center">
+    <div class="wrap">
+      <p style="font-size:13px;color:var(--text-mute);margin-block-end:8px">
+        אקדמיית מולדבסקי · כל הזכויות שמורות לדניאל מולדבסקי
+      </p>
+      <div class="credit">נבנה ע"י <b>הלל אקנין</b></div>
+    </div>
+  </footer>
+
+</div><!-- /lp-body -->
+
+<!-- ========== AUTH MODAL ========== -->
+<div class="portal-modal" id="auth-modal">
+  <div class="box pop">
+    <button class="modal-close" id="close-modal" aria-label="סגור">✕</button>
+    <div class="brand" style="justify-content:center;margin-block-end:18px">
+      <span class="logo">M</span> אקדמיית <b>מולדבסקי</b>
+    </div>
+
+    <div class="auth-tabs" id="auth-tabs">
+      <button class="active" data-tab="login">כניסה</button>
+      <button data-tab="register">הרשמה</button>
+    </div>
+
+    <!-- Login form -->
+    <div id="tab-login">
+      <div class="form-group">
+        <label for="login-email">אימייל</label>
+        <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="login-pass">סיסמה</label>
+        <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn btn--primary btn--block" id="btn-login">כניסה ←</button>
+      <div class="divider">או</div>
+      <button class="btn-google" id="btn-google-login">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.1l6.8-6.8C35.6 2.4 30.1 0 24 0 14.7 0 6.7 5.5 2.8 13.6l7.9 6.1C12.6 13.3 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.6 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.2-10.1 7.2-17z"/><path fill="#FBBC05" d="M10.7 28.3A14.4 14.4 0 0 1 9.5 24c0-1.5.3-2.9.7-4.3L2.3 13.6A23.9 23.9 0 0 0 0 24c0 3.8.9 7.4 2.5 10.6l8.2-6.3z"/><path fill="#34A853" d="M24 48c6.1 0 11.2-2 14.9-5.4l-7.5-5.8c-2 1.4-4.6 2.2-7.4 2.2-6.2 0-11.4-4.2-13.3-9.9l-8.1 6.2C6.8 42.5 14.8 48 24 48z"/></svg>
+        המשך עם Google
+      </button>
+    </div>
+
+    <!-- Register form -->
+    <div id="tab-register" class="hidden">
+      <div class="form-group">
+        <label for="reg-name">שם מלא</label>
+        <input type="text" id="reg-name" placeholder="ישראל ישראלי" autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label for="reg-email">אימייל</label>
+        <input type="email" id="reg-email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="reg-pass">סיסמה</label>
+        <input type="password" id="reg-pass" placeholder="לפחות 6 תווים" autocomplete="new-password">
+      </div>
+      <button class="btn btn--primary btn--block" id="btn-register">הרשמה חינמית ←</button>
+      <div class="divider">או</div>
+      <button class="btn-google" id="btn-google-register">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.1l6.8-6.8C35.6 2.4 30.1 0 24 0 14.7 0 6.7 5.5 2.8 13.6l7.9 6.1C12.6 13.3 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.6 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.2-10.1 7.2-17z"/><path fill="#FBBC05" d="M10.7 28.3A14.4 14.4 0 0 1 9.5 24c0-1.5.3-2.9.7-4.3L2.3 13.6A23.9 23.9 0 0 0 0 24c0 3.8.9 7.4 2.5 10.6l8.2-6.3z"/><path fill="#34A853" d="M24 48c6.1 0 11.2-2 14.9-5.4l-7.5-5.8c-2 1.4-4.6 2.2-7.4 2.2-6.2 0-11.4-4.2-13.3-9.9l-8.1 6.2C6.8 42.5 14.8 48 24 48z"/></svg>
+        המשך עם Google
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script src="data/curriculum.js"></script>
+<script src="js/portal-core.js"></script>
+<script>
+  /* ---- Stats from real data ---- */
+  document.getElementById('stat-lessons').textContent = window.LESSON_COUNT;
+
+  /* ---- Curriculum accordion ---- */
+  (function () {
+    const container = document.getElementById('curriculum-list');
+    window.CURRICULUM.modules.forEach((mod, idx) => {
+      const div = document.createElement('div');
+      div.className = 'curriculum-item reveal' + (idx === 0 ? ' open' : '');
+      div.innerHTML = `
+        <div class="curriculum-item-head">
+          <span class="ci-icon">${mod.icon}</span>
+          <span class="ci-title">${mod.title}</span>
+          <span class="ci-count">${mod.lessons.length} שיעורים</span>
+          <span class="ci-chev">▶</span>
+        </div>
+        <div class="curriculum-item-body">
+          <ul>
+            ${mod.lessons.map(l => `<li>${l.title}</li>`).join('')}
+          </ul>
+        </div>`;
+      div.querySelector('.curriculum-item-head').addEventListener('click', () => {
+        div.classList.toggle('open');
+      });
+      container.appendChild(div);
+    });
+  })();
+
+  /* ---- Auth modal logic ---- */
+  const modal   = document.getElementById('auth-modal');
+  const tabBtns = document.querySelectorAll('#auth-tabs button');
+  const tabLogin = document.getElementById('tab-login');
+  const tabReg  = document.getElementById('tab-register');
+
+  document.getElementById('open-auth-btn').addEventListener('click', () => {
+    modal.classList.add('open');
+  });
+  document.getElementById('close-modal').addEventListener('click', () => {
+    modal.classList.remove('open');
+  });
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.classList.remove('open');
+  });
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (btn.dataset.tab === 'login') {
+        tabLogin.classList.remove('hidden');
+        tabReg.classList.add('hidden');
+      } else {
+        tabReg.classList.remove('hidden');
+        tabLogin.classList.add('hidden');
+      }
+    });
+  });
+
+  function saveAndRedirect(name) {
+    /* capture referral */
+    const ref = window.qs('ref');
+    if (ref) localStorage.setItem('mold_ref', ref);
+    /* mock user */
+    const initial = name ? name.trim()[0] : 'א';
+    localStorage.setItem('mold_user', JSON.stringify({ name: name || 'אורח', initial, role: 'student', plan: 'free' }));
+    window.location.href = 'course-library.html';
+  }
+
+  document.getElementById('btn-login').addEventListener('click', () => {
+    const email = document.getElementById('login-email').value.trim();
+    if (!email) { toast('נא להזין אימייל', '⚠️'); return; }
+    saveAndRedirect(email.split('@')[0]);
+  });
+  document.getElementById('btn-register').addEventListener('click', () => {
+    const name = document.getElementById('reg-name').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    if (!email) { toast('נא להזין אימייל', '⚠️'); return; }
+    saveAndRedirect(name || email.split('@')[0]);
+  });
+  ['btn-google-login', 'btn-google-register'].forEach(id => {
+    document.getElementById(id).addEventListener('click', () => saveAndRedirect('משתמש Google'));
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>אקדמיית מולדבסקי</title>
+<link rel="stylesheet" href="css/portal.css">
+</head>
+<body>
+<script>
+  // entry point: logged-in (mock) → straight into the course hub, else the landing.
+  try {
+    var u = localStorage.getItem('mold_user');
+    location.replace(u ? 'course-library.html' : 'free-portal.html');
+  } catch (e) {
+    location.replace('free-portal.html');
+  }
+</script>
+<noscript><meta http-equiv="refresh" content="0; url=free-portal.html"></noscript>
+</body>
+</html>
