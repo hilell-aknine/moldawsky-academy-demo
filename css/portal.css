@@ -17,8 +17,8 @@
   --border:    #ECEDF1;
   --border-2:  #E3E5EA;
   --text:      #16181D;
-  --text-dim:  #5B616E;
-  --text-mute: #9AA0AD;
+  --text-dim:  #545A66;
+  --text-mute: #6E7480;
 
   --brand:     #1D1F26;            /* dark, for primary buttons / dark blocks / logo */
   --green:     #3B5BDB;            /* ACCENT (indigo) — kept name for compatibility */
@@ -335,3 +335,14 @@ h1,h2,h3,h4 { font-family: var(--font-head); line-height: 1.2; font-weight: 800;
 .pop { animation: pop .35s var(--ease) both; }
 .reveal { opacity:0; transform:translateY(12px); transition:opacity .3s var(--ease), transform .3s var(--ease); }
 .reveal.in { opacity:1; transform:none; }
+
+/* ---------- Accessibility ---------- */
+a:focus-visible, button:focus-visible, .btn:focus-visible, .icon-btn:focus-visible,
+.avatar:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible,
+[tabindex]:focus-visible, .portal-nav-item:focus-visible {
+  outline: 2px solid var(--green); outline-offset: 2px; border-radius: 6px;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
+  .reveal { opacity:1 !important; transform:none !important; }
+}
