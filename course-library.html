@@ -88,10 +88,10 @@
   <aside class="app-sidebar" id="sidebar">
     <div class="sidebar-head">
       <div class="search-wrap">
-        <span class="s-ico">🔍</span>
+        <span class="s-ico"><i data-lucide="search"></i></span>
         <input id="syllabusSearch" class="search-input" type="search" placeholder="חיפוש שיעור..." autocomplete="off">
       </div>
-      <button id="sidebarClose" type="button" aria-label="סגור תפריט">✕</button>
+      <button id="sidebarClose" type="button" aria-label="סגור תפריט"><i data-lucide="x"></i></button>
     </div>
     <nav id="navGroups"></nav>
     <div class="sidebar-progress">
@@ -145,6 +145,13 @@
     const $  = (s, r=document) => r.querySelector(s);
     const $$ = (s, r=document) => [...r.querySelectorAll(s)];
     const esc = (s) => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    // emoji -> Lucide icon name (module icons live in curriculum data; map them here without touching that file)
+    const ICO = {
+      '🎯':'target','🏗️':'building-2','🧩':'puzzle','📦':'package','✍️':'pen-line',
+      '🎨':'palette','💰':'banknote','⚖️':'scale','⚙️':'settings','💳':'credit-card',
+      '🔔':'bell','🚀':'rocket'
+    };
+    const licon = (emoji, cls) => `<i data-lucide="${ICO[emoji] || 'circle'}"${cls?` class="${cls}"`:''}></i>`;
     const MODULES = window.CURRICULUM.modules;
     const LOCKED_MODULE = 'm12';
 
@@ -182,10 +189,11 @@
       burger.id = 'hamburger';
       burger.title = 'תפריט שיעורים';
       burger.setAttribute('aria-label', 'פתח תפריט שיעורים');
-      burger.innerHTML = '☰';
+      burger.innerHTML = '<i data-lucide="menu"></i>';
       burger.style.cssText = 'display:none';
       burger.onclick = toggleDrawer;
       header.insertBefore(burger, header.firstChild);
+      window.refreshIcons();
       const mq = window.matchMedia('(max-width:1024px)');
       const sync = () => { burger.style.display = mq.matches ? 'grid' : 'none'; if (!mq.matches) closeDrawer(); };
       mq.addEventListener('change', sync); sync();
@@ -213,13 +221,14 @@
         }).join('');
         return `<div class="portal-nav-group ${open?'open':''}" data-mod="${m.id}">
           <div class="group-head ${here?'is-here':''}">
-            <span class="g-left"><span class="g-ico">${m.icon}</span><span>${esc(m.title)}</span></span>
+            <span class="g-left"><span class="g-ico">${licon(m.icon)}</span><span>${esc(m.title)}</span></span>
             <span class="flex items-center gap-8"><span class="g-prog">${st.done}/${st.total}</span><span class="chev">›</span></span>
           </div>
           <div class="group-lessons">${lessons}</div>
         </div>`;
       }).join('');
       $('#navGroups').innerHTML = html;
+      window.refreshIcons();
 
       // group toggle (one open at a time)
       $$('.portal-nav-group .group-head').forEach(h => {
@@ -280,7 +289,7 @@
             <div class="content">
               <span class="badge badge--green">${started ? 'השיעור הבא שלך' : 'מתחילים מכאן'}</span>
               <h2>${esc(n.title)}</h2>
-              <p class="muted">${n.moduleIcon} ${esc(n.moduleTitle)} · ${n.dur} דקות</p>
+              <p class="muted">${licon(n.moduleIcon)} ${esc(n.moduleTitle)} · ${n.dur} דקות</p>
               <div class="progress-bar mt-16" style="max-width:420px"><i style="width:${pct}%"></i></div>
               <p class="muted mt-8" style="font-size:13px">${started ? `כבר ${pct}% מאחוריך. עוד כמה שיעורים והחנות שלך באוויר.` : 'שלוש דקות מכאן אתה מבין בדיוק איך החנות הזאת מתחילה להרוויח.'}</p>
               <div class="mt-16">
@@ -293,19 +302,19 @@
           <div class="portal-hero-card pop">
             <img class="thumb" src="${window.YT_THUMB(0)}" alt="">
             <div class="content">
-              <span class="badge badge--gold">🏆 סיימת את כל הקורס</span>
+              <span class="badge badge--gold"><i data-lucide="trophy"></i> סיימת את כל הקורס</span>
               <h2>סיימת את כל השיעורים. עכשיו הופכים את הידע לחנות שמוכרת.</h2>
               <p class="muted">100% מהמסלול מאחוריך. השלב הבא הוא DMA, הליווי הצמוד שלוקח אותך מ"אני יודע" ל"אני מרוויח".</p>
-              <div class="mt-16"><a class="btn btn--primary btn--lg" href="dma.html">קח אותי ל-DMA 🚀</a></div>
+              <div class="mt-16"><a class="btn btn--primary btn--lg" href="dma.html">קח אותי ל-DMA <i data-lucide="rocket"></i></a></div>
             </div>
           </div>`;
       }
 
       // stats
       $('#statsRow').innerHTML = `
-        <div class="portal-stat-tile"><span class="ico">🔥</span><span class="v">${window.Progress.streak()}</span><span class="k">ימים ברצף, אל תשבור</span></div>
-        <div class="portal-stat-tile"><span class="ico">⏱️</span><span class="v" style="font-size:24px">${window.Progress.timeLeftLabel()}</span><span class="k">עד סוף הקורס</span></div>
-        <div class="portal-stat-tile"><span class="ico">📚</span><span class="v">${done}<span style="font-size:18px;color:var(--text-mute)">/${window.LESSON_COUNT}</span></span><span class="k">שיעורים בכיס</span></div>`;
+        <div class="portal-stat-tile"><span class="ico"><i data-lucide="flame"></i></span><span class="v">${window.Progress.streak()}</span><span class="k">ימים ברצף, אל תשבור</span></div>
+        <div class="portal-stat-tile"><span class="ico"><i data-lucide="clock"></i></span><span class="v" style="font-size:24px">${window.Progress.timeLeftLabel()}</span><span class="k">עד סוף הקורס</span></div>
+        <div class="portal-stat-tile"><span class="ico"><i data-lucide="book-open"></i></span><span class="v">${done}<span style="font-size:18px;color:var(--text-mute)">/${window.LESSON_COUNT}</span></span><span class="k">שיעורים בכיס</span></div>`;
 
       // all modules grid
       $('#modulesAll').innerHTML = MODULES.map(m => {
@@ -313,13 +322,14 @@
         const cards = m.lessons.map(l => lessonCard(l)).join('');
         return `<div class="module-block">
           <div class="mb-head">
-            <span class="mb-ico">${m.icon}</span><h3>${esc(m.title)}</h3>
+            <span class="mb-ico">${licon(m.icon)}</span><h3>${esc(m.title)}</h3>
             <span class="mb-count">${st.done}/${st.total} שיעורים</span>
           </div>
           <div class="lesson-grid">${cards}</div>
         </div>`;
       }).join('');
 
+      window.refreshIcons();
       bindCardClicks();
     }
 
@@ -335,11 +345,11 @@
           ${!locked ? '<span class="play"><span>▶</span></span>' : ''}
         </div>
         <div class="flex items-center gap-8" style="margin-block-start:10px">
-          <span class="badge ${locked?'badge--locked':'badge--green'}">${l.moduleIcon} שיעור ${num}</span>
+          <span class="badge ${locked?'badge--locked':'badge--green'}">${licon(l.moduleIcon)} שיעור ${num}</span>
         </div>
         <h4>${esc(l.title)}</h4>
         <div class="meta">
-          <span class="muted" style="font-size:13px">${locked ? '🔒 נפתח ב-DMA' : (done ? '✓ סיימת את זה' : 'לחץ לצפייה')}</span>
+          <span class="muted" style="font-size:13px">${locked ? '<i data-lucide="lock"></i> נפתח ב-DMA' : (done ? '<i data-lucide="check-circle-2"></i> סיימת את זה' : 'לחץ לצפייה')}</span>
         </div>
       </div>`;
     }
@@ -376,7 +386,7 @@
 
       lv.innerHTML = `
         <div class="lesson-view-head">
-          <div class="lv-crumb"><span class="back" id="goBack">← כל השיעורים</span><span>·</span><span>${m.icon} ${esc(m.title)}</span></div>
+          <div class="lv-crumb"><span class="back" id="goBack">← כל השיעורים</span><span>·</span><span>${licon(m.icon)} ${esc(m.title)}</span></div>
           <span class="badge badge--green">שיעור ${idx+1} מתוך ${window.LESSON_COUNT}</span>
         </div>
 
@@ -386,13 +396,13 @@
         </div>
 
         <h1>${esc(l.title)}</h1>
-        <p class="muted">${m.icon} ${esc(m.title)} · ${l.dur} דקות</p>
+        <p class="muted">${licon(m.icon)} ${esc(m.title)} · ${l.dur} דקות</p>
 
         <div class="lv-actions">
           <button class="btn btn--outline mark-btn ${done?'is-done':''}" id="markBtn">
             <span id="markIco">${done?'✓':'○'}</span> <span id="markTxt">${done?'הושלם · לחץ לביטול':'סמן כהושלם'}</span>
           </button>
-          <a class="btn btn--outline btn--sm" id="summaryBtn" href="lesson-summary.html?lesson=${l.id}">📄 סיכום השיעור (PDF)</a>
+          <a class="btn btn--outline btn--sm" id="summaryBtn" href="lesson-summary.html?lesson=${l.id}"><i data-lucide="file-text"></i> סיכום השיעור (PDF)</a>
           <div class="prevnext">
             <button class="btn btn--ghost" id="prevBtn" ${prev?'':'disabled'}>→ הקודם</button>
             <button class="btn btn--primary" id="nextBtn" ${next?'':'disabled'}>הבא ←</button>
@@ -410,7 +420,7 @@
           <div class="tab-panel active" data-panel="overview">
             <div class="portal-card portal-card--solid mt-16">
               <div class="flex items-center gap-12 mb-16">
-                <span class="badge badge--green">⏱️ ${l.dur} דקות</span>
+                <span class="badge badge--green"><i data-lucide="clock"></i> ${l.dur} דקות</span>
                 <span class="badge badge--gold">+50 XP כשתסיים</span>
               </div>
               <p style="font-size:16px;line-height:1.8">${esc(l.summary)}</p>
@@ -423,14 +433,14 @@
               <textarea class="notes-area" id="notesArea" placeholder="לדוגמה: לבחור נישה, לבדוק דומיין פנוי, להריץ את הסיסטם ה-AI על תיאורי המוצר...">${esc(savedNotes)}</textarea>
               <div class="flex items-center gap-12 mt-16 wrap-f">
                 <span class="muted" id="notesStatus" style="font-size:13px">${savedNotes?'נשמר ✓':'מתחיל לכתוב...'}</span>
-                <button class="btn btn--outline btn--sm" id="exportPdf" style="margin-inline-start:auto">📄 ייצוא PDF</button>
+                <button class="btn btn--outline btn--sm" id="exportPdf" style="margin-inline-start:auto"><i data-lucide="file-text"></i> ייצוא PDF</button>
               </div>
             </div>
           </div>
 
           <div class="tab-panel" data-panel="ai">
             <div class="portal-card portal-card--accent portal-card--hover mt-16 center">
-              <div style="font-size:42px;margin-block-end:8px">🤖</div>
+              <div class="ic-chip" style="margin:0 auto 8px"><i data-lucide="sparkles"></i></div>
               <h3 style="font-size:20px">תקוע על משהו? תן לסוכני ה-AI לעבוד בשבילך</h3>
               <p class="muted mt-8" style="max-width:520px;margin-inline:auto">מורה ה-AI בלע את כל השיטה של דניאל. שאל אותו כל שאלה על "${esc(l.title)}", בקש ממנו לכתוב לך תיאור מוצר שמוכר או לבחור נישה. תשובה מדויקת, בלי להמתין לאף אחד. זה הסיסטם מבוסס ה-AI בפעולה. נסה אותו עכשיו.</p>
               <a class="btn btn--primary btn--lg mt-16" href="ai-mentor.html?lesson=${l.id}">דבר עם מורה ה-AI ←</a>
@@ -440,17 +450,17 @@
           <div class="tab-panel" data-panel="resources">
             <div class="mt-16 col flex gap-12">
               <a class="helper-link" href="workbooks.html?lesson=${l.id}">
-                <span class="hl-ico">📔</span>
+                <span class="hl-ico"><i data-lucide="notebook-pen"></i></span>
                 <span><b>חוברת העבודה של המודול</b><br><span class="muted" style="font-size:13px">צ'קליסט יישום שמתרגם את השיעור לפעולה</span></span>
                 <span class="hl-go">פתח ←</span>
               </a>
               <a class="helper-link" href="workbooks.html">
-                <span class="hl-ico">🗂️</span>
+                <span class="hl-ico"><i data-lucide="folder-open"></i></span>
                 <span><b>כל החוברות והתבניות</b><br><span class="muted" style="font-size:13px">תבניות מדיניות, תיאורי מוצר מנצחים ועוד</span></span>
                 <span class="hl-go">פתח ←</span>
               </a>
               <a class="helper-link" href="ai-mentor.html?lesson=${l.id}">
-                <span class="hl-ico">🤖</span>
+                <span class="hl-ico"><i data-lucide="sparkles"></i></span>
                 <span><b>שאל את מורה ה-AI</b><br><span class="muted" style="font-size:13px">תשובות מיידיות בדיוק על השיעור הזה</span></span>
                 <span class="hl-go">פתח ←</span>
               </a>
@@ -458,6 +468,8 @@
           </div>
         </div>
       `;
+
+      window.refreshIcons();
 
       // url + sidebar
       history.replaceState(null, '', '?lesson=' + l.id);
@@ -590,11 +602,13 @@
       overlay.id = 'lessonEndModal';
       const secondary = (pick.cta2Text && cta2Href)
         ? `<a class="btn btn--outline btn--block" href="${esc(cta2Href)}">${esc(pick.cta2Text)}</a>` : '';
+      const POPUP_ICO = { '🎉':'party-popper','🥳':'party-popper','🔥':'flame','🏆':'trophy','💎':'gem','🚀':'rocket' };
+      const popIco = POPUP_ICO[pick.icon] || 'party-popper';
       overlay.innerHTML = `
         <div class="box pop" role="dialog" aria-modal="true">
           <div class="flex between items-center mb-8">
-            <div style="font-size:40px">${esc(pick.icon || '🎉')}</div>
-            <button class="icon-btn" id="lessonEndClose" title="סגור">✕</button>
+            <div class="ic-chip"><i data-lucide="${popIco}"></i></div>
+            <button class="icon-btn" id="lessonEndClose" title="סגור"><i data-lucide="x"></i></button>
           </div>
           <h3 style="font-size:21px">${esc(pick.title || '')}</h3>
           <p class="muted mt-8" style="line-height:1.7">${esc(pick.body || '')}</p>
@@ -604,6 +618,7 @@
           </div>
         </div>`;
       document.body.appendChild(overlay);
+      window.refreshIcons();
       const close = () => overlay.remove();
       overlay.querySelector('#lessonEndClose').onclick = close;
       overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });

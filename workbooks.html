@@ -14,7 +14,7 @@
       flex-direction: column;
       gap: 12px;
     }
-    .wb-card-icon { font-size: 36px; line-height: 1; }
+    .wb-card-icon { font-size: 36px; line-height: 1; display:flex; align-items:center; }
     .wb-card-title { font-size: 17px; font-weight: 800; margin: 0; }
     .wb-card-desc { font-size: 14px; color: var(--text-dim); flex: 1; }
     .wb-card-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
@@ -63,7 +63,7 @@
 
     /* locked overlay */
     .card-locked-overlay { position: absolute; inset: 0; border-radius: var(--r); background: rgba(10,14,13,.65); backdrop-filter: blur(3px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; z-index: 2; }
-    .card-locked-overlay span { font-size: 30px; }
+    .card-locked-overlay .ic-lock { font-size: 30px; line-height:1; }
     .card-locked-overlay p { font-size: 13px; color: var(--text-dim); font-weight: 700; }
   </style>
 </head>
@@ -94,7 +94,7 @@
   <!-- Modal 1: מדיניות אתר -->
   <div class="portal-modal" id="modal-policy">
     <div class="box wb-box">
-      <div class="wb-modal-title">📋 מדיניות אתר · תבניות מוכנות <button class="wb-modal-close" onclick="closeModal('modal-policy')">×</button></div>
+      <div class="wb-modal-title"><i data-lucide="clipboard-list"></i> מדיניות אתר · תבניות מוכנות <button class="wb-modal-close" onclick="closeModal('modal-policy')"><i data-lucide="x"></i></button></div>
       <div class="wb-content">
         <div class="wb-note">תבניות שעורכי הדין של תנאור ניסחו. החלף <code>[שם המותג]</code> בשם החנות שלך ואתה מוכן. רוצה נוסח יותר אישי? תשלח ל-ChatGPT עם הוראה פשוטה לרכך את השפה.</div>
 
@@ -127,7 +127,7 @@
         </div>
       </div>
       <div class="flex gap-8 mt-24 wrap-f">
-        <button class="btn btn--primary btn--sm" onclick="toast('המסמך מוכן להורדה 📄')">הורד PDF</button>
+        <button class="btn btn--primary btn--sm" onclick="toast('המסמך מוכן להורדה')">הורד PDF</button>
         <button class="btn btn--outline btn--sm" onclick="closeModal('modal-policy')">סגור</button>
       </div>
     </div>
@@ -136,7 +136,7 @@
   <!-- Modal 2: AIDA -->
   <div class="portal-modal" id="modal-aida">
     <div class="box wb-box">
-      <div class="wb-modal-title">✍️ AIDA לתיאור מוצר · צ'יטשיט <button class="wb-modal-close" onclick="closeModal('modal-aida')">×</button></div>
+      <div class="wb-modal-title"><i data-lucide="pen-line"></i> AIDA לתיאור מוצר · צ'יטשיט <button class="wb-modal-close" onclick="closeModal('modal-aida')"><i data-lucide="x"></i></button></div>
       <div class="wb-content">
         <p>זו הנוסחה שמאחורי כל תיאור מוצר שמוכר בחנויות שלנו. ארבעה צעדים שמובילים את הלקוח מ"לא מכיר" ל"הוסף לסל". תמלא את הסוגריים ויש לך עמוד מוצר.</p>
 
@@ -167,7 +167,7 @@
         <div class="wb-note">כלל ברזל של דניאל: כתוב בשפה של הלקוח, לא בשפה שלך. אם הלקוח הוא אמא בת 40 שסובלת מכאבי גב, כתוב בדיוק כמו שהיא מספרת לחברה שלה על הכאב. ה-AI עוזר לנסח, אבל ההכרות עם הלקוח זו עבודתך.</div>
       </div>
       <div class="flex gap-8 mt-24 wrap-f">
-        <button class="btn btn--primary btn--sm" onclick="toast('המסמך מוכן להורדה 📄')">הורד PDF</button>
+        <button class="btn btn--primary btn--sm" onclick="toast('המסמך מוכן להורדה')">הורד PDF</button>
         <button class="btn btn--outline btn--sm" onclick="closeModal('modal-aida')">סגור</button>
       </div>
     </div>
@@ -176,7 +176,7 @@
   <!-- Modal 3: צ'קליסט מוצר -->
   <div class="portal-modal" id="modal-checklist">
     <div class="box wb-box">
-      <div class="wb-modal-title">🔍 צ'קליסט מוצר · 6 קריטריונים <button class="wb-modal-close" onclick="closeModal('modal-checklist')">×</button></div>
+      <div class="wb-modal-title"><i data-lucide="search"></i> צ'קליסט מוצר · 6 קריטריונים <button class="wb-modal-close" onclick="closeModal('modal-checklist')"><i data-lucide="x"></i></button></div>
       <div class="wb-content">
         <p>זה הפילטר שדניאל מריץ לפני כל מוצר שנכנס לחנות. שישה קריטריונים. כולם חייבים לעבור. נכשל אחד? מוצר הבא.</p>
 
@@ -192,7 +192,7 @@
         <div class="wb-note">הדוגמה שדניאל חוזר אליה: הבובה הנושמת. פותרת כאב אמיתי (חרדה, לחץ), מחיר מכירה 120₪, עלות 40₪, מרג'ין 200%, רכישה אימפולסיבית ב-100%. זה בדיוק המודל.</div>
       </div>
       <div class="flex gap-8 mt-24 wrap-f">
-        <button class="btn btn--primary btn--sm" onclick="toast('המסמך מוכן להורדה 📄')">הורד PDF</button>
+        <button class="btn btn--primary btn--sm" onclick="toast('המסמך מוכן להורדה')">הורד PDF</button>
         <button class="btn btn--outline btn--sm" onclick="closeModal('modal-checklist')">סגור</button>
       </div>
     </div>
@@ -201,7 +201,7 @@
   <!-- Modal 4: אפליקציות -->
   <div class="portal-modal" id="modal-apps">
     <div class="box wb-box">
-      <div class="wb-modal-title">🧰 ערכת האפליקציות של תנאור <button class="wb-modal-close" onclick="closeModal('modal-apps')">×</button></div>
+      <div class="wb-modal-title"><i data-lucide="wrench"></i> ערכת האפליקציות של תנאור <button class="wb-modal-close" onclick="closeModal('modal-apps')"><i data-lucide="x"></i></button></div>
       <div class="wb-content">
         <p>7 אפליקציות שנכנסות לכל חנות שפותחים. כל אחת פותרת בעיה ספציפית שתיתקל בה בשבועות הראשונים. הסדר חשוב.</p>
         <table>
@@ -249,7 +249,7 @@
         <div class="wb-note">סדר ההתקנה הוא חלק מהמתודה, לא המלצה. AutoDS ← Sales RTL ← AutoTrack ← PayPlus ← Vouch AI ← BundleUp ← Cartify. תסטה מהסדר ותבזבז שעות על תקלות שאפשר למנוע.</div>
       </div>
       <div class="flex gap-8 mt-24 wrap-f">
-        <button class="btn btn--primary btn--sm" onclick="toast('המסמך מוכן להורדה 📄')">הורד PDF</button>
+        <button class="btn btn--primary btn--sm" onclick="toast('המסמך מוכן להורדה')">הורד PDF</button>
         <button class="btn btn--outline btn--sm" onclick="closeModal('modal-apps')">סגור</button>
       </div>
     </div>
@@ -258,7 +258,7 @@
   <!-- Modal 5: פרומפטים -->
   <div class="portal-modal" id="modal-prompts">
     <div class="box wb-box">
-      <div class="wb-modal-title">🤖 פרומפטים מוכנים ל-ChatGPT <button class="wb-modal-close" onclick="closeModal('modal-prompts')">×</button></div>
+      <div class="wb-modal-title"><i data-lucide="sparkles"></i> פרומפטים מוכנים ל-ChatGPT <button class="wb-modal-close" onclick="closeModal('modal-prompts')"><i data-lucide="x"></i></button></div>
       <div class="wb-content">
         <p>העתק, החלף את מה שבסוגריים עם פרטי המוצר שלך, ושלח. כתיבת הקופי של החנות אמורה לקחת שעה, לא יום.</p>
 
@@ -288,7 +288,7 @@
         </div>
       </div>
       <div class="flex gap-8 mt-24 wrap-f">
-        <button class="btn btn--primary btn--sm" onclick="toast('המסמך מוכן להורדה 📄')">הורד PDF</button>
+        <button class="btn btn--primary btn--sm" onclick="toast('המסמך מוכן להורדה')">הורד PDF</button>
         <button class="btn btn--outline btn--sm" onclick="closeModal('modal-prompts')">סגור</button>
       </div>
     </div>
@@ -297,7 +297,7 @@
   <!-- Modal 6: מחשבון AOV -->
   <div class="portal-modal" id="modal-aov">
     <div class="box wb-box">
-      <div class="wb-modal-title">💰 מחשבון רווחיות ומרג'ין <button class="wb-modal-close" onclick="closeModal('modal-aov')">×</button></div>
+      <div class="wb-modal-title"><i data-lucide="calculator"></i> מחשבון רווחיות ומרג'ין <button class="wb-modal-close" onclick="closeModal('modal-aov')"><i data-lucide="x"></i></button></div>
       <div class="wb-content">
         <h3>מה זה AOV ולמה זה קובע הכל?</h3>
         <p>AOV הוא הסכום הממוצע שלקוח משלם בהזמנה. זה הנתון שמכריע אם הפרסום שלך מרוויח או מפסיד. עלות מוצר + עלות שיווק + משלוח חייבים להישאר מתחת למחיר המכירה בפער משמעותי.</p>
@@ -325,7 +325,7 @@
         <p class="muted" style="font-size:13px">BundleUp ו-Cartify מגדירים את זה אוטומטית. אתה מזין את המחירים פעם אחת והאפליקציה עושה את כל השאר.</p>
       </div>
       <div class="flex gap-8 mt-24 wrap-f">
-        <button class="btn btn--primary btn--sm" onclick="toast('המסמך מוכן להורדה 📄')">הורד PDF</button>
+        <button class="btn btn--primary btn--sm" onclick="toast('המסמך מוכן להורדה')">הורד PDF</button>
         <button class="btn btn--outline btn--sm" onclick="closeModal('modal-aov')">סגור</button>
       </div>
     </div>
@@ -340,7 +340,7 @@
     /* ---- Workbook card definitions ---- */
     const WORKBOOKS = [
       {
-        icon: '📋',
+        icon: 'clipboard-list',
         title: 'מדיניות אתר · מוכן להדביק',
         desc: 'תבניות מדיניות שעורכי הדין של תנאור ניסחו: החזרות, פרטיות, תנאי שימוש, משלוחים. החלף שם מותג ואתה מוגן.',
         modal: 'modal-policy',
@@ -348,7 +348,7 @@
         module: 'm8',
       },
       {
-        icon: '✍️',
+        icon: 'pen-line',
         title: "AIDA לתיאור מוצר · צ'יטשיט",
         desc: 'הנוסחה שמאחורי כל עמוד מוצר שמוכר. מלא את הסוגריים ויש לך קופי מוכן תוך 10 דקות.',
         modal: 'modal-aida',
@@ -356,7 +356,7 @@
         module: 'm5',
       },
       {
-        icon: '🔍',
+        icon: 'search',
         title: "צ'קליסט 6 הקריטריונים",
         desc: 'הפילטר שדניאל מריץ לפני כל מוצר. נכשל קריטריון אחד? מוצר הבא. חוסך חודשים של טעויות.',
         modal: 'modal-checklist',
@@ -364,7 +364,7 @@
         module: 'm4',
       },
       {
-        icon: '🧰',
+        icon: 'wrench',
         title: 'ערכת האפליקציות של תנאור',
         desc: '7 אפליקציות לכל חנות, בסדר ההתקנה הנכון: AutoDS, Sales RTL, AutoTrack, PayPlus, Vouch AI, BundleUp, Cartify.',
         modal: 'modal-apps',
@@ -372,7 +372,7 @@
         module: 'm3',
       },
       {
-        icon: '🤖',
+        icon: 'sparkles',
         title: "פרומפטים מוכנים ל-ChatGPT",
         desc: 'שם מותג, תיאור מוצר AIDA, דף About, שאלות-תשובות, קריאייטיב למודעות. העתק, מלא, שלח.',
         modal: 'modal-prompts',
@@ -380,7 +380,7 @@
         module: 'm2',
       },
       {
-        icon: '💰',
+        icon: 'calculator',
         title: 'מחשבון מרג\'ין ורווחיות',
         desc: 'הזן עלות ספק ומחיר מכירה וקבל מרג\'ין, רווח גולמי, ו-ROAS נדרש. כולל הסבר על לוגיקת Bundle.',
         modal: 'modal-aov',
@@ -388,7 +388,7 @@
         module: 'm7',
       },
       {
-        icon: '📊',
+        icon: 'trending-up',
         title: 'ניתוח מתחרים ב-Ad Library',
         desc: 'מדריך מלא: איך לרגל נכון ב-Facebook Ad Library, מה לחפש, ואיך לתרגם את זה למוצר מנצח.',
         modal: null,
@@ -396,7 +396,7 @@
         module: 'm12',
       },
       {
-        icon: '🎯',
+        icon: 'target',
         title: 'תסריט מודעת פייסבוק · מלא',
         desc: 'מבנה ה-Hook, הגוף, ה-CTA עם דוגמאות אמיתיות מקמפיינים שרצו. העתק ותתאים לקהל שלך.',
         modal: null,
@@ -417,13 +417,14 @@
 
     document.getElementById('checklist-items').innerHTML = CRITERIA.map((c, i) => `
       <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;padding:12px;background:var(--surface-2);border-radius:var(--r-sm);border:1px solid var(--border);">
-        <span style="font-size:20px;flex-shrink:0;margin-top:1px">✅</span>
+        <span style="flex-shrink:0;margin-top:1px;color:var(--green)"><i data-lucide="check-circle-2"></i></span>
         <div>
           <div style="font-weight:700;font-size:14px;margin-bottom:2px">${c.text}</div>
           <div style="font-size:13px;color:var(--text-dim)">${c.detail}</div>
         </div>
       </div>
     `).join('');
+    if (window.refreshIcons) window.refreshIcons();
 
     /* ---- Render workbook grid ---- */
     function renderGrid() {
@@ -433,19 +434,22 @@
         const locked = wb.badge === 'dma' && !paid;
         return `
           <div class="portal-card portal-card--hover portal-card--accent wb-card reveal" style="position:relative;">
-            ${locked ? `<div class="card-locked-overlay"><span>🔒</span><p>בלעדי לחברי DMA</p><button class="btn btn--primary btn--sm" onclick="unlockDma()">שדרג ל-DMA</button></div>` : ''}
-            <div class="wb-card-icon">${wb.icon}</div>
+            ${locked ? `<div class="card-locked-overlay"><span class="ic-lock"><i data-lucide="lock"></i></span><p>בלעדי לחברי DMA</p><button class="btn btn--primary btn--sm" onclick="unlockDma()">שדרג ל-DMA</button></div>` : ''}
+            <div class="wb-card-icon"><span class="ic-chip"><i data-lucide="${wb.icon}"></i></span></div>
             <h3 class="wb-card-title">${wb.title}</h3>
             <p class="wb-card-desc">${wb.desc}</p>
             <div class="wb-card-actions">
               ${!locked && wb.modal ? `<button class="btn btn--primary btn--sm" onclick="openModal('${wb.modal}')">פתח</button>` : ''}
-              ${!locked && wb.modal ? `<button class="btn btn--outline btn--sm" onclick="toast('המסמך מוכן להורדה 📄')">הורד PDF</button>` : ''}
-              ${locked ? `<span class="badge badge--locked">🔒 DMA בלבד</span>` : ''}
+              ${!locked && wb.modal ? `<button class="btn btn--outline btn--sm" onclick="toast('המסמך מוכן להורדה')">הורד PDF</button>` : ''}
+              ${locked ? `<span class="badge badge--locked"><i data-lucide="lock"></i> DMA בלבד</span>` : ''}
               ${wb.badge === 'dma' && !locked ? `<span class="badge badge--gold">DMA</span>` : ''}
             </div>
           </div>
         `;
       }).join('');
+
+      // refresh Lucide icons for dynamically injected markup
+      if (window.refreshIcons) window.refreshIcons();
 
       // re-observe reveal
       if (window.__revealIo) {

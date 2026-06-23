@@ -88,7 +88,7 @@
     .achievement-card.unlocked { border-color: var(--green-line); background: linear-gradient(160deg, rgba(247,198,0,.06), var(--surface)); }
     .achievement-card.unlocked:hover { transform: translateY(-3px); box-shadow: var(--glow); }
     .achievement-card.locked { opacity: .45; filter: grayscale(.6); }
-    .achievement-icon { font-size: 32px; line-height: 1; }
+    .achievement-icon { line-height: 1; }
     .achievement-name { font-size: 13px; font-weight: 700; }
     .achievement-desc { font-size: 11px; color: var(--text-mute); line-height: 1.4; }
     .achievement-tag { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; }
@@ -107,7 +107,7 @@
     }
     .note-lesson-label { font-size: 11px; color: var(--text-mute); margin-top: 6px; }
     .notes-empty { text-align: center; padding: 40px 20px; color: var(--text-mute); }
-    .notes-empty .empty-icon { font-size: 40px; margin-bottom: 10px; }
+    .notes-empty .empty-icon { font-size: 40px; margin-bottom: 10px; display: flex; justify-content: center; }
 
     /* --- Section headings --- */
     .section-head {
@@ -175,7 +175,7 @@
       <!-- Achievements -->
       <div class="reveal mb-24">
         <div class="section-head">
-          <h2>🏆 הישגים</h2>
+          <h2><i data-lucide="trophy"></i> הישגים</h2>
         </div>
         <div class="achievements-grid" id="achievementsGrid"></div>
       </div>
@@ -183,7 +183,7 @@
       <!-- Notes -->
       <div class="reveal mb-24">
         <div class="section-head">
-          <h2>📝 הפנקס שלי</h2>
+          <h2><i data-lucide="pen-line"></i> הפנקס שלי</h2>
           <span class="muted" style="font-size:13px" id="notesCount"></span>
         </div>
         <div id="notesList"></div>
@@ -192,7 +192,7 @@
       <!-- CTA -->
       <div class="cta-bar reveal mb-24">
         <div>
-          <div class="cta-bar-text">כל שיעור שמסיים, עסק שמתקדם. בוא נמשיך.</div>
+          <div class="cta-bar-text"><i data-lucide="rocket"></i> כל שיעור שמסיים, עסק שמתקדם. בוא נמשיך.</div>
           <div class="cta-bar-sub" id="ctaSub"></div>
         </div>
         <a href="course-library.html" class="btn btn--primary btn--lg">המשך לקורס ←</a>
@@ -209,6 +209,7 @@
   <script>
     document.getElementById('topbar').innerHTML = renderTopbar('profile.html');
     document.getElementById('bottomnav').innerHTML = renderBottomNav('profile.html');
+    window.refreshIcons();
 
     /* ---- Populate page ---- */
     const u = window.User.get();
@@ -232,8 +233,9 @@
 
     /* Plan badge */
     document.getElementById('planBadge').innerHTML = isPaid
-      ? `<span class="badge badge--green">✓ DMA</span>`
+      ? `<span class="badge badge--green"><i data-lucide="check-circle-2"></i> DMA</span>`
       : `<span class="badge badge--locked">חינמי</span>`;
+    window.refreshIcons();
 
     /* XP bar */
     document.getElementById('xpLabel').textContent = `${xp} XP`;
@@ -242,18 +244,19 @@
 
     /* Stats */
     const tileData = [
-      { ico: '🔥', v: streak,                        k: 'רצף יומי' },
-      { ico: '✅', v: `${completed}/${window.LESSON_COUNT}`, k: 'שיעורים הושלמו' },
-      { ico: '⏱️', v: window.Progress.timeLeftLabel(), k: 'נותר לסיום' },
-      { ico: '⭐', v: xp,                             k: 'נקודות XP' },
+      { ico: 'flame',          v: streak,                        k: 'רצף יומי' },
+      { ico: 'check-circle-2', v: `${completed}/${window.LESSON_COUNT}`, k: 'שיעורים הושלמו' },
+      { ico: 'clock',          v: window.Progress.timeLeftLabel(), k: 'נותר לסיום' },
+      { ico: 'star',           v: xp,                             k: 'נקודות XP' },
     ];
     document.getElementById('statsRow').innerHTML = tileData.map(t =>
       `<div class="portal-stat-tile">
-        <span class="ico">${t.ico}</span>
+        <span class="ico"><i data-lucide="${t.ico}"></i></span>
         <span class="v">${t.v}</span>
         <span class="k">${t.k}</span>
       </div>`
     ).join('');
+    window.refreshIcons();
 
     /* Module rings */
     document.getElementById('modulesGrid').innerHTML = window.CURRICULUM.modules.map(m => {
@@ -266,35 +269,36 @@
         <span class="done-label">${s.done}/${s.total} שיעורים</span>
       </div>`;
     }).join('');
+    window.refreshIcons();
 
     /* Achievements */
     const ACHIEVEMENTS = [
       {
-        icon: '🎓', name: 'הצעד הראשון', desc: 'סיימת את השיעור הראשון באקדמיית מולדבסקי. הדרך מתחילה כאן.',
+        icon: 'graduation-cap', name: 'הצעד הראשון', desc: 'סיימת את השיעור הראשון באקדמיית מולדבסקי. הדרך מתחילה כאן.',
         unlocked: completed >= 1,
       },
       {
-        icon: '🏁', name: 'מודול ראשון בכיס', desc: 'סגרת מודול שלם מהתחלה לסוף. אתה כבר לא בהתחלה.',
+        icon: 'target', name: 'מודול ראשון בכיס', desc: 'סגרת מודול שלם מהתחלה לסוף. אתה כבר לא בהתחלה.',
         unlocked: window.CURRICULUM.modules.some(m => window.Progress.moduleStats(m).pct === 100),
       },
       {
-        icon: '🔥', name: 'עקביות משתלמת', desc: 'למדת 3 ימים ברצף. העסקים הגדולים נבנים בהרגלים קטנים.',
+        icon: 'flame', name: 'עקביות משתלמת', desc: 'למדת 3 ימים ברצף. העסקים הגדולים נבנים בהרגלים קטנים.',
         unlocked: streak >= 3,
       },
       {
-        icon: '⚡', name: 'חצי הדרך אחריך', desc: `עברת את ${Math.floor(window.LESSON_COUNT / 2)} השיעורים הראשונים. הכסף האמיתי מגיע ממה שנשאר.`,
+        icon: 'trending-up', name: 'חצי הדרך אחריך', desc: `עברת את ${Math.floor(window.LESSON_COUNT / 2)} השיעורים הראשונים. הכסף האמיתי מגיע ממה שנשאר.`,
         unlocked: completed >= Math.floor(window.LESSON_COUNT / 2),
       },
       {
-        icon: '🏆', name: 'בוגר אקדמיית מולדבסקי', desc: 'סיימת את כל הקורס. יש לך עכשיו את הידע לבנות מותג שמוכר.',
+        icon: 'trophy', name: 'בוגר אקדמיית מולדבסקי', desc: 'סיימת את כל הקורס. יש לך עכשיו את הידע לבנות מותג שמוכר.',
         unlocked: completed >= window.LESSON_COUNT,
       },
       {
-        icon: '🤖', name: 'הפעלת את ה-AI', desc: 'שאלת את מורה ה-AI. זה בדיוק מה שמבדיל בין עסק ידני לעסק חכם.',
+        icon: 'sparkles', name: 'הפעלת את ה-AI', desc: 'שאלת את מורה ה-AI. זה בדיוק מה שמבדיל בין עסק ידני לעסק חכם.',
         unlocked: !!localStorage.getItem('mold_ai_used'),
       },
       {
-        icon: '💬', name: 'חלק מהקהילה', desc: 'שיתפת את הקהילה. הנראות שלך מתחילה כאן.',
+        icon: 'users', name: 'חלק מהקהילה', desc: 'שיתפת את הקהילה. הנראות שלך מתחילה כאן.',
         unlocked: !!localStorage.getItem('mold_community_post'),
       },
     ];
@@ -302,15 +306,16 @@
     document.getElementById('achievementsGrid').innerHTML = ACHIEVEMENTS.map(a => {
       const cls = a.unlocked ? 'unlocked' : 'locked';
       const tag = a.unlocked
-        ? `<span class="achievement-tag earned">✓ הושג</span>`
+        ? `<span class="achievement-tag earned"><i data-lucide="check-circle-2"></i> הושג</span>`
         : `<span class="achievement-tag not-earned">נעול</span>`;
       return `<div class="achievement-card ${cls}">
-        <div class="achievement-icon">${a.icon}</div>
+        <div class="achievement-icon"><span class="ic-chip"><i data-lucide="${a.icon}"></i></span></div>
         <div class="achievement-name">${a.name}</div>
         <div class="achievement-desc">${a.desc}</div>
         ${tag}
       </div>`;
     }).join('');
+    window.refreshIcons();
 
     /* Notes from localStorage */
     const noteKeys = Object.keys(localStorage).filter(k => k.startsWith('mold_note_'));
@@ -322,10 +327,11 @@
 
     if (noteKeys.length === 0) {
       notesList.innerHTML = `<div class="notes-empty">
-        <div class="empty-icon">📝</div>
+        <div class="empty-icon"><i data-lucide="pen-line"></i></div>
         <div style="font-weight:700;margin-bottom:6px">הפנקס שלך עדיין ריק</div>
         <div class="muted">תוך כדי שיעורים תוכל לרשום תובנות, רעיונות, והחלטות לעסק שלך. הכל יישמר כאן.</div>
       </div>`;
+      window.refreshIcons();
     } else {
       notesList.innerHTML = `<div class="notes-list">${noteKeys.map(k => {
         const lessonId = k.replace('mold_note_', '');
@@ -333,9 +339,10 @@
         const lessonTitle = lessonMap[lessonId] || lessonId;
         return `<div class="note-item">
           <div>${text}</div>
-          <div class="note-lesson-label">📚 ${lessonTitle}</div>
+          <div class="note-lesson-label"><i data-lucide="book-open"></i> ${lessonTitle}</div>
         </div>`;
       }).join('')}</div>`;
+      window.refreshIcons();
     }
 
     /* CTA subtitle */
@@ -349,6 +356,7 @@
       document.querySelectorAll('.reveal').forEach(el => {
         if (el.getBoundingClientRect().top < window.innerHeight) el.classList.add('in');
       });
+      window.refreshIcons();
     }, 100);
   </script>
 </body>

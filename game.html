@@ -48,7 +48,8 @@
       border-color: var(--green-line);
       box-shadow: var(--glow);
     }
-    .stage-card .stage-icon { font-size: 30px; margin-bottom: 8px; }
+    .stage-card .stage-icon { margin-bottom: 8px; }
+    .stage-card .stage-icon svg { width: 30px; height: 30px; }
     .stage-card .stage-num { font-size: 11px; font-weight: 700; color: var(--text-mute); margin-bottom: 4px; }
     .stage-card .stage-name { font-size: 14px; font-weight: 700; line-height: 1.3; }
     .stage-card .stage-prog { margin-top: 12px; }
@@ -141,7 +142,8 @@
     .feedback-panel.show { display: block; }
     .feedback-panel.correct-fb { background: rgba(247,198,0,.12); border: 1.5px solid var(--green-line); }
     .feedback-panel.wrong-fb   { background: rgba(255,92,108,.10); border: 1.5px solid rgba(255,92,108,.4); }
-    .feedback-icon { font-size: 26px; margin-bottom: 4px; }
+    .feedback-icon { margin-bottom: 4px; }
+    .feedback-icon svg { width: 26px; height: 26px; }
     .feedback-headline { font-size: 17px; font-weight: 800; margin-bottom: 4px; }
     .feedback-explain { font-size: 14px; color: var(--text-dim); line-height: 1.5; }
     .feedback-xp { margin-top: 10px; font-size: 13px; font-weight: 700; color: var(--gold); }
@@ -160,13 +162,15 @@
       animation: pop .4s var(--ease) both;
     }
     #celebration.show { display: flex; }
-    .cele-emoji { font-size: 72px; margin-bottom: 16px; animation: floaty 2s ease-in-out infinite; }
+    .cele-emoji { margin-bottom: 16px; animation: floaty 2s ease-in-out infinite; }
+    .cele-emoji svg { width: 72px; height: 72px; }
     .cele-title { font-size: 32px; font-weight: 900; margin-bottom: 8px; }
     .cele-subtitle { color: var(--text-dim); font-size: 16px; margin-bottom: 8px; }
     .cele-score { font-size: 48px; font-weight: 900; color: var(--green); margin: 20px 0 8px; }
     .cele-score-label { font-size: 15px; color: var(--text-dim); margin-bottom: 24px; }
     .cele-xp { font-size: 20px; font-weight: 700; color: var(--gold); margin-bottom: 28px; }
-    .stars { font-size: 36px; letter-spacing: 6px; margin-bottom: 8px; }
+    .stars { display: flex; gap: 6px; justify-content: center; margin-bottom: 8px; color: var(--gold); }
+    .stars svg { width: 36px; height: 36px; }
 
     .section-title { font-size: 18px; font-weight: 800; margin-bottom: 14px; }
   </style>
@@ -179,12 +183,12 @@
       <!-- Game home -->
       <div id="game-home">
         <div class="game-hero pop">
-          <div style="font-size:38px;margin-bottom:6px;">🎮</div>
+          <div style="margin-bottom:6px;"><i data-lucide="gamepad-2" style="width:38px;height:38px;"></i></div>
           <h1>אתגר הידע של אקדמיית מולדבסקי</h1>
           <p class="muted" style="margin-top:6px;font-size:15px;">ענה נכון, צבור XP, ותפעיל את מה שלמדת · כבר בחנות האמיתית שלך.</p>
           <div class="hero-stats" id="hero-stats-row">
             <div class="hero-stat"><div class="v" id="stat-xp">0</div><div class="k">XP</div></div>
-            <div class="hero-stat"><div class="v" id="stat-streak">3</div><div class="k">🔥 רצף</div></div>
+            <div class="hero-stat"><div class="v" id="stat-streak">3</div><div class="k"><i data-lucide="flame" style="width:13px;height:13px;vertical-align:-1px;"></i> רצף</div></div>
             <div class="hero-stat"><div class="v" id="stat-done">0</div><div class="k">שלבים מושלמים</div></div>
           </div>
           <div class="xp-bar" style="margin-top:20px;">
@@ -202,7 +206,7 @@
       <!-- Quiz overlay (full-screen) -->
       <div id="quiz-overlay">
         <div class="quiz-topbar">
-          <button class="close-btn" onclick="closeQuiz()">✕</button>
+          <button class="close-btn" onclick="closeQuiz()"><i data-lucide="x"></i></button>
           <div class="quiz-title" id="quiz-stage-title">שלב</div>
           <div class="q-counter" id="q-counter">1 / 5</div>
         </div>
@@ -216,7 +220,7 @@
 
           <!-- Celebration screen (end of stage) -->
           <div id="celebration">
-            <div class="cele-emoji" id="cele-emoji">🏆</div>
+            <div class="cele-emoji" id="cele-emoji"><i data-lucide="trophy"></i></div>
             <div class="stars" id="cele-stars"></div>
             <div class="cele-title" id="cele-title">כל הכבוד!</div>
             <div class="cele-subtitle" id="cele-subtitle">סיימת את השלב</div>
@@ -463,6 +467,22 @@
       return shuffled.slice(0, Math.min(5, shuffled.length));
     }
 
+    /* Normalize a module icon to Lucide markup (curriculum may hold emoji or
+       already-Lucide markup). Pass-through if it already contains an <i>. */
+    const ICON_EMOJI_MAP = {
+      '🎯':'target','🏪':'store','🛍️':'shopping-bag','🛒':'shopping-bag',
+      '✍️':'pen-line','📝':'pen-line','⚖️':'scale','⚙️':'settings','🛠️':'settings',
+      '📚':'book-open','📖':'book-open','🎓':'graduation-cap','💰':'banknote',
+      '📈':'trending-up','📊':'trending-up','🚀':'rocket','💡':'lightbulb',
+      '🤖':'sparkles','✨':'sparkles','📦':'package','💳':'credit-card','🏆':'trophy'
+    };
+    function modIcon(raw) {
+      if (!raw) return '<i data-lucide="circle-dot"></i>';
+      if (raw.indexOf('<i') !== -1) return raw;
+      const name = ICON_EMOJI_MAP[raw.trim()] || 'circle-dot';
+      return '<i data-lucide="' + name + '"></i>';
+    }
+
     /* ============================================================
        STAGE GRID
     ============================================================ */
@@ -475,7 +495,7 @@
         return `
           <div class="stage-card portal-card--hover" onclick="startStage('${mod.id}')">
             ${starsHtml}
-            <div class="stage-icon">${mod.icon}</div>
+            <div class="stage-icon">${modIcon(mod.icon)}</div>
             <div class="stage-num">שלב ${idx + 1}</div>
             <div class="stage-name">${mod.title}</div>
             <div class="stage-prog">
@@ -485,13 +505,15 @@
             </div>
           </div>`;
       }).join('');
+      window.refreshIcons && window.refreshIcons();
     }
 
     function starsForScore(correct, total) {
       const pct = correct / total;
-      if (pct >= 0.8) return '⭐⭐⭐';
-      if (pct >= 0.5) return '⭐⭐';
-      return '⭐';
+      const star = '<i data-lucide="star"></i>';
+      if (pct >= 0.8) return star + star + star;
+      if (pct >= 0.5) return star + star;
+      return star;
     }
 
     function updateHeroStats() {
@@ -521,13 +543,14 @@
       if (!mod) return;
       currentStageId = moduleId;
       questions = getQuestionsForModule(moduleId);
-      if (questions.length === 0) { toast('שאלות לשלב זה מגיעות בקרוב', '🚧'); return; }
+      if (questions.length === 0) { toast('שאלות לשלב זה מגיעות בקרוב'); return; }
       currentQ = 0;
       correctCount = 0;
       answered = false;
       earnedXp = 0;
 
-      document.getElementById('quiz-stage-title').textContent = mod.icon + ' ' + mod.title;
+      document.getElementById('quiz-stage-title').innerHTML = modIcon(mod.icon) + ' <span>' + mod.title + '</span>';
+      window.refreshIcons && window.refreshIcons();
       document.getElementById('celebration').classList.remove('show');
       document.getElementById('question-area').style.display = '';
 
@@ -591,10 +614,11 @@
       const fp = document.getElementById('feedback-panel');
       fp.className = 'feedback-panel show ' + (isCorrect ? 'correct-fb' : 'wrong-fb');
       fp.innerHTML = `
-        <div class="feedback-icon">${isCorrect ? '✅' : '❌'}</div>
+        <div class="feedback-icon"><i data-lucide="${isCorrect ? 'check-circle-2' : 'x-circle'}"></i></div>
         <div class="feedback-headline">${isCorrect ? 'נכון לגמרי!' : 'לא הפעם...'}</div>
         <div class="feedback-explain">${q.explain}</div>
         ${isCorrect ? '<div class="feedback-xp">+10 XP</div>' : ''}`;
+      window.refreshIcons && window.refreshIcons();
 
       document.getElementById('next-btn-wrap').style.display = '';
     }
@@ -618,30 +642,31 @@
       const prev = parseInt(localStorage.getItem('game_best_' + currentStageId) || '0', 10);
       if (correctCount > prev) localStorage.setItem('game_best_' + currentStageId, String(correctCount));
 
-      let emoji, title, subtitle;
+      let icon, title, subtitle;
       if (pct >= 0.8) {
-        emoji = '🏆'; title = 'מנטליות של מיליון!'; subtitle = 'זה בדיוק הידע שיבדיל אותך מהשאר.';
+        icon = 'trophy'; title = 'מנטליות של מיליון!'; subtitle = 'זה בדיוק הידע שיבדיל אותך מהשאר.';
       } else if (pct >= 0.6) {
-        emoji = '💪'; title = 'חזק! אתה בדרך הנכונה.'; subtitle = 'עוד סיבוב אחד ואתה סוגר את זה לגמרי.';
+        icon = 'flame'; title = 'חזק! אתה בדרך הנכונה.'; subtitle = 'עוד סיבוב אחד ואתה סוגר את זה לגמרי.';
       } else if (pct >= 0.4) {
-        emoji = '📚'; title = 'בסיס טוב, בואו נחדד!'; subtitle = 'חזור לשיעור ותנסה שוב · זה ישתלם.';
+        icon = 'book-open'; title = 'בסיס טוב, בואו נחדד!'; subtitle = 'חזור לשיעור ותנסה שוב · זה ישתלם.';
       } else {
-        emoji = '🔄'; title = 'הפעם זה מאתגר.'; subtitle = 'כל טעות מלמדת אותך משהו שהמתחרים לא יודעים.';
+        icon = 'rotate-ccw'; title = 'הפעם זה מאתגר.'; subtitle = 'כל טעות מלמדת אותך משהו שהמתחרים לא יודעים.';
       }
 
       const stars = starsForScore(correctCount, total);
-      document.getElementById('cele-emoji').textContent = emoji;
+      document.getElementById('cele-emoji').innerHTML = '<i data-lucide="' + icon + '"></i>';
       document.getElementById('cele-title').textContent = title;
       document.getElementById('cele-subtitle').textContent = subtitle;
-      document.getElementById('cele-stars').textContent = stars;
+      document.getElementById('cele-stars').innerHTML = stars;
       document.getElementById('cele-score').textContent = correctCount + '/' + total;
       document.getElementById('cele-xp').textContent = '+' + earnedXp + ' XP';
+      window.refreshIcons && window.refreshIcons();
 
       const cel = document.getElementById('celebration');
       cel.classList.add('show');
       document.getElementById('quiz-overlay').scrollTop = 0;
 
-      toast('+' + earnedXp + ' XP נוספו לחשבונך!', '🏅');
+      toast('+' + earnedXp + ' XP נוספו לחשבונך!');
     }
 
     /* ============================================================

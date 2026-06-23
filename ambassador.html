@@ -26,7 +26,7 @@
       border-radius: 4px 0 0 4px;
     }
     .amb-hero::after {
-      content: "💸";
+      content: "";
       position: absolute;
       inset-block-start: 50%;
       inset-inline-end: 30px;
@@ -122,7 +122,7 @@
       flex-direction: column;
       padding: 10px;
     }
-    .qr-box .qr-icon { font-size: 32px; }
+    .qr-box .qr-icon { font-size: 32px; display:flex; align-items:center; justify-content:center; }
 
     /* ---- How it works steps ---- */
     .steps-row {
@@ -237,26 +237,26 @@
       <h1>אתה מפנה. <span>הכסף מגיע אליך.</span></h1>
       <p class="mt-8">כל אחד שמצטרף לאקדמיית מולדבסקי דרכך ועובר ל-DMA שווה לך עמלה אמיתית. אין מינימום, אין תקרה, אין תפוגה.</p>
       <div class="flex gap-8 wrap-f mt-16">
-        <span class="badge badge--green">✓ הצטרפות חינמית</span>
-        <span class="badge badge--gold">⭐ עד 15% עמלה</span>
-        <span class="badge badge--locked">🔒 הכנסה ללא תקרה</span>
+        <span class="badge badge--green"><i data-lucide="check-circle-2"></i> הצטרפות חינמית</span>
+        <span class="badge badge--gold"><i data-lucide="star"></i> עד 15% עמלה</span>
+        <span class="badge badge--locked"><i data-lucide="lock"></i> הכנסה ללא תקרה</span>
       </div>
     </div>
 
     <!-- Stats row -->
     <div class="stats-row mb-24 reveal">
       <div class="portal-stat-tile">
-        <span class="ico">📨</span>
+        <span class="ico"><i data-lucide="users"></i></span>
         <span class="v" id="stat-invited">0</span>
         <span class="k">נרשמו דרכך</span>
       </div>
       <div class="portal-stat-tile">
-        <span class="ico">⬆️</span>
+        <span class="ico"><i data-lucide="trending-up"></i></span>
         <span class="v" id="stat-upgraded">0</span>
         <span class="k">סגרו DMA</span>
       </div>
       <div class="portal-stat-tile">
-        <span class="ico">💰</span>
+        <span class="ico"><i data-lucide="banknote"></i></span>
         <span class="v green" id="stat-earnings">0₪</span>
         <span class="k">הרווחת עד כה</span>
       </div>
@@ -272,13 +272,13 @@
         </div>
         <div class="share-row">
           <button class="share-btn whatsapp" onclick="shareWhatsApp()">
-            <span>💬</span> WhatsApp
+            <i data-lucide="message-circle"></i> WhatsApp
           </button>
           <button class="share-btn instagram" onclick="shareInstagram()">
-            <span>📸</span> אינסטגרם
+            <i data-lucide="instagram"></i> אינסטגרם
           </button>
           <button class="share-btn" onclick="copyLink()">
-            <span>🔗</span> העתק קישור
+            <i data-lucide="copy"></i> העתק קישור
           </button>
         </div>
       </div>
@@ -286,7 +286,7 @@
       <div class="qr-card">
         <p class="section-label">QR הקישור שלך</p>
         <div class="qr-box">
-          <span class="qr-icon">⬛</span>
+          <span class="qr-icon"><i data-lucide="qr-code" style="width:32px;height:32px;color:var(--text-mute)"></i></span>
           <span>QR Code<br>יוצג כאן</span>
         </div>
         <p style="font-size:13px;color:var(--text-dim);max-width:180px;">שים בסטורי, בפוסט, בהדגמה, בכרטיס ביקור. הוא עובד בכל מקום.</p>
@@ -300,17 +300,17 @@
     </div>
     <div class="steps-row reveal">
       <div class="step-card" data-step="1">
-        <div class="step-icon">🔗</div>
+        <div class="step-icon"><span class="ic-chip"><i data-lucide="link"></i></span></div>
         <h4>מפיץ את הקישור</h4>
         <p>וואטסאפ, סטורי, פוסט, שיחה. בכל מקום שמישהו שואל "איך מוכרים באינטרנט", הקישור שלך שם.</p>
       </div>
       <div class="step-card" data-step="2">
-        <div class="step-icon">👤</div>
+        <div class="step-icon"><span class="ic-chip"><i data-lucide="user-plus"></i></span></div>
         <h4>הם מצטרפים לאקדמיה</h4>
         <p>נרשמים לפורטל בחינם. הם מתחברים לתוכן של דניאל, אתה רואה את המספרים עולים בזמן אמת.</p>
       </div>
       <div class="step-card" data-step="3">
-        <div class="step-icon">💸</div>
+        <div class="step-icon"><span class="ic-chip"><i data-lucide="banknote"></i></span></div>
         <h4>הכסף מגיע אליך</h4>
         <p>ברגע שסגרו DMA, העמלה מחושבת אוטומטית ומועברת ישירות אליך. אפס התעסקות.</p>
       </div>
@@ -321,17 +321,17 @@
       <p class="section-label">ככל שסוגרים יותר, מרוויחים יותר</p>
       <div class="tier-row">
         <div class="tier-card">
-          <div class="tier-icon">🥉</div>
+          <div class="tier-icon"><span class="ic-chip"><i data-lucide="medal"></i></span></div>
           <div class="tier-val">5%</div>
           <div class="tier-lbl">4-1 סגירות ראשונות</div>
         </div>
         <div class="tier-card">
-          <div class="tier-icon">🥈</div>
+          <div class="tier-icon"><span class="ic-chip"><i data-lucide="award"></i></span></div>
           <div class="tier-val">10%</div>
           <div class="tier-lbl">14-5 סגירות, מתזזים</div>
         </div>
         <div class="tier-card">
-          <div class="tier-icon">🥇</div>
+          <div class="tier-icon"><span class="ic-chip"><i data-lucide="crown"></i></span></div>
           <div class="tier-val">15%</div>
           <div class="tier-lbl">15+ סגירות, שגריר זהב</div>
         </div>
@@ -390,7 +390,11 @@
     { name:'נועה גולן',    ref:12, upg: 5, earn:1499  },
     { name:'תום ברק',      ref: 9, upg: 3, earn: 300  },
   ];
-  const EMOJIS = ['🏆','🥈','🥉'];
+  const MEDAL_ICONS = [
+    '<i data-lucide="trophy" style="color:var(--gold)"></i>',
+    '<i data-lucide="award" style="color:var(--silver,#A8A9AD)"></i>',
+    '<i data-lucide="medal" style="color:var(--bronze,#CD7F32)"></i>'
+  ];
   const PODIUM_ORDER = [1, 0, 2]; // silver-gold-bronze visual order
 
   /* ---- Build referral link from user name ---- */
@@ -438,11 +442,12 @@
       <div class="ava">${a.name.charAt(0)}</div>
       <div style="font-size:11px;font-weight:700;margin-bottom:8px;color:var(--text-dim)">${a.name.split(' ')[0]}</div>
       <div class="pillar">
-        <span style="font-size:20px;margin-bottom:4px">${EMOJIS[realRank-1]}</span>
+        <span style="font-size:20px;margin-bottom:4px;display:flex;align-items:center;justify-content:center">${MEDAL_ICONS[realRank-1]}</span>
         <span style="font-size:13px;color:var(--text-dim)">${a.upg} שדרוגים</span>
       </div>`;
     podiumEl.appendChild(spot);
   });
+  window.refreshIcons();
 
   /* ---- Leaderboard table ---- */
   const tbody = document.getElementById('lb-body');
@@ -451,13 +456,14 @@
     const rankClass = rank <= 3 ? `r${rank}` : '';
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td class="lb-rank ${rankClass}">${rank <= 3 ? EMOJIS[rank-1] : rank}</td>
+      <td class="lb-rank ${rankClass}">${rank <= 3 ? MEDAL_ICONS[rank-1] : rank}</td>
       <td class="lb-name">${a.name}</td>
       <td class="lb-refs">${a.ref}</td>
       <td><span class="badge badge--green">${a.upg}</span></td>
       <td class="lb-earn">${a.earn.toLocaleString('he-IL')}₪</td>`;
     tbody.appendChild(tr);
   });
+  window.refreshIcons();
 
   /* ---- Scroll reveal ---- */
   window.addEventListener('load', () => {

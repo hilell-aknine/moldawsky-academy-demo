@@ -77,11 +77,11 @@
 
   /* ---------- Shared chrome (topbar + bottom-nav) ---------- */
   const NAV = [
-    { href:'course-library.html', ico:'📚', label:'הקורס' },
-    { href:'workbooks.html',      ico:'📔', label:'חוברות' },
-    { href:'ai-mentor.html',      ico:'🤖', label:'מורה AI' },
-    { href:'community.html',      ico:'👥', label:'קהילה' },
-    { href:'profile.html',        ico:'🎮', label:'פרופיל' },
+    { href:'course-library.html', ico:'book-open',   label:'הקורס' },
+    { href:'workbooks.html',      ico:'notebook-pen',label:'חוברות' },
+    { href:'ai-mentor.html',      ico:'sparkles',    label:'מורה AI' },
+    { href:'community.html',      ico:'users',       label:'קהילה' },
+    { href:'profile.html',        ico:'circle-user', label:'פרופיל' },
   ];
   window.renderTopbar = function (active) {
     const u = window.User.get();
@@ -90,17 +90,17 @@
       <div class="topbar-spacer"></div>
       ${ (() => { const n = window.Progress.nextLesson();
           return n ? `<a class="btn btn--primary btn--sm" href="course-library.html?lesson=${n.id}" aria-label="המשך בשיעור הבא">המשך<span class="hide-sm"> בשיעור הבא</span> ←</a>` : ''; })() }
-      <a class="icon-btn hide-sm" href="game.html" title="משחק תרגול" aria-label="משחק תרגול">🎮</a>
-      <a class="icon-btn hide-sm" href="ambassador.html" title="שגרירים" aria-label="תוכנית שגרירים">💸</a>
-      <button class="icon-btn" title="מצב תצוגה (בהיר/כהה)" aria-label="החלף מצב תצוגה בהיר או כהה" onclick="toggleTheme()">◐</button>
-      <a class="icon-btn hide-sm" href="admin.html" title="ניהול (מאחורי הקלעים)" aria-label="דשבורד ניהול">⚙️</a>
-      <a class="icon-btn" href="dma.html" title="DMA — הרמה הבאה" aria-label="DMA, הרמה הבאה">🔓</a>
+      <a class="icon-btn hide-sm" href="game.html" title="משחק תרגול" aria-label="משחק תרגול"><i data-lucide="gamepad-2"></i></a>
+      <a class="icon-btn hide-sm" href="ambassador.html" title="שגרירים" aria-label="תוכנית שגרירים"><i data-lucide="gift"></i></a>
+      <button class="icon-btn" title="מצב תצוגה (בהיר/כהה)" aria-label="החלף מצב תצוגה בהיר או כהה" onclick="toggleTheme()"><i data-lucide="sun-moon"></i></button>
+      <a class="icon-btn hide-sm" href="admin.html" title="ניהול (מאחורי הקלעים)" aria-label="דשבורד ניהול"><i data-lucide="layout-dashboard"></i></a>
+      <a class="icon-btn" href="dma.html" title="DMA · הרמה הבאה" aria-label="DMA, הרמה הבאה"><i data-lucide="crown"></i></a>
       <a class="avatar" href="profile.html" title="${u.name}" aria-label="הפרופיל שלי">${u.initial}</a>
     </header>`;
   };
   window.renderBottomNav = function (active) {
     return `<nav class="bottom-nav">${NAV.map(n =>
-      `<a href="${n.href}" class="${active===n.href?'active':''}"><span class="ico">${n.ico}</span>${n.label}</a>`).join('')}</nav>`;
+      `<a href="${n.href}" class="${active===n.href?'active':''}"><i data-lucide="${n.ico}" class="ico"></i>${n.label}</a>`).join('')}</nav>`;
   };
 
   /* ---------- Reveal on scroll ---------- */
@@ -113,4 +113,20 @@
 
   /* ---------- tiny query helper ---------- */
   window.qs = (k) => new URLSearchParams(location.search).get(k);
+
+  /* ---------- Lucide vector icons (replaces emoji) ----------
+     Renders every <i data-lucide="name"></i> into a clean SVG. Call
+     window.refreshIcons() after injecting any dynamic markup with icons. */
+  window.refreshIcons = function () { try { window.lucide && window.lucide.createIcons(); } catch (e) {} };
+  (function loadLucide(){
+    if (window.lucide) { window.refreshIcons(); return; }
+    var s = document.createElement('script');
+    s.src = 'https://unpkg.com/lucide@latest/dist/umd/lucide.min.js';
+    s.defer = true;
+    s.onload = window.refreshIcons;
+    document.head.appendChild(s);
+  })();
+  if (document.readyState !== 'loading') setTimeout(window.refreshIcons, 0);
+  else document.addEventListener('DOMContentLoaded', window.refreshIcons);
+  window.addEventListener('load', window.refreshIcons);
 })();

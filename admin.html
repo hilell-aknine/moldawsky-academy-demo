@@ -145,16 +145,16 @@
 
     <!-- 1 · KPI ROW -->
     <div class="stats-row">
-      <div class="portal-stat-tile"><span class="ico">👥</span><span class="v">342</span><span class="k">תלמידים פעילים</span></div>
-      <div class="portal-stat-tile"><span class="ico">📈</span><span class="v">58%</span><span class="k">אחוז השלמה ממוצע</span></div>
-      <div class="portal-stat-tile"><span class="ico">▶️</span><span class="v">5,184</span><span class="k">שיעורים שנצפו</span></div>
-      <div class="portal-stat-tile"><span class="ico">🎯</span><span class="v">47</span><span class="k">לידים ל-DMA</span></div>
-      <div class="portal-stat-tile"><span class="ico">💰</span><span class="v">₪118K</span><span class="k">הכנסה משוערת</span></div>
+      <div class="portal-stat-tile"><span class="ic-chip"><i data-lucide="users"></i></span><span class="v">342</span><span class="k">תלמידים פעילים</span></div>
+      <div class="portal-stat-tile"><span class="ic-chip"><i data-lucide="trending-up"></i></span><span class="v">58%</span><span class="k">אחוז השלמה ממוצע</span></div>
+      <div class="portal-stat-tile"><span class="ic-chip"><i data-lucide="play"></i></span><span class="v">5,184</span><span class="k">שיעורים שנצפו</span></div>
+      <div class="portal-stat-tile"><span class="ic-chip"><i data-lucide="target"></i></span><span class="v">47</span><span class="k">לידים ל-DMA</span></div>
+      <div class="portal-stat-tile"><span class="ic-chip"><i data-lucide="banknote"></i></span><span class="v">₪118K</span><span class="k">הכנסה משוערת</span></div>
     </div>
 
     <!-- 2 · FUNNEL -->
     <section class="admin-section">
-      <h3>🪣 משפך התלמידים</h3>
+      <h3><i data-lucide="filter"></i> משפך התלמידים</h3>
       <p class="sub">מנרשמים ועד פניית DMA. רוחב הפס הוא אחוז ביחס לשלב הראשון.</p>
       <div class="portal-card">
         <div class="funnel" id="funnel"></div>
@@ -163,7 +163,7 @@
 
     <!-- 3 · STUDENTS TABLE -->
     <section class="admin-section">
-      <h3>👥 טבלת תלמידים</h3>
+      <h3><i data-lucide="users"></i> טבלת תלמידים</h3>
       <p class="sub">מי לומד, איפה הוא במשפך, ומי בשל לפנייה.</p>
       <div class="mb-16">
         <input class="search-input" id="stuSearch" placeholder="חיפוש תלמיד לפי שם..." style="max-width:340px;">
@@ -180,7 +180,7 @@
 
     <!-- 4 · CONTENT MANAGEMENT -->
     <section class="admin-section">
-      <h3>📚 ניהול תוכן</h3>
+      <h3><i data-lucide="book-open"></i> ניהול תוכן</h3>
       <p class="sub">12 מודולים · 31 שיעורים. מתג פרסום לכל מודול.</p>
       <div class="portal-card" style="padding:0;">
         <div id="modList"></div>
@@ -189,7 +189,7 @@
 
     <!-- 5 · POPUP MANAGER -->
     <section class="admin-section">
-      <h3>✨ מנהל הפופאפים</h3>
+      <h3><i data-lucide="sparkles"></i> מנהל הפופאפים</h3>
       <p class="sub">הלב של חדר הבקרה. כל פופאפ שהתלמיד רואה בנגן נשלט מכאן. שינוי נשמר מיידית.</p>
       <div class="flex between items-center wrap-f gap-12 mb-16">
         <span class="badge badge--green" id="popCount">0 פופאפים</span>
@@ -264,11 +264,12 @@
         return `<tr>
           <td><span class="stu-name"><span class="stu-ava">${initial}</span>${s.name}</span></td>
           <td><div class="pbar-cell"><div class="progress-bar"><i style="width:${s.prog}%"></i></div><span class="pct">${s.prog}%</span></div></td>
-          <td>🔥 ${s.streak}</td>
+          <td><span class="seg"><i data-lucide="flame"></i> ${s.streak}</span></td>
           <td><span class="badge ${st.c}">${st.t}</span></td>
           <td><button class="btn btn--outline btn--sm" onclick="toast('נפתח כרטיס תלמיד · ${s.name}','👤')">צפה</button></td>
         </tr>`;
       }).join('');
+      window.refreshIcons();
     }
     document.getElementById('stuSearch').addEventListener('input', e => renderStudents(e.target.value));
     renderStudents();
@@ -293,6 +294,7 @@
           </label>
         </div>`;
       }).join('');
+      window.refreshIcons();
     }
     window.togglePub = function(id, on){
       setPub(id, on);
@@ -345,6 +347,7 @@
       document.getElementById('popCount').textContent = `${POPUPS.length} פופאפים`;
       const grid = document.getElementById('popGrid');
       grid.innerHTML = POPUPS.map(p => editingId===p.id ? editCard(p) : viewCard(p)).join('');
+      window.refreshIcons();
     }
 
     function viewCard(p){
@@ -362,9 +365,9 @@
         </div>
         <div class="pc-body">${esc(p.body)}</div>
         <div class="pc-actions">
-          <button class="btn btn--primary btn--sm" onclick="previewPopup('${p.id}')">👁 תצוגה מקדימה</button>
-          <button class="btn btn--outline btn--sm" onclick="startEdit('${p.id}')">✏️ עריכה</button>
-          <button class="btn btn--ghost btn--sm" onclick="deletePopup('${p.id}')">🗑 מחק</button>
+          <button class="btn btn--primary btn--sm" onclick="previewPopup('${p.id}')"><i data-lucide="eye"></i> תצוגה מקדימה</button>
+          <button class="btn btn--outline btn--sm" onclick="startEdit('${p.id}')"><i data-lucide="pen-line"></i> עריכה</button>
+          <button class="btn btn--ghost btn--sm" onclick="deletePopup('${p.id}')"><i data-lucide="trash-2"></i> מחק</button>
         </div>
       </div>`;
     }
@@ -388,7 +391,7 @@
           <div class="fld"><label>כפתור משני · קישור</label><input id="e_cta2Href" value="${esc(p.cta2Href)}"></div>
         </div>
         <div class="pc-actions">
-          <button class="btn btn--primary btn--sm" onclick="saveEdit('${p.id}')">💾 שמור</button>
+          <button class="btn btn--primary btn--sm" onclick="saveEdit('${p.id}')"><i data-lucide="save"></i> שמור</button>
           <button class="btn btn--outline btn--sm" onclick="cancelEdit()">ביטול</button>
         </div>
       </div>`;
@@ -430,7 +433,7 @@
       document.getElementById('previewBox').innerHTML = `
         <div class="flex between items-center mb-16">
           <span class="pill">תצוגה מקדימה · ${TRIGGER_LABELS[p.trigger]||p.trigger}</span>
-          <button class="icon-btn" onclick="closePreview()" title="סגור">✕</button>
+          <button class="icon-btn" onclick="closePreview()" title="סגור"><i data-lucide="x"></i></button>
         </div>
         <div class="center">
           <div style="font-size:52px;line-height:1;margin-block-end:10px;">${esc(p.icon)}</div>
@@ -441,6 +444,7 @@
             ${cta2}
           </div>
         </div>`;
+      window.refreshIcons();
       document.getElementById('previewModal').classList.add('open');
     };
     window.closePreview = function(){ document.getElementById('previewModal').classList.remove('open'); };

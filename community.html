@@ -165,7 +165,7 @@
 
       <!-- Page header -->
       <div class="mb-24">
-        <div class="page-title">👥 קהילת הסוחרים</div>
+        <div class="page-title"><i data-lucide="users" class="ico"></i> קהילת הסוחרים</div>
         <div class="page-sub">ניצחונות, שאלות, מוצרים שעובדים. 340 סוחרים פעילים מדי יום.</div>
       </div>
 
@@ -178,7 +178,7 @@
           <div class="portal-card mb-24" id="composer-card">
             <div class="flex gap-12 items-center mb-16">
               <div class="post-avatar" id="composer-ava">ד</div>
-              <div style="flex:1; color:var(--text-dim); font-size:14px;">שלום <strong id="composer-name">דניאל</strong> 👋</div>
+              <div style="flex:1; color:var(--text-dim); font-size:14px;">שלום <strong id="composer-name">דניאל</strong> <i data-lucide="hand" class="ico"></i></div>
             </div>
             <textarea class="composer-textarea" id="composer-text" placeholder="פוסט ראשון? נצחון קטן? מוצר שגילית? מישהו כאן כבר עבר את זה. כתוב."></textarea>
             <div class="flex between items-center mt-16">
@@ -232,19 +232,19 @@
           <div class="portal-card reveal">
             <div class="flex between items-center mb-16">
               <div style="font-weight:800; font-size:15px;">מובילי החודש</div>
-              <span class="badge badge--gold">🏆 יוני 2025</span>
+              <span class="badge badge--gold"><i data-lucide="trophy" class="ico"></i> יוני 2025</span>
             </div>
             <div id="leaderboard"></div>
           </div>
 
           <!-- Rules -->
           <div class="portal-card reveal">
-            <div style="font-weight:800; font-size:15px; margin-bottom:12px;">📋 כללי הקהילה</div>
-            <div class="rule-item"><span class="rule-icon">✅</span>שתף מה עובד לך. גם מוצר ראשון, גם ROAS של 1.2.</div>
-            <div class="rule-item"><span class="rule-icon">🤝</span>עזור לאחרים. היום אתה שואל על סליקה, מחר אתה עונה.</div>
-            <div class="rule-item"><span class="rule-icon">🚫</span>אין ספאם, אין פרסום שירותים מתחרים. בקשר לזה ברור.</div>
-            <div class="rule-item"><span class="rule-icon">💬</span>שאלות מוזמנות. אין שאלה מטופשת לסוחר שמתחיל.</div>
-            <div class="rule-item"><span class="rule-icon">🔒</span>מה שנאמר בקהילה נשאר בקהילה.</div>
+            <div style="font-weight:800; font-size:15px; margin-bottom:12px;"><i data-lucide="clipboard-list" class="ico"></i> כללי הקהילה</div>
+            <div class="rule-item"><span class="rule-icon"><i data-lucide="check-circle-2" class="ico"></i></span>שתף מה עובד לך. גם מוצר ראשון, גם ROAS של 1.2.</div>
+            <div class="rule-item"><span class="rule-icon"><i data-lucide="users" class="ico"></i></span>עזור לאחרים. היום אתה שואל על סליקה, מחר אתה עונה.</div>
+            <div class="rule-item"><span class="rule-icon"><i data-lucide="x" class="ico"></i></span>אין ספאם, אין פרסום שירותים מתחרים. בקשר לזה ברור.</div>
+            <div class="rule-item"><span class="rule-icon"><i data-lucide="message-circle" class="ico"></i></span>שאלות מוזמנות. אין שאלה מטופשת לסוחר שמתחיל.</div>
+            <div class="rule-item"><span class="rule-icon"><i data-lucide="lock" class="ico"></i></span>מה שנאמר בקהילה נשאר בקהילה.</div>
           </div>
 
         </div>
@@ -262,6 +262,7 @@
     /* ---------- Shell ---------- */
     document.getElementById('topbar').innerHTML = renderTopbar('community.html');
     document.getElementById('bottomnav').innerHTML = renderBottomNav('community.html');
+    window.refreshIcons();
 
     /* ---------- User ---------- */
     const u = window.User.get();
@@ -288,11 +289,12 @@
     ];
     document.getElementById('leaderboard').innerHTML = LB.map((p, i) => `
       <div class="leaderboard-row">
-        <div class="lb-rank ${p.rank}">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</div>
+        <div class="lb-rank ${p.rank}">${i === 0 ? '<i data-lucide="trophy" class="ico"></i>' : i === 1 ? '<i data-lucide="medal" class="ico"></i>' : i === 2 ? '<i data-lucide="medal" class="ico"></i>' : i + 1}</div>
         <div class="lb-ava ${p.cls}" style="background:${avatarBg(p.cls)};color:${avatarColor(p.cls)}">${p.initial}</div>
         <div class="lb-name">${p.name}</div>
         <div class="lb-pts">${p.pts.toLocaleString()} XP</div>
       </div>`).join('');
+    window.refreshIcons();
 
     function avatarBg(cls) {
       const map = { 'alt-1':'linear-gradient(135deg,#4FB0FF,#2277CC)', 'alt-2':'linear-gradient(135deg,#F0B743,#C98A4B)', 'alt-3':'linear-gradient(135deg,#FF5C6C,#CC2233)', 'alt-4':'linear-gradient(135deg,#F7C600,#C99A00)', 'alt-5':'linear-gradient(135deg,#A855F7,#7C3AED)' };
@@ -414,6 +416,7 @@
     /* ---------- Render ---------- */
     function renderFeed() {
       document.getElementById('feed').innerHTML = posts.map(renderPost).join('');
+      window.refreshIcons();
       // Re-bind comments visibility from state
       posts.forEach(p => {
         if (p.commentsOpen) {
@@ -454,12 +457,12 @@
           <div class="post-body">${bodyHtml}</div>
           <div class="post-actions">
             <button class="action-btn ${p.userLiked ? 'liked' : ''}" onclick="toggleLike('${p.id}')">
-              ❤️ <span id="likes-${p.id}">${p.likes}</span>
+              <i data-lucide="heart" class="ico"></i> <span id="likes-${p.id}">${p.likes}</span>
             </button>
             <button class="action-btn" onclick="toggleComments('${p.id}')">
-              💬 <span>${(p.comments || []).length}</span>
+              <i data-lucide="message-circle" class="ico"></i> <span>${(p.comments || []).length}</span>
             </button>
-            <button class="action-btn" onclick="sharePost('${p.id}')">🔗 שתף</button>
+            <button class="action-btn" onclick="sharePost('${p.id}')"><i data-lucide="link" class="ico"></i> שתף</button>
           </div>
           <div class="comments-section" id="comments-${p.id}">
             ${commentsHtml}
@@ -524,6 +527,7 @@
       const card = div.firstElementChild;
       card.classList.add('new-post-anim');
       feed.prepend(card);
+      window.refreshIcons();
 
       ta.value = '';
       activeTag = '';

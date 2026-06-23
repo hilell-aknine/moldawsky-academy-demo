@@ -297,6 +297,16 @@ h1,h2,h3,h4 { font-family: var(--font-head); line-height: 1.2; font-weight: 800;
 .mb-8{margin-bottom:8px}.mb-16{margin-bottom:16px}.mb-24{margin-bottom:24px}
 .hidden{display:none!important}
 @media (max-width:560px){ .hide-sm{ display:none!important; } }
+
+/* ---------- Lucide vector icons (premium, replaces emoji) ---------- */
+[data-lucide], svg.lucide { width:1.15em; height:1.15em; stroke-width:2; vertical-align:-0.16em; flex-shrink:0; display:inline-block; }
+.icon-btn svg.lucide, .icon-btn [data-lucide] { width:20px; height:20px; }
+.bottom-nav .ico, .bottom-nav svg.lucide { width:21px; height:21px; }
+.portal-stat-tile .ico, .portal-stat-tile svg.lucide { width:21px; height:21px; color:var(--green); }
+.btn svg.lucide, .btn [data-lucide] { width:18px; height:18px; }
+/* icon "chip" container for cards/agents (set bg via brand tokens) */
+.ic-chip { width:42px; height:42px; border-radius:12px; display:grid; place-items:center; background:var(--green-soft); color:var(--green); }
+.ic-chip svg.lucide { width:21px; height:21px; }
 .credit { text-align:center; padding:22px; color:var(--text-mute); font-size:12.5px; }
 .credit b { color:var(--text-dim); }
 

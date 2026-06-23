@@ -170,9 +170,9 @@
       <div class="grow">
         <select class="ls-select" id="lessonSelect" aria-label="בחירת שיעור"></select>
       </div>
-      <button class="btn btn--primary" id="btnPdf">⬇ הורד PDF</button>
-      <button class="btn btn--outline" id="btnPrint">🖨 הדפס</button>
-      <a class="back" id="backLink" href="course-library.html">→ חזרה לקורס</a>
+      <button class="btn btn--primary" id="btnPdf"><i data-lucide="download"></i> הורד PDF</button>
+      <button class="btn btn--outline" id="btnPrint"><i data-lucide="printer"></i> הדפס</button>
+      <a class="back" id="backLink" href="course-library.html"><i data-lucide="arrow-right"></i> חזרה לקורס</a>
     </div>
 
     <!-- The branded, printable summary -->
@@ -732,7 +732,7 @@
     function renderSheet(les) {
       const c = CONTENT[les.id] || fallback(les);
       const li = (arr, cls) => `<ul class="ls-list ${cls||''}">` +
-        arr.map(x => `<li><span class="bullet">${cls==='action'?'›':'✓'}</span><span>${esc(x)}</span></li>`).join('') + `</ul>`;
+        arr.map(x => `<li><span class="bullet"><i data-lucide="${cls==='action'?'chevron-left':'check'}"></i></span><span>${esc(x)}</span></li>`).join('') + `</ul>`;
       const terms = (c.terms||[]).map(t =>
         `<div class="ls-term"><b>${esc(t.t)}</b><span>${esc(t.d)}</span></div>`).join('');
 
@@ -749,7 +749,7 @@
           <h1>${esc(les.title)}</h1>
           <div class="meta">
             <span class="chip accent">${esc(les.moduleIcon||'')} ${esc(les.moduleTitle||'')}</span>
-            <span class="chip">⏱ ${esc(les.dur||'')}</span>
+            <span class="chip"><i data-lucide="clock"></i> ${esc(les.dur||'')}</span>
             <span class="chip">שיעור ${esc(les.id.replace('l',''))} מתוך ${window.LESSON_COUNT}</span>
           </div>
         </div>
@@ -758,22 +758,22 @@
           <p class="sheet-intro">${esc(les.summary||'')}</p>
 
           <div class="ls-block">
-            <h2><span class="ic">📘</span> מה למדנו</h2>
+            <h2><span class="ic"><i data-lucide="book-open"></i></span> מה למדנו</h2>
             ${li(c.takeaways)}
           </div>
 
           <div class="ls-block">
-            <h2><span class="ic">🎯</span> נקודות מפתח לפעולה</h2>
+            <h2><span class="ic"><i data-lucide="target"></i></span> נקודות מפתח לפעולה</h2>
             ${li(c.actions,'action')}
           </div>
 
           <div class="ls-block">
-            <h2><span class="ic">🔑</span> מושגים</h2>
+            <h2><span class="ic"><i data-lucide="tag"></i></span> מושגים</h2>
             <div class="ls-terms">${terms}</div>
           </div>
 
           <div class="ls-block">
-            <h2><span class="ic">💡</span> טיפ של דניאל</h2>
+            <h2><span class="ic"><i data-lucide="lightbulb"></i></span> טיפ של דניאל</h2>
             <div class="ls-tip">
               <span class="ava">ד</span>
               <div>
@@ -788,6 +788,7 @@
           <div class="fl"><span class="m">M</span> אקדמיית מולדבסקי · הסיסטם מבוסס ה-AI להקמת מותג איקומרס מ-0</div>
           <div class="fr">נבנה ע"י <b>הלל אקנין</b></div>
         </div>`;
+      window.refreshIcons();
     }
 
     /* ---------- Lesson <select> ---------- */
@@ -814,6 +815,7 @@
 
     /* ---------- PDF + print ---------- */
     function downloadPDF(les) {
+      window.refreshIcons(); // ensure Lucide SVGs are rendered before capture
       const el = document.getElementById('summarySheet');
       const safe = (les.title || 'שיעור').replace(/[\\/:*?"<>|]/g,'').trim();
       const fileName = `סיכום · ${safe}.pdf`;
