@@ -129,4 +129,18 @@
   if (document.readyState !== 'loading') setTimeout(window.refreshIcons, 0);
   else document.addEventListener('DOMContentLoaded', window.refreshIcons);
   window.addEventListener('load', window.refreshIcons);
+  // Bulletproof: auto-convert any <i data-lucide> added dynamically, no per-page calls needed.
+  (function observeIcons(){
+    if (!('MutationObserver' in window)) return;
+    var t = null;
+    var mo = new MutationObserver(function (muts) {
+      for (var i = 0; i < muts.length; i++) {
+        if (muts[i].addedNodes && muts[i].addedNodes.length) {
+          clearTimeout(t); t = setTimeout(window.refreshIcons, 50); return;
+        }
+      }
+    });
+    var start = function () { mo.observe(document.body, { childList: true, subtree: true }); };
+    if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+  })();
 })();
