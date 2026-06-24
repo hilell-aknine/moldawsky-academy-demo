@@ -181,7 +181,7 @@
     <!-- 4 · CONTENT MANAGEMENT -->
     <section class="admin-section">
       <h3><i data-lucide="book-open"></i> ניהול תוכן</h3>
-      <p class="sub">12 מודולים · 31 שיעורים. מתג פרסום לכל מודול.</p>
+      <p class="sub">12 מודולים · 44 שיעורים. מתג פרסום לכל מודול.</p>
       <div class="portal-card" style="padding:0;">
         <div id="modList"></div>
       </div>
@@ -211,6 +211,47 @@
   <script src="data/curriculum.js"></script>
   <script src="js/portal-core.js"></script>
   <script>
+    /* ============ ACCESS GATE (demo · presentation protection) ============
+       זה שער הדגמה. בגרסת הפרודקשן (אם דניאל נסגר) זה מוחלף באימות Supabase אמיתי.
+       לשנות סיסמה = לערוך את ADMIN_PASS כאן. */
+    const ADMIN_PASS = 'moldawsky2026';
+    (function adminGate() {
+      if (sessionStorage.getItem('mold_admin_ok') === '1') return;
+      const g = document.createElement('div');
+      g.id = 'adminGate';
+      g.innerHTML = `
+        <div class="gate-box pop" role="dialog" aria-modal="true" aria-label="כניסה מוגנת לניהול">
+          <div class="ic-chip" style="margin:0 auto 12px"><i data-lucide="lock"></i></div>
+          <h2 style="font-size:22px;text-align:center">ניהול מאחורי הקלעים</h2>
+          <p class="muted" style="text-align:center;margin-block:8px 20px;font-size:14px">אזור מוגן. הזן את סיסמת הניהול כדי להיכנס.</p>
+          <input id="gatePass" type="password" class="search-input" placeholder="סיסמת ניהול" autocomplete="current-password" style="text-align:center;font-size:16px">
+          <p id="gateErr" class="muted" style="text-align:center;color:var(--red);font-size:13px;min-height:18px;margin-block-start:8px"></p>
+          <button id="gateBtn" class="btn btn--primary btn--block btn--lg" style="margin-block-start:6px">כניסה</button>
+          <a href="course-library.html" class="btn btn--ghost btn--block" style="margin-block-start:8px">חזרה לפורטל</a>
+        </div>`;
+      document.body.appendChild(g);
+      document.body.style.overflow = 'hidden';
+      window.refreshIcons && window.refreshIcons();
+      const pass = g.querySelector('#gatePass');
+      const err  = g.querySelector('#gateErr');
+      const tryEnter = () => {
+        if (pass.value === ADMIN_PASS) {
+          sessionStorage.setItem('mold_admin_ok', '1');
+          document.body.style.overflow = '';
+          g.remove();
+        } else {
+          err.textContent = 'סיסמה שגויה, נסה שוב.';
+          pass.value = ''; pass.focus();
+          g.querySelector('.gate-box').animate(
+            [{transform:'translateX(0)'},{transform:'translateX(-8px)'},{transform:'translateX(8px)'},{transform:'translateX(0)'}],
+            {duration:280, easing:'ease-in-out'});
+        }
+      };
+      g.querySelector('#gateBtn').onclick = tryEnter;
+      pass.addEventListener('keydown', e => { if (e.key === 'Enter') tryEnter(); });
+      setTimeout(() => pass.focus(), 60);
+    })();
+
     document.getElementById('topbar').innerHTML   = renderTopbar('admin.html');
     document.getElementById('bottomnav').innerHTML = renderBottomNav('admin.html');
 

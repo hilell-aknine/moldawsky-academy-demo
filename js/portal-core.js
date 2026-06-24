@@ -53,15 +53,19 @@
       localStorage.setItem(LS.progress, JSON.stringify(a));
       return !!a[id];
     },
-    totalPct() { return Math.round(this.completedCount() / (window.LESSON_COUNT || 31) * 100); },
+    totalPct() { return Math.round(this.completedCount() / (window.LESSON_COUNT || 44) * 100); },
     nextLesson() { return (window.ALL_LESSONS || []).find(l => !this.isDone(l.id)) || null; },
     /* XP + streak (gamification) */
     xp() { return parseInt(localStorage.getItem(LS.xp) || '0', 10); },
     addXp(n) { localStorage.setItem(LS.xp, String(this.xp() + n)); },
     streak() { return parseInt(localStorage.getItem(LS.streak) || '3', 10); }, // demo seed
     timeLeftLabel() {
-      const left = (window.LESSON_COUNT || 31) - this.completedCount();
-      const mins = left * 8; const h = Math.floor(mins/60);
+      // sum the REAL remaining lesson durations (dur "M:SS"), not a flat estimate
+      const secs = (window.ALL_LESSONS || []).filter(l => !this.isDone(l.id)).reduce((sum, l) => {
+        const p = String(l.dur || '0:0').split(':').map(Number);
+        return sum + (p[0] || 0) * 60 + (p[1] || 0);
+      }, 0);
+      const mins = Math.round(secs / 60); const h = Math.floor(mins/60);
       return h > 0 ? `${h} ש' ${mins%60} ד'` : `${mins} ד'`;
     }
   };
@@ -80,6 +84,7 @@
     { href:'course-library.html', ico:'book-open',   label:'הקורס' },
     { href:'workbooks.html',      ico:'notebook-pen',label:'חוברות' },
     { href:'ai-mentor.html',      ico:'sparkles',    label:'מורה AI' },
+    { href:'game.html',           ico:'gamepad-2',   label:'משחק' },
     { href:'community.html',      ico:'users',       label:'קהילה' },
     { href:'profile.html',        ico:'circle-user', label:'פרופיל' },
   ];
@@ -93,7 +98,6 @@
       <a class="icon-btn hide-sm" href="game.html" title="משחק תרגול" aria-label="משחק תרגול"><i data-lucide="gamepad-2"></i></a>
       <a class="icon-btn hide-sm" href="ambassador.html" title="שגרירים" aria-label="תוכנית שגרירים"><i data-lucide="gift"></i></a>
       <button class="icon-btn" title="מצב תצוגה (בהיר/כהה)" aria-label="החלף מצב תצוגה בהיר או כהה" onclick="toggleTheme()"><i data-lucide="sun-moon"></i></button>
-      <a class="icon-btn hide-sm" href="admin.html" title="ניהול (מאחורי הקלעים)" aria-label="דשבורד ניהול"><i data-lucide="layout-dashboard"></i></a>
       <a class="icon-btn" href="dma.html" title="DMA · הרמה הבאה" aria-label="DMA, הרמה הבאה"><i data-lucide="crown"></i></a>
       <a class="avatar" href="profile.html" title="${u.name}" aria-label="הפרופיל שלי">${u.initial}</a>
     </header>`;
@@ -102,6 +106,25 @@
     return `<nav class="bottom-nav">${NAV.map(n =>
       `<a href="${n.href}" class="${active===n.href?'active':''}"><i data-lucide="${n.ico}" class="ico"></i>${n.label}</a>`).join('')}</nav>`;
   };
+
+  /* ---------- Discreet, protected admin entry at the bottom of every page ---------- */
+  window.mountBackstageLink = function () {
+    document.querySelectorAll('.credit').forEach(c => {
+      if (c.dataset.backstage) return;
+      c.dataset.backstage = '1';
+      const a = document.createElement('a');
+      a.href = 'admin.html';
+      a.className = 'admin-backstage';
+      a.setAttribute('aria-label', 'ניהול מאחורי הקלעים (מוגן)');
+      a.innerHTML = '<i data-lucide="lock"></i> ניהול מאחורי הקלעים';
+      c.appendChild(document.createElement('br'));
+      c.appendChild(a);
+    });
+    window.refreshIcons();
+  };
+  if (document.readyState !== 'loading') setTimeout(window.mountBackstageLink, 80);
+  else document.addEventListener('DOMContentLoaded', () => setTimeout(window.mountBackstageLink, 80));
+  window.addEventListener('load', window.mountBackstageLink);
 
   /* ---------- Reveal on scroll ---------- */
   function revealAll(){ document.querySelectorAll('.reveal:not(.in)').forEach(el => el.classList.add('in')); }

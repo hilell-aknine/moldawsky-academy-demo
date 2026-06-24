@@ -216,7 +216,8 @@ h1,h2,h3,h4 { font-family: var(--font-head); line-height: 1.2; font-weight: 800;
 .bottom-nav { display:none; position:fixed; inset-inline:0; inset-block-end:0; height:62px; z-index:130;
   background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter:blur(14px);
   border-block-start:1px solid var(--border); padding-block-end: env(safe-area-inset-bottom); }
-.bottom-nav a { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; color:var(--text-mute); font-size:12px; font-weight:600; }
+.bottom-nav a { flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; color:var(--text-mute); font-size:12px; font-weight:600; white-space:nowrap; }
+@media (max-width:380px){ .bottom-nav a { font-size:11px; } }
 .bottom-nav a.active { color:var(--green); }
 .bottom-nav .ico { font-size:19px; }
 
@@ -265,6 +266,12 @@ h1,h2,h3,h4 { font-family: var(--font-head); line-height: 1.2; font-weight: 800;
 .portal-modal.open { display:grid; }
 .portal-modal .box { width:100%; max-width:440px; background:var(--surface); border:1px solid var(--border); border-radius:var(--r-lg); padding:28px; box-shadow:var(--shadow-lg); }
 
+/* ---------- Access gate (admin) ---------- */
+#adminGate { position:fixed; inset:0; z-index:500; display:grid; place-items:center; padding:20px;
+  background:color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter:saturate(140%) blur(10px); }
+#adminGate .gate-box { width:100%; max-width:380px; background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--r-lg); padding:30px 26px; box-shadow:var(--shadow-lg); }
+
 /* ---------- Toast ---------- */
 .portal-toast { position:fixed; inset-block-end:84px; inset-inline-start:50%; transform:translateX(-50%) translateY(20px);
   background:var(--brand); border:1px solid var(--brand); color:#fff; padding:13px 20px; border-radius:12px;
@@ -309,6 +316,11 @@ h1,h2,h3,h4 { font-family: var(--font-head); line-height: 1.2; font-weight: 800;
 .ic-chip svg.lucide { width:21px; height:21px; }
 .credit { text-align:center; padding:22px; color:var(--text-mute); font-size:12.5px; }
 .credit b { color:var(--text-dim); }
+.admin-backstage { display:inline-flex; align-items:center; gap:6px; margin-block-start:10px; padding:6px 13px; border-radius:999px;
+  font-family:var(--font-head); font-size:11.5px; font-weight:700; color:var(--text-mute);
+  background:var(--surface-2); border:1px solid var(--border); opacity:.7; transition:.18s; }
+.admin-backstage:hover { opacity:1; color:var(--green); border-color:var(--green-line); background:var(--green-soft); }
+.admin-backstage svg.lucide { width:13px; height:13px; }
 
 /* ---------- Responsive ---------- */
 @media (min-width: 1025px) { .layout-course .portal-header { inset-inline-end: var(--sidebar-w); } }

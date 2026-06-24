@@ -38,6 +38,46 @@
     .module-block > .mb-head h3 { font-size:19px; }
     .module-block > .mb-head .mb-count { color:var(--text-mute); font-size:13px; font-weight:600; margin-inline-start:auto; }
 
+    /* ===== modules accordion ===== */
+    .acc-hint { display:flex; align-items:center; gap:8px; color:var(--text-mute); font-size:13px; font-weight:600; margin-block:16px 14px; }
+    .acc-hint svg.lucide { width:16px; height:16px; color:var(--green); }
+    .acc-list { display:flex; flex-direction:column; gap:12px; }
+    .acc-module { background:var(--surface); border:1px solid var(--border); border-radius:var(--r); box-shadow:var(--shadow-sm); overflow:hidden; transition:border-color .2s, box-shadow .2s; }
+    .acc-module:hover { border-color:var(--border-2); }
+    .acc-module.is-open { border-color:var(--green-line); box-shadow:var(--shadow); }
+    .acc-head { width:100%; display:flex; align-items:center; gap:14px; padding:16px 18px; text-align:start; transition:background .15s; }
+    .acc-head:hover { background:var(--surface-2); }
+    .acc-ico { width:44px; height:44px; flex-shrink:0; border-radius:12px; background:var(--green-soft); color:var(--green); display:grid; place-items:center; }
+    .acc-ico svg.lucide { width:22px; height:22px; }
+    .acc-module.is-complete .acc-ico { background:var(--ok-soft); color:var(--ok); }
+    .acc-module.is-locked .acc-ico { background:var(--surface-3); color:var(--text-mute); }
+    .acc-main { flex:1; min-width:0; }
+    .acc-row1 { display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
+    .acc-mnum { font-family:var(--font-head); font-size:11.5px; font-weight:800; color:var(--text-mute); letter-spacing:.3px; }
+    .acc-title { font-family:var(--font-head); font-weight:800; font-size:16px; color:var(--text); letter-spacing:-.2px; overflow-wrap:anywhere; }
+    .acc-row2 { display:flex; align-items:center; gap:10px; margin-block-start:7px; }
+    .acc-bar { flex:1; max-width:200px; height:5px; border-radius:999px; background:var(--surface-3); overflow:hidden; }
+    .acc-bar > i { display:block; height:100%; border-radius:999px; background:var(--grad-green); transition:width .6s var(--ease); }
+    .acc-module.is-complete .acc-bar > i { background:var(--ok); }
+    .acc-count { font-size:12.5px; font-weight:700; color:var(--text-dim); white-space:nowrap; }
+    .acc-module.is-complete .acc-count { color:var(--ok); }
+    .acc-right { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    .acc-chev { color:var(--text-mute); display:grid; place-items:center; transition:transform .3s var(--ease); }
+    .acc-chev svg.lucide { width:22px; height:22px; }
+    .acc-module.is-open .acc-chev { transform:rotate(180deg); color:var(--green); }
+    .acc-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:999px; font-family:var(--font-head); font-size:11px; font-weight:800; }
+    .acc-badge.b-go { background:var(--green-soft); color:var(--green); }
+    .acc-badge.b-done { background:var(--ok-soft); color:var(--ok); }
+    .acc-badge.b-lock { background:var(--surface-3); color:var(--text-mute); }
+    .acc-badge svg.lucide { width:13px; height:13px; }
+    /* collapsible body via grid-rows trick (smooth, height-agnostic) */
+    .acc-body { display:grid; grid-template-rows:0fr; transition:grid-template-rows .35s var(--ease); }
+    .acc-module.is-open .acc-body { grid-template-rows:1fr; }
+    .acc-inner { overflow:hidden; min-height:0; }
+    .acc-pad { padding:4px 18px 20px; border-block-start:1px solid var(--border); }
+    .acc-module:not(.is-open) .acc-pad { border-block-start-color:transparent; }
+    @media (prefers-reduced-motion: reduce){ .acc-body { transition:none; } }
+
     /* lesson view */
     .lesson-view-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-block-end:14px; flex-wrap:wrap; }
     .lv-crumb { color:var(--text-dim); font-size:13px; font-weight:600; display:flex; align-items:center; gap:7px; }
@@ -123,7 +163,7 @@
         <div class="page-head mt-32" style="margin-block-end:0">
           <div>
             <h3 style="font-size:21px">כל השיעורים</h3>
-            <p class="sub">12 מודולים · 31 שיעורים · השיטה המלאה של דניאל מולדבסקי, צעד אחרי צעד</p>
+            <p class="sub">12 מודולים · 44 שיעורים · השיטה המלאה של דניאל מולדבסקי, צעד אחרי צעד</p>
           </div>
         </div>
         <div id="modulesAll"></div>
@@ -152,6 +192,8 @@
       '🔔':'bell','🚀':'rocket'
     };
     const licon = (emoji, cls) => `<i data-lucide="${ICO[emoji] || 'circle'}"${cls?` class="${cls}"`:''}></i>`;
+    // module icons are already valid Lucide HTML (<i data-lucide="...">) in curriculum.js · inject directly
+    const micon = (iconHtml) => iconHtml || '';
     const MODULES = window.CURRICULUM.modules;
     const LOCKED_MODULE = 'm12';
 
@@ -221,7 +263,7 @@
         }).join('');
         return `<div class="portal-nav-group ${open?'open':''}" data-mod="${m.id}">
           <div class="group-head ${here?'is-here':''}">
-            <span class="g-left"><span class="g-ico">${licon(m.icon)}</span><span>${esc(m.title)}</span></span>
+            <span class="g-left"><span class="g-ico">${micon(m.icon)}</span><span>${esc(m.title)}</span></span>
             <span class="flex items-center gap-8"><span class="g-prog">${st.done}/${st.total}</span><span class="chev">›</span></span>
           </div>
           <div class="group-lessons">${lessons}</div>
@@ -289,7 +331,7 @@
             <div class="content">
               <span class="badge badge--green">${started ? 'השיעור הבא שלך' : 'מתחילים מכאן'}</span>
               <h2>${esc(n.title)}</h2>
-              <p class="muted">${licon(n.moduleIcon)} ${esc(n.moduleTitle)} · ${n.dur} דקות</p>
+              <p class="muted">${micon(n.moduleIcon)} ${esc(n.moduleTitle)} · ${n.dur} דקות</p>
               <div class="progress-bar mt-16" style="max-width:420px"><i style="width:${pct}%"></i></div>
               <p class="muted mt-8" style="font-size:13px">${started ? `כבר ${pct}% מאחוריך. עוד כמה שיעורים והחנות שלך באוויר.` : 'שלוש דקות מכאן אתה מבין בדיוק איך החנות הזאת מתחילה להרוויח.'}</p>
               <div class="mt-16">
@@ -316,18 +358,61 @@
         <div class="portal-stat-tile"><span class="ico"><i data-lucide="clock"></i></span><span class="v" style="font-size:24px">${window.Progress.timeLeftLabel()}</span><span class="k">עד סוף הקורס</span></div>
         <div class="portal-stat-tile"><span class="ico"><i data-lucide="book-open"></i></span><span class="v">${done}<span style="font-size:18px;color:var(--text-mute)">/${window.LESSON_COUNT}</span></span><span class="k">שיעורים בכיס</span></div>`;
 
-      // all modules grid
-      $('#modulesAll').innerHTML = MODULES.map(m => {
+      // all modules · ACCORDION (one open at a time; module of next lesson opens by default)
+      const openModId = n ? (moduleOf(n.id) || MODULES[0]).id : MODULES[0].id;
+      const accHtml = MODULES.map((m, mi) => {
         const st = window.Progress.moduleStats(m);
+        const pct = st.total ? Math.round(st.done / st.total * 100) : 0;
+        const isComplete = st.total > 0 && st.done === st.total;
+        const isLocked = (m.id === LOCKED_MODULE) && !window.User.isPaid();
+        const isOpen = m.id === openModId;
         const cards = m.lessons.map(l => lessonCard(l)).join('');
-        return `<div class="module-block">
-          <div class="mb-head">
-            <span class="mb-ico">${licon(m.icon)}</span><h3>${esc(m.title)}</h3>
-            <span class="mb-count">${st.done}/${st.total} שיעורים</span>
+
+        let badge = '';
+        if (isComplete) badge = `<span class="acc-badge b-done"><i data-lucide="check"></i> הושלם</span>`;
+        else if (isLocked) badge = `<span class="acc-badge b-lock"><i data-lucide="lock"></i> DMA</span>`;
+        else if (isOpen) badge = `<span class="acc-badge b-go"><i data-lucide="play"></i> ${st.done > 0 ? 'המשך כאן' : 'התחל כאן'}</span>`;
+
+        const cls = ['acc-module', isOpen ? 'is-open' : '', isComplete ? 'is-complete' : '', isLocked ? 'is-locked' : ''].filter(Boolean).join(' ');
+        return `<div class="${cls}" data-mod="${m.id}">
+          <button class="acc-head" type="button" aria-expanded="${isOpen}" aria-controls="accbody-${m.id}">
+            <span class="acc-ico">${micon(m.icon)}</span>
+            <span class="acc-main">
+              <span class="acc-row1">
+                <span class="acc-mnum">מודול ${mi + 1}</span>
+                <span class="acc-title">${esc(m.title)}</span>
+                ${badge}
+              </span>
+              <span class="acc-row2">
+                <span class="acc-bar"><i style="width:${pct}%"></i></span>
+                <span class="acc-count">${st.done}/${st.total} שיעורים</span>
+              </span>
+            </span>
+            <span class="acc-right">
+              <span class="acc-chev"><i data-lucide="chevron-down"></i></span>
+            </span>
+          </button>
+          <div class="acc-body" id="accbody-${m.id}">
+            <div class="acc-inner"><div class="acc-pad"><div class="lesson-grid">${cards}</div></div></div>
           </div>
-          <div class="lesson-grid">${cards}</div>
         </div>`;
       }).join('');
+      $('#modulesAll').innerHTML = `
+        <p class="acc-hint"><i data-lucide="mouse-pointer-click"></i> לחץ על מודול כדי לפתוח את השיעורים שלו</p>
+        <div class="acc-list">${accHtml}</div>`;
+
+      // accordion toggle · one open at a time
+      $$('.acc-module .acc-head').forEach(head => {
+        head.addEventListener('click', () => {
+          const mod = head.parentElement;
+          const wasOpen = mod.classList.contains('is-open');
+          $$('.acc-module').forEach(x => {
+            x.classList.remove('is-open');
+            const h = x.querySelector('.acc-head'); if (h) h.setAttribute('aria-expanded', 'false');
+          });
+          if (!wasOpen) { mod.classList.add('is-open'); head.setAttribute('aria-expanded', 'true'); }
+        });
+      });
 
       window.refreshIcons();
       bindCardClicks();
@@ -345,7 +430,7 @@
           ${!locked ? '<span class="play"><span>▶</span></span>' : ''}
         </div>
         <div class="flex items-center gap-8" style="margin-block-start:10px">
-          <span class="badge ${locked?'badge--locked':'badge--green'}">${licon(l.moduleIcon)} שיעור ${num}</span>
+          <span class="badge ${locked?'badge--locked':'badge--green'}">${micon(l.moduleIcon)} שיעור ${num}</span>
         </div>
         <h4>${esc(l.title)}</h4>
         <div class="meta">
@@ -386,7 +471,7 @@
 
       lv.innerHTML = `
         <div class="lesson-view-head">
-          <div class="lv-crumb"><span class="back" id="goBack">← כל השיעורים</span><span>·</span><span>${licon(m.icon)} ${esc(m.title)}</span></div>
+          <div class="lv-crumb"><span class="back" id="goBack">← כל השיעורים</span><span>·</span><span>${micon(m.icon)} ${esc(m.title)}</span></div>
           <span class="badge badge--green">שיעור ${idx+1} מתוך ${window.LESSON_COUNT}</span>
         </div>
 
@@ -396,7 +481,7 @@
         </div>
 
         <h1>${esc(l.title)}</h1>
-        <p class="muted">${licon(m.icon)} ${esc(m.title)} · ${l.dur} דקות</p>
+        <p class="muted">${micon(m.icon)} ${esc(m.title)} · ${l.dur} דקות</p>
 
         <div class="lv-actions">
           <button class="btn btn--outline mark-btn ${done?'is-done':''}" id="markBtn">
@@ -503,6 +588,13 @@
       if (prev) $('#prevBtn').onclick = () => openLesson(prev.id);
       if (next) $('#nextBtn').onclick = () => {
         if (isLockedLesson(next)) { toast('השיעור הבא נפתח בליווי הצמוד DMA 🔓', '🔒'); return; }
+        // finishing the current lesson always ends with a popup, even when advancing via "next"
+        if (!window.Progress.isDone(l.id)) {
+          window.Progress.toggle(l.id);   // mark current as done
+          celebrate();
+          buildSidebar(l.id);
+          showLessonEndPopup(l.id);
+        }
         openLesson(next.id);
       };
 
@@ -579,7 +671,7 @@
     function showLessonEndPopup(lessonId) {
       const popups = loadPopups();
       const completed = window.Progress.completedCount();
-      const total = window.LESSON_COUNT || 31;
+      const total = window.LESSON_COUNT || 44;
       const find = (t) => popups.find(p => p.trigger === t && p.active);
 
       let pick = null;
