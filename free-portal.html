@@ -45,17 +45,6 @@
     }
     .lp-hero .cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 
-    /* order chip */
-    .order-chip {
-      display: inline-flex; align-items: center; gap: 10px;
-      background: var(--surface); border: 1px solid var(--green-line);
-      border-radius: 999px; padding: 10px 20px; font-size: 14px; font-weight: 700;
-      box-shadow: var(--glow); color: var(--green); margin-block-end: 30px;
-      animation: floaty 3s ease-in-out infinite;
-    }
-    .order-chip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 1.4s infinite; flex-shrink: 0; }
-    @keyframes pulse { 0%,100%{ opacity:1; transform:scale(1); } 50%{ opacity:.5; transform:scale(.7); } }
-
     /* stats strip */
     .lp-stats { background: var(--surface); border-block: 1px solid var(--border); padding-block: 40px; }
     .lp-stats .stats-row { max-width: var(--max); margin-inline: auto; padding-inline: 22px; }
@@ -179,20 +168,15 @@
   <!-- ========== HERO ========== -->
   <section class="lp-hero section">
     <div class="wrap">
-      <div class="order-chip">
-        <span class="dot"></span>
-        <i data-lucide="bell" style="width:14px;height:14px;flex-shrink:0"></i> נכנסה הזמנה חדשה לחנות · ₪149
-        <span style="color:var(--text-mute);font-size:12px;font-weight:600">לפני שנייה</span>
-      </div>
-      <div class="eyebrow reveal">הפורטל החינמי</div>
+      <div class="eyebrow reveal">הפורטל החינמי של דניאל מולדבסקי</div>
       <h1 class="h-display reveal">
-        הסיסטם מבוסס ה-AI של דניאל מולדבסקי, שאיתו אני בונה חנויות שמוכרות מהיום הראשון, ופותח לך אותו במלואו. חינם.
+        השיטה שבנתה מותגים של 53 מיליון ש״ח. עכשיו פתוחה לפניך, במלואה, בחינם.
       </h1>
       <p class="sub reveal">
-        בלי הון התחלתי גדול, בלי ניסיון, בלי אנגלית, בלי מלאי שמתיישן במחסן. רק חנות Shopify אחת שעובדת בזמן שאתה ישן.
+        44 שיעורים שלוקחים אותך צעד אחר צעד, מ-0 ועד ההזמנה הראשונה בחנות ה-Shopify שלך. בלי ניסיון קודם, בלי אנגלית ובלי מלאי.
       </p>
       <p class="sub reveal" style="margin-block-start:-18px;font-size:16px">
-        אותו הסיסטם שבנה את תנאור והכניס מיליונים. כאן, צעד אחר צעד, בחינם מלא. לא קורס טעימה. הכל בפנים.
+        לא קורס טעימה ולא תאוריה. בדיוק מה שדניאל עושה בפועל, פתוח לפניך, עם מנטור AI שמלווה אותך בכל שלב.
       </p>
       <div class="cta-row reveal">
         <a href="course-library.html" class="btn btn--primary btn--lg">פותחים את הקורס עכשיו ←</a>
@@ -299,7 +283,7 @@
     <div class="wrap">
       <div class="eyebrow center reveal">מסלול הקורס</div>
       <h2 class="center reveal" style="font-size:clamp(22px,4vw,34px);margin-block:12px 32px">
-        12 מודולים. מ-0 ידע ועד ההזמנה הראשונה שנכנסת.
+        12 מודולים. מ-0 ידע ועד ההזמנה הראשונה.
       </h2>
       <div class="curriculum-list" id="curriculum-list">
         <!-- rendered by JS -->
@@ -441,11 +425,6 @@
         <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
       </div>
       <button class="btn btn--primary btn--block" id="btn-login">כניסה ←</button>
-      <div class="divider">או</div>
-      <button class="btn-google" id="btn-google-login">
-        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.1l6.8-6.8C35.6 2.4 30.1 0 24 0 14.7 0 6.7 5.5 2.8 13.6l7.9 6.1C12.6 13.3 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.6 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.2-10.1 7.2-17z"/><path fill="#FBBC05" d="M10.7 28.3A14.4 14.4 0 0 1 9.5 24c0-1.5.3-2.9.7-4.3L2.3 13.6A23.9 23.9 0 0 0 0 24c0 3.8.9 7.4 2.5 10.6l8.2-6.3z"/><path fill="#34A853" d="M24 48c6.1 0 11.2-2 14.9-5.4l-7.5-5.8c-2 1.4-4.6 2.2-7.4 2.2-6.2 0-11.4-4.2-13.3-9.9l-8.1 6.2C6.8 42.5 14.8 48 24 48z"/></svg>
-        המשך עם Google
-      </button>
     </div>
 
     <!-- Register form -->
@@ -463,11 +442,6 @@
         <input type="password" id="reg-pass" placeholder="לפחות 6 תווים" autocomplete="new-password">
       </div>
       <button class="btn btn--primary btn--block" id="btn-register">הרשמה חינמית ←</button>
-      <div class="divider">או</div>
-      <button class="btn-google" id="btn-google-register">
-        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.1l6.8-6.8C35.6 2.4 30.1 0 24 0 14.7 0 6.7 5.5 2.8 13.6l7.9 6.1C12.6 13.3 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.6 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.2-10.1 7.2-17z"/><path fill="#FBBC05" d="M10.7 28.3A14.4 14.4 0 0 1 9.5 24c0-1.5.3-2.9.7-4.3L2.3 13.6A23.9 23.9 0 0 0 0 24c0 3.8.9 7.4 2.5 10.6l8.2-6.3z"/><path fill="#34A853" d="M24 48c6.1 0 11.2-2 14.9-5.4l-7.5-5.8c-2 1.4-4.6 2.2-7.4 2.2-6.2 0-11.4-4.2-13.3-9.9l-8.1 6.2C6.8 42.5 14.8 48 24 48z"/></svg>
-        המשך עם Google
-      </button>
     </div>
 
   </div>
@@ -555,9 +529,6 @@
     const email = document.getElementById('reg-email').value.trim();
     if (!email) { toast('נא להזין אימייל', '⚠️'); return; }
     saveAndRedirect(name || email.split('@')[0]);
-  });
-  ['btn-google-login', 'btn-google-register'].forEach(id => {
-    document.getElementById(id).addEventListener('click', () => saveAndRedirect('משתמש Google'));
   });
 </script>
 </body>

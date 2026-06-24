@@ -439,13 +439,39 @@
         return 'היי! אני מורה ה-AI של אקדמיית מולדבסקי. שאל אותי כל דבר על מוצרים, תמחור, שיווק או דרופשיפינג · או תפעיל אחד הסוכנים למעלה ותראה את הקסם. <i data-lucide="rocket"></i>';
       return 'שאלה טובה. הדרך הכי מהירה לתשובה · תפעיל אחד הסוכנים למעלה (שם מותג, תיאור מוצר, בורר מוצרים), או תקפוץ לשיעור הרלוונטי ב<a href="course-library.html" class="green">קורס</a>. רוצה שאכוון אותך לשיעור ספציפי?';
     }
-    function sendChat(){
+    /* real mentor (Claude Sonnet via /api/mentor); falls back to canned replies offline */
+    const chatHistory = [];
+    const mentorLesson = (() => {
+      const id = window.qs && window.qs('lesson');
+      const l = id && (window.ALL_LESSONS || []).find(x => x.id === id);
+      return l ? l.title : '';
+    })();
+    function fmtReply(t){
+      return String(t).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])).replace(/\n/g, '<br>');
+    }
+    async function sendChat(){
       const inp = document.getElementById('chatInput');
       const q = inp.value.trim();
       if(!q) return;
       pushMsg(q,'me'); inp.value='';
+      chatHistory.push({ role:'user', content:q });
       const typing = pushMsg('<span class="typing"><span class="d"></span><span class="d"></span><span class="d"></span></span>','bot');
-      setTimeout(()=>{ typing.innerHTML = botReply(q); window.refreshIcons && window.refreshIcons(); chatThread.parentElement.scrollTop = chatThread.parentElement.scrollHeight; }, 600+Math.random()*400);
+      try {
+        const r = await fetch('/api/mentor', {
+          method:'POST', headers:{'content-type':'application/json'},
+          body: JSON.stringify({ messages: chatHistory.slice(-12), lesson: mentorLesson })
+        });
+        if(!r.ok) throw new Error('http '+r.status);
+        const data = await r.json();
+        if(data && data.reply){
+          chatHistory.push({ role:'assistant', content:data.reply });
+          typing.innerHTML = fmtReply(data.reply);
+        } else { typing.innerHTML = botReply(q); }
+      } catch(e){
+        typing.innerHTML = botReply(q); // offline / GitHub Pages / API down
+      }
+      window.refreshIcons && window.refreshIcons();
+      chatThread.parentElement.scrollTop = chatThread.parentElement.scrollHeight;
     }
     function quickChat(el){ document.getElementById('chatInput').value = el.textContent; sendChat(); }
     /* greeting */
