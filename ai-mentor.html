@@ -447,7 +447,14 @@
       return l ? l.title : '';
     })();
     function fmtReply(t){
-      return String(t).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])).replace(/\n/g, '<br>');
+      // escape first (safe), then render minimal markdown the model tends to emit
+      let s = String(t).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+      s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');   // **bold**
+      s = s.replace(/^\s{0,3}#{1,6}\s*(.+)$/gm, '<strong>$1</strong>'); // # heading -> bold
+      s = s.replace(/^\s*---+\s*$/gm, '');                         // --- divider -> drop
+      s = s.replace(/^\s*[-*]\s+/gm, '• ');                        // bullets
+      s = s.replace(/\n/g, '<br>');
+      return s;
     }
     async function sendChat(){
       const inp = document.getElementById('chatInput');
